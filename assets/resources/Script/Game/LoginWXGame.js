@@ -56,7 +56,7 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.EventManager.unEvent( this );
+        G.EventManager.unEvent( this, ConfEvent.WEBSOCKET_OPEN );
     },
 
     /**

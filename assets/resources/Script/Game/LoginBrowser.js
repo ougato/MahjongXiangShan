@@ -81,6 +81,7 @@ cc.Class({
             if( data.code === 0 ) {
                 if( token !== data.token ) {
                     G.StoreManager.set( ConfStore.Token, data.token );
+                    G.StoreManager.set( ConfStore.LoginMode, 0 );
                 }
                 G.NetManager.connect( data.loginws );
             }

@@ -237,7 +237,7 @@ let List = cc.Class({
     forEach( callback ) {
         let node = this.m_node;
         while( !Utils.isNull( node ) ) {
-            callback( node );
+            callback( node.getData() );
             node = node.getNext();
         }
     },

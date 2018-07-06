@@ -55,7 +55,7 @@ let Game = cc.Class({
      * 销毁
      */
     destroy() {
-        G.EventManager.unEvent( this );
+        G.EventManager.unEvent( this, ConfEvent.WEBSOCKET_OPEN );
     },
 
     /**
@@ -74,7 +74,7 @@ let Game = cc.Class({
      */
     register() {
         G.EventManager.addEvent( this, ConfEvent.WEBSOCKET_OPEN );
-        G.NetManager.addProto( ConfNet.LOGIN, this.onLogin.bind( this ) );
+        // G.NetManager.addProto( ConfNet.LOGIN, this.onLogin.bind( this ) );
     },
 
     /**
@@ -99,13 +99,11 @@ let Game = cc.Class({
      * 网络连接成功
      */
     onOpen() {
-        let ws = G.NetManager.getWS();
-        // TODO 发送心跳
         let cmd =  ConfNet.LOGIN;
         let data = {};
         data.token = G.StoreManager.get( ConfStore.Token );
         data.type = G.StoreManager.get( ConfStore.LoginMode );
-        ws.send( cmd, data );
+        G.NetManager.send( cmd, data );
     },
 
     /**

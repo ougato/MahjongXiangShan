@@ -52,6 +52,7 @@ let Http = {
         // 完成回调
         xhr.onreadystatechange = function() {
             if( xhr.readyState === 4 ) {
+                G.ViewManager.closeLoading();
                 if( xhr.status >= 200 && xhr.status < 400 ) {
                     let response = xhr.responseText;
                     if( Utils.isJson( response ) ) {
@@ -64,7 +65,6 @@ let Http = {
                 } else {
                     G.ViewManager.openTips( Utils.format( G.I18N.get( 2 ), ( xhr.status ) ) );
                 }
-                G.ViewManager.closeLoading();
             }
         }.bind( this );
 

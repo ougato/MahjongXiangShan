@@ -15,6 +15,7 @@ let Hash = require( "Hash" );
 let ConfEvent = require( "ConfEvent" );
 let DefLog = require( "DefLog" );
 let Log = require( "Log" );
+let DefView = require( "DefView" );
 
 // 实例化对象
 let instance = null;
@@ -60,13 +61,15 @@ let NetManager = cc.Class({
         // 发送队列
         this.m_hashSendData = new Hash();
         // 发送超时定时器
-        this.m_nSendTimerId = 0;
+        this.m_nSendTimerId = null;
         // 心跳超时定时器
-        this.m_nPingTimerId = 0;
+        this.m_nPingTimerId = null;
         // 心跳消息ID
-        this.m_nPingCmd = 0;
+        this.m_nPingCmd = ConfNet.PING;
         // 是否重连
         this.m_bIsReconnect = false;
+        // 是否错误
+        this.m_bIsError = false;
 
     },
 
@@ -122,6 +125,7 @@ let NetManager = cc.Class({
             let ids = {};
             ids[DefView.DialogBoxIDs.IDRETRY] = function() {
                 this.connect( this.m_objWS.url, this.m_objWS.protocol );
+                G.ViewManager.closeDialogBox();
             }.bind( this );
             G.ViewManager.openDialogBox( G.I18N.get( 24 ), ids );
         }
@@ -133,6 +137,20 @@ let NetManager = cc.Class({
      */
     isOpen() {
         return ( ( !Utils.isNull( this.m_objWS ) ) && ( this.m_objWS.readyState === WebSocket.OPEN ) );
+    },
+
+    /**
+     * 是否错误
+     */
+    isError() {
+        return this.m_bIsError;
+    },
+
+    /**
+     * 是否心跳ID
+     */
+    isPingCmd( cmd ) {
+        return cmd === this.m_nPingCmd;
     },
 
     /**
@@ -165,30 +183,49 @@ let NetManager = cc.Class({
             G.ViewManager.closeLoading();
         }
 
-        // 回调 消息接收函数
-        let callback = G.NetManager.getCallback( cmd );
-        if( !Utils.isNull( callback ) ) {
-            callback( data );
+        let scriptList = this.m_mapNetList.get( parseInt( cmd ) );
+        if( !Utils.isNull( scriptList ) && !scriptList.isEmpty() ) {
+            scriptList.forEach( function( data ) {
+                let script = data;
+                if( Utils.isObject( script ) ) {
+                    if( Utils.isFunction( script.onNet ) ) {
+                        let msg = {};
+                        msg.cmd = cmd;
+                        msg.data = data;
+                        script.onNet( msg );
+                    }
+                }
+            } );
         }
-        Log.print( Utils.format( DefLog[10], cmd ) );
+
+        Log.print( Utils.format( DefLog[10] ) );
+        Log.print( cmd );
         Log.print( data );
-        Log.print( json );
     },
 
     /**
      * 网络错误 回调
      */
     onError() {
+        this.m_bIsError = true;
+        let ids = {};
+        ids[DefView.DialogBoxIDs.IDRETRY] = function() {
+            this.connect( this.m_objWS.url, this.m_objWS.protocol );
+            G.ViewManager.closeDialogBox();
+            this.m_bIsError = false;
+        }.bind( this );
+        G.ViewManager.openDialogBox( G.I18N.get( 26 ), ids );
         G.ViewManager.closeLoading();
-        G.ViewManager.openTips( G.I18N.get( 9 ) );
     },
 
     /**
      * 网络关闭 回调
      */
     onClose() {
-        this.stopPingTimer();
-        this.reconnect();
+        if( !this.m_bIsError ) {
+            this.stopPingTimer();
+            this.reconnect();
+        }
     },
 
     /**
@@ -221,7 +258,7 @@ let NetManager = cc.Class({
             this.m_hashSendData.set( cmd, data );
         }
 
-        this.m_objWS.send( JSON.stringify( cmd, data ) );
+        this.m_objWS.send( JSON.stringify( msg ) );
 
         // 启动发送定时器
         if( !this.isPingCmd( cmd ) ) {
@@ -235,14 +272,50 @@ let NetManager = cc.Class({
 
 
     /**
-     * 设置注册网络回调函数
-     * @param cmd 协议消息ID
-     * @param callback 接收回调函数
+     * 添加 网络协议
+     * @param script {object} 脚本
+     * @param cmd 协议ID
      */
     addProto( script, cmd ) {
-        this.m_mapS2CFunc.set( cmd, callback );
+        let scriptList = this.m_mapNetList.get( cmd );
+
+        if( Utils.isNull( scriptList ) ) {
+            scriptList = new List;
+            this.m_mapNetList.set( cmd, scriptList );
+        }
+        if( Utils.isNull( scriptList.find( script ) ) ) {
+            scriptList.insert( script );
+        }
     },
 
+    /**
+     * 卸载 网络协议
+     * @param script {object} 脚本
+     * @param cmd 协议ID
+     */
+    unProto( script, cmd ) {
+        let scriptList = this.m_mapNetList.get( cmd );
+        if( !Utils.isNull( scriptList ) && !scriptList.isEmpty() ) {
+            scriptList.delete( script );
+        }
+    },
+
+    /**
+     * 发送超时
+     */
+    popupSendTimeout() {
+        let ids = {};
+        ids[DefView.DialogBoxIDs.IDRETRY] = function() {
+            let hashKey = this.m_hashSendData.getKey();
+            if( !Utils.isNull( hashKey ) ) {
+                let hashValue = this.m_hashSendData.getValue();
+                this.send( hashKey, hashValue );
+            }
+            this.startPingTimer();
+            G.ViewManager.closeDialogBox();
+        }.bind( this );
+        G.ViewManager.openDialogBox( G.I18N.get( 25 ), ids );
+    },
 
     /**
      * 开始 消息发送定时器
@@ -252,8 +325,10 @@ let NetManager = cc.Class({
             this.stopSendTimer();
         }
         this.m_nSendTimerId = setTimeout( function() {
-            this.m_objWS.close();
             this.stopSendTimer();
+            this.stopPingTimer();
+            this.popupSendTimeout();
+            G.ViewManager.closeLoading();
         }.bind( this ), DefNet.MESSAGE_TIMEOUT * 1000 );
     },
 
@@ -274,8 +349,9 @@ let NetManager = cc.Class({
         if( !Utils.isNull( this.m_nPingTimerId ) ) {
             this.stopPingTimer();
         }
+        this.send( ConfNet.PING );
         this.m_nPingTimerId = setInterval( function() {
-            this.send( ConfNet.PING );
+            this.send( ConfNet.PING, {} );
         }.bind( this ), DefNet.PING_GAP * 1000 );
     },
 
@@ -288,7 +364,6 @@ let NetManager = cc.Class({
             this.m_nPingTimerId = null;
         }
     },
-
 
 });
 
