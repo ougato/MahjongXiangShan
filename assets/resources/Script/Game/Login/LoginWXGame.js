@@ -20,22 +20,7 @@ cc.Class({
     extends: UIBase,
 
     properties: {
-        pEnterGame: { default: null, type: cc.Button },
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
+        buttonLogin: { default: null, type: cc.Button, tooltip: "头像" },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -73,12 +58,10 @@ cc.Class({
      */
     initView() {
         let style = {
-            // left: this.pEnterGame.node.getPositionX(),
             left: 360,
-            // top: this.pEnterGame.node.getPositionY(),
             top: 200,
-            width: this.pEnterGame.node.getContentSize().width,
-            height: this.pEnterGame.node.getContentSize().height,
+            width: this.buttonLogin.node.getContentSize().width,
+            height: this.buttonLogin.node.getContentSize().height,
         };
         this.buttonGetUserInfo = wx.createUserInfoButton({
             type: 'image',
@@ -197,7 +180,6 @@ cc.Class({
         let signature = Utils.isNull( userInfo.signature ) ? "null" : userInfo.signature;
         let encryptedData = Utils.isNull( userInfo.encryptedData ) ? "null" : userInfo.encryptedData;
         let iv = Utils.isNull( userInfo.iv ) ? "null" : userInfo.iv;
-
 
         return Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, rawData, signature, encryptedData, iv, token );
     },

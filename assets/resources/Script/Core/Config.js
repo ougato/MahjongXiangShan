@@ -15,7 +15,7 @@ const Config = {
     // 是否调试模式
     isDebug: true,
     // 默认场景
-    defaultScene: ConfView.Scene.Update,
+    defaultScene: ConfView.Scene.Lobby,
     // 默认语言
     defaultLanguage: DefLanguage.CN,
 

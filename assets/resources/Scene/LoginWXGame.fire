@@ -455,6 +455,8 @@
       "__id__": 2
     },
     "_enabled": true,
-    "pEnterGame": null
+    "buttonEnterGame": {
+      "__id__": 10
+    }
   }
 ]

@@ -1457,7 +1457,7 @@
       "a": 255
     },
     "duration": 0.1,
-    "zoomScale": 1.1,
+    "zoomScale": 1.05,
     "clickEvents": [
       {
         "__id__": 37
@@ -1927,7 +1927,7 @@
       "a": 255
     },
     "duration": 0.1,
-    "zoomScale": 1.1,
+    "zoomScale": 1.05,
     "clickEvents": [
       {
         "__id__": 49

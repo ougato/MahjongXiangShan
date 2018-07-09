@@ -67,8 +67,8 @@ cc.Class({
             Log.error( Utils.format( DefLog[14], data.code ) );
             return ;
         }
+
         let userInfo = data.UserInfo;
-        // this.spriteAvatar.spriteFrame = userInfo.pictureUrl;
         this.labelName.string = userInfo.name;
         this.labelGold.string = userInfo.gold;
         this.labelJewel.string = userInfo.diamond;
