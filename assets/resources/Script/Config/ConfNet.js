@@ -13,12 +13,14 @@ const ProtocolIDs = {
     // 登录
     LOGIN: 102,
     // 广播
-    BROADCAST: 103
+    BROADCAST: 103,
 
     /** ------------------- 游戏匹配 ------------------- */
 
 
     /** ------------------- 游戏房卡 ------------------- */
+    CREATE_ROOM: 301,
+
 };
 
 module.exports = ProtocolIDs;

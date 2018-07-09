@@ -11,14 +11,15 @@ const Scene = {
     LoginWXGame: "LoginWXGame",
     LoginBrowser: "LoginBrowser",
     Lobby: "Lobby",
-    Update: "Update",
 };
 
 /**
  * 预制
  */
 const Prefab = {
-
+    FriendBattle: "Lobby/FriendBattle",
+    FriendCreateRoom: "Lobby/FriendCreateRoom",
+    FriendJoinRoom: "Lobby/FriendJoinRoom",
 };
 
 

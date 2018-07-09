@@ -1,14 +1,14 @@
 {
   "ver": "1.0.0",
-  "uuid": "02e91b1e-836d-4077-be82-5cc3619fd07b",
+  "uuid": "968ea872-e426-4f8d-8f5b-6f3890d9217f",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "subMetas": {
     "ProgressBar_2": {
       "ver": "1.0.3",
-      "uuid": "1ae366bd-108a-4286-93d7-2d26b5026cbc",
-      "rawTextureUuid": "02e91b1e-836d-4077-be82-5cc3619fd07b",
+      "uuid": "037c3105-3088-4bee-9195-c850ec279775",
+      "rawTextureUuid": "968ea872-e426-4f8d-8f5b-6f3890d9217f",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

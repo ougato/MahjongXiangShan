@@ -56,6 +56,7 @@ let Game = cc.Class({
      */
     destroy() {
         G.EventManager.unEvent( this, ConfEvent.WEBSOCKET_OPEN );
+        G.NetManager.unProto( this, ConfNet.LOGIN );
     },
 
     /**
@@ -74,7 +75,8 @@ let Game = cc.Class({
      */
     register() {
         G.EventManager.addEvent( this, ConfEvent.WEBSOCKET_OPEN );
-        // G.NetManager.addProto( ConfNet.LOGIN, this.onLogin.bind( this ) );
+        G.NetManager.addProto( this, ConfNet.LOGIN );
+
     },
 
     /**
@@ -121,6 +123,18 @@ let Game = cc.Class({
         switch( msg.id ) {
             case ConfEvent.WEBSOCKET_OPEN:
                 this.onOpen();
+                break;
+        }
+    },
+
+    /**
+     * 网络 回调
+     * @param msg
+     */
+    onNet( msg ) {
+        switch( msg.cmd ) {
+            case ConfNet.LOGIN:
+                G.EventManager.sendEvent( ConfEvent.LOGIN_SUCCEED, msg.data );
                 break;
         }
     },

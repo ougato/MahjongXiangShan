@@ -13,6 +13,8 @@ let Utils = require( "Utils" );
 let ConfUrl = require( "ConfUrl" );
 let ConfStore = require( "ConfStore" );
 let Config = require( "Config" );
+let ConfEvent = require( "ConfEvent" );
+let ConfView = require( "ConfView" );
 
 cc.Class({
     extends: UIBase,
@@ -38,6 +40,13 @@ cc.Class({
     },
 
     /**
+     * 销毁
+     */
+    onDestroy() {
+        G.EventManager.unEvent( this, ConfEvent.LOGIN_SUCCEED );
+    },
+
+    /**
      * 初始化数据
      */
     initData() {
@@ -59,7 +68,7 @@ cc.Class({
      * 注册
      */
     register() {
-
+        G.EventManager.addEvent( this, ConfEvent.LOGIN_SUCCEED );
     },
 
     /**
@@ -86,6 +95,25 @@ cc.Class({
                 G.NetManager.connect( data.loginws );
             }
         } );
+    },
+
+    /**
+     * 登录成功
+     * @param data {object} 用户数据
+     */
+    onLoginSucceed( data ) {
+        G.ViewManager.replaceScene( ConfView.Scene.Lobby, data );
+    },
+
+    /**
+     * 事件 回调
+     */
+    onEvent( msg ) {
+        switch( msg.id ) {
+            case ConfEvent.LOGIN_SUCCEED:
+                this.onLoginSucceed( msg.data );
+                break;
+        }
     },
 
 

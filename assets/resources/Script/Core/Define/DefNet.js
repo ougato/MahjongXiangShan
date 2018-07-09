@@ -14,7 +14,7 @@ let DefNet = {
     // 重连间隔时间(s)
     RECONNECT_GAP: 3,
     // 心跳间隔时间(s)
-    PING_GAP: 5,
+    PING_GAP: 20,
 
 };
 

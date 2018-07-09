@@ -87,9 +87,7 @@ let StoreManager = cc.Class({
         // 如果数据有加密，一定要解密后再返回，否则数据会出问题
         let value = cc.sys.localStorage.getItem( key );
         if( !Utils.isNull( value ) && value.length > 0 ) {
-            if( Utils.isJson( value ) ) {
-                value = JSON.parse( value );
-            }
+            value = JSON.parse( value );
             this.m_mapStore.set( key, value );
         } else {
             value = null;
@@ -106,11 +104,7 @@ let StoreManager = cc.Class({
         // 允许加密数据 封装他的原因就是为了调用时不让开发者手动写加密
         if( !Utils.isNull( data ) ) {
             this.m_mapStore.set( key, data );
-            let jsonData = data;
-            if( Utils.isObject( jsonData ) ) {
-                jsonData = JSON.stringify( data );
-            }
-            cc.sys.localStorage.setItem( key, jsonData );
+            cc.sys.localStorage.setItem( key, JSON.stringify( data ) );
         }
     },
 

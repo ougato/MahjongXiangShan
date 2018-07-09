@@ -173,25 +173,21 @@ let NetManager = cc.Class({
             jsonData = JSON.parse( jsonData );
         }
 
-        let cmd = jsonData.cmd;
-        let data = jsonData.data;
-
         // 消息队列移除 并 关闭菊花
-        if( !this.isPingCmd( cmd ) ) {
+        if( !this.isPingCmd( jsonData.cmd ) ) {
             this.m_hashSendData.clear();
             this.stopSendTimer();
             G.ViewManager.closeLoading();
         }
 
-        let scriptList = this.m_mapNetList.get( parseInt( cmd ) );
+        let scriptList = this.m_mapNetList.get( parseInt( jsonData.cmd ) );
         if( !Utils.isNull( scriptList ) && !scriptList.isEmpty() ) {
-            scriptList.forEach( function( data ) {
-                let script = data;
+            scriptList.forEach( function( script ) {
                 if( Utils.isObject( script ) ) {
                     if( Utils.isFunction( script.onNet ) ) {
                         let msg = {};
-                        msg.cmd = cmd;
-                        msg.data = data;
+                        msg.cmd = jsonData.cmd;
+                        msg.data = jsonData.data;
                         script.onNet( msg );
                     }
                 }
@@ -199,8 +195,8 @@ let NetManager = cc.Class({
         }
 
         Log.print( Utils.format( DefLog[10] ) );
-        Log.print( cmd );
-        Log.print( data );
+        Log.print( jsonData.cmd );
+        Log.print( jsonData.data );
     },
 
     /**
@@ -240,9 +236,7 @@ let NetManager = cc.Class({
             return ;
         }
 
-        if( Utils.isNumber( cmd ) || Utils.isString( cmd ) ) {
-            cmd.toString();
-        } else {
+        if( !Utils.isNumber( cmd ) ) {
             Log.error( DefLog[13] );
             return ;
         }

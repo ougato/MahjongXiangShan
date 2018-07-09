@@ -1,13 +1,14 @@
 /**
  * Author: oucheng(ougato@gmail.com)
- * Copyright (c) 2018-03
+ * Copyright (c) 2018-07
  */
 
 /**
- * 大厅场景
+ * 好友对战
  */
 
 let UIBase = require( "UIBase" );
+let ConfView = require( "ConfView" );
 
 cc.Class({
     extends: UIBase,
@@ -64,6 +65,27 @@ cc.Class({
      */
     register() {
 
+    },
+
+    /**
+     * 返回
+     */
+    onGoBack() {
+        G.ViewManager.closePrefab( ConfView.Prefab.FriendBattle );
+    },
+
+    /**
+     * 创建房间
+     */
+    onCreateRoom() {
+        G.ViewManager.openPrefab( ConfView.Prefab.FriendCreateRoom );
+    },
+
+    /**
+     * 加入房间
+     */
+    onJoinRoom() {
+        G.ViewManager.openPrefab( ConfView.Prefab.FriendJoinRoom );
     },
 
     // update (dt) {},

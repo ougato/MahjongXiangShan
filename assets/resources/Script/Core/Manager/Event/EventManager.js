@@ -96,8 +96,7 @@ let EventManager = cc.Class({
     sendEvent( id, data ) {
         let scriptList = this.m_mapEventList.get( id );
         if( !Utils.isNull( scriptList ) && !scriptList.isEmpty() ) {
-            scriptList.forEach( function( data ) {
-                let script = data;
+            scriptList.forEach( function( script ) {
                 if( Utils.isObject( script ) ) {
                     if( Utils.isFunction( script.onEvent ) ) {
                         let msg = {};

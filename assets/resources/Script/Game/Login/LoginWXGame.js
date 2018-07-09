@@ -14,6 +14,7 @@ let ConfUrl = require( "ConfUrl" );
 let DefView = require( "DefView" );
 let ConfStore = require( "ConfStore" );
 let ConfEvent = require( "ConfEvent" );
+let ConfView = require( "ConfView" );
 
 cc.Class({
     extends: UIBase,
@@ -56,7 +57,7 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.EventManager.unEvent( this, ConfEvent.WEBSOCKET_OPEN );
+        G.EventManager.unEvent( this, ConfEvent.LOGIN_SUCCEED );
     },
 
     /**
@@ -91,7 +92,7 @@ cc.Class({
      * 注册
      */
     register() {
-        G.EventManager.addEvent( this, ConfEvent.WEBSOCKET_OPEN );
+        G.EventManager.addEvent( this, ConfEvent.LOGIN_SUCCEED );
     },
 
     /**
@@ -202,10 +203,11 @@ cc.Class({
     },
 
     /**
-     * 网络连接成功
+     * 登录成功
+     * @param data {object} 用户数据
      */
-    onOpen() {
-        this.buttonGetUserInfo.hide();
+    onLoginSucceed( data ) {
+        G.ViewManager.replaceScene( ConfView.Scene.Lobby, data );
     },
 
     /**
@@ -213,8 +215,8 @@ cc.Class({
      */
     onEvent( msg ) {
         switch( msg.id ) {
-            case ConfEvent.WEBSOCKET_OPEN:
-                this.onOpen();
+            case ConfEvent.LOGIN_SUCCEED:
+                this.onLoginSucceed( msg.data );
                 break;
         }
     },
