@@ -57,15 +57,23 @@ cc.Class({
      * 初始化视图
      */
     initView() {
+
+        let systemInfo = wx.getSystemInfoSync();
+        let winSize = cc.director.getWinSize();
+        let screenWidth = systemInfo.screenWidth;
+        let screenHeight = systemInfo.screenHeight;
+        let width = screenWidth / winSize.width * this.buttonLogin.node.getContentSize().width;
+        let height = screenHeight / winSize.height * this.buttonLogin.node.getContentSize().height;
+
         let style = {
-            left: 360,
-            top: 200,
-            width: this.buttonLogin.node.getContentSize().width,
-            height: this.buttonLogin.node.getContentSize().height,
+            left: screenWidth * 0.5 - width * 0.5,
+            top: screenHeight * 0.7,
+            width: width,
+            height: height,
         };
         this.buttonGetUserInfo = wx.createUserInfoButton({
             type: 'image',
-            image: cc.url.raw( "resources/atlas/loading.png" ),
+            image: 'http://47.106.125.21/cocos/origin/Atlas/Login/Button_1.png',
             style: style,
         });
         this.buttonGetUserInfo.onTap( this.onGetUserInfo.bind( this ) );

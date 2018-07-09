@@ -30,7 +30,7 @@
   "title": "MahjongXiangShan",
   "webOrientation": "auto",
   "wechatgame": {
-    "REMOTE_SERVER_ROOT": "http://47.106.125.21/cocos",
+    "REMOTE_SERVER_ROOT": "http://47.106.125.21/cocos/build",
     "appid": "wx1df4129a0f25f710",
     "isSubdomain": false,
     "orientation": "landscape",
