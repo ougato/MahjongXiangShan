@@ -11,16 +11,18 @@ let UIBase = require( "UIBase" );
 let Http = require( "Http" );
 let Utils = require( "Utils" );
 let ConfUrl = require( "ConfUrl" );
-let DefView = require( "DefView" );
 let ConfStore = require( "ConfStore" );
+let Config = require( "Config" );
 let ConfEvent = require( "ConfEvent" );
-let ConfView = require( "ConfView" );
+let DefView = require( "DefView" );
 
 cc.Class({
     extends: UIBase,
 
     properties: {
-        buttonLogin: { default: null, type: cc.Button, tooltip: "头像" },
+        nodePhoneNumber: { default: null, type: cc.Node, tooltip: "手机号登录节点" },
+        nodeGuest: { default: null, type: cc.Node, tooltip: "游客登录节点" },
+        nodeWechat: { default: null, type: cc.Node, tooltip: "微信登录节点" },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -42,28 +44,61 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.EventManager.unEvent( this, ConfEvent.LOGIN_SUCCEED );
+        if( !Utils.isNull( this.buttonGetUserInfo ) ) {
+            this.buttonGetUserInfo.hide();
+        }
     },
 
     /**
      * 初始化数据
      */
     initData() {
+        // 微信获取用户信息组件
         this.buttonGetUserInfo = null;
-
     },
 
     /**
      * 初始化视图
      */
     initView() {
+        this.nodePhoneNumber.active = false;
+        this.nodeGuest.active = false;
+        this.nodeWechat.active = false;
+
+        if( cc.sys.isMobile ) {
+            let button = this.createGetUserInfoButton();
+            button.onTap( this.onGetUserInfo.bind( this ) );
+            this.buttonGetUserInfo = button;
+        } else if( cc.sys.isBrowser || cc.sys.isNative ) {
+            if( Config.isDebug ) {
+                this.nodeGuest.active = true;
+            } else {
+                this.nodePhoneNumber.active = true;
+            }
+        }
+
+    },
+
+    /**
+     * 注册
+     */
+    register() {
+
+    },
+
+    /**
+     * 创建 获取 微信用户信息 按钮
+     * @return {object}
+     */
+    createGetUserInfoButton() {
+        let wechatButton = this.nodeWechat.getChildByName( "Button_Wechat" );
 
         let systemInfo = wx.getSystemInfoSync();
         let winSize = cc.director.getWinSize();
         let screenWidth = systemInfo.screenWidth;
         let screenHeight = systemInfo.screenHeight;
-        let width = screenWidth / winSize.width * this.buttonLogin.node.getContentSize().width;
-        let height = screenHeight / winSize.height * this.buttonLogin.node.getContentSize().height;
+        let width = screenWidth / winSize.width * wechatButton.getContentSize().width;
+        let height = screenHeight / winSize.height * wechatButton.getContentSize().height;
 
         let style = {
             left: screenWidth * 0.5 - width * 0.5,
@@ -71,19 +106,38 @@ cc.Class({
             width: width,
             height: height,
         };
-        this.buttonGetUserInfo = wx.createUserInfoButton({
+
+        return wx.createUserInfoButton({
             type: 'image',
             image: 'http://47.106.125.21/cocos/origin/Atlas/Login/Button_1.png',
             style: style,
         });
-        this.buttonGetUserInfo.onTap( this.onGetUserInfo.bind( this ) );
     },
 
     /**
-     * 注册
+     * 手机号 登录
      */
-    register() {
-        G.EventManager.addEvent( this, ConfEvent.LOGIN_SUCCEED );
+    onPhoneNumber() {
+
+    },
+
+    /**
+     * 游客 登录
+     */
+    onGuest() {
+        let token = G.StoreManager.get( ConfStore.Token );
+        if( Utils.isNull( token ) || token.length < 0 ) {
+            token = "null";
+        }
+        Http.get( Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER_GUEST, token ), function( data ) {
+            if( data.code === 0 ) {
+                if( token !== data.token ) {
+                    G.StoreManager.set( ConfStore.Token, data.token );
+                    G.StoreManager.set( ConfStore.LoginMode, 0 );
+                }
+                G.NetManager.connect( data.loginws );
+            }
+        } );
     },
 
     /**
@@ -111,24 +165,6 @@ cc.Class({
         }
     },
 
-    /**
-     * 退出微信小游戏
-     */
-    wxExitGame( callback ) {
-        let self = this;
-        wx.exitMiniProgram( {
-            success( res ) {
-                Utils.isFunction( callback ) && callback( res );
-            },
-            fail( err ) {
-                let ids = {};
-                ids[DefView.DialogBoxIDs.IDRETRY] = function() {
-                    self.wxExitGame( callback );
-                };
-                G.ViewManager.openDialogBox( Utils.format( G.I18N.get( 22 ), err.errcode, err.errmsg ), ids );
-            },
-        } );
-    },
 
     /**
      * 微信登录
@@ -156,7 +192,7 @@ cc.Class({
 
     /**
      * 生成用户信息
-     * @param res
+     * @param res {*} 微信返回数据
      */
     makeUserInfo( res ) {
         let userInfo = {};
@@ -192,24 +228,6 @@ cc.Class({
         return Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, rawData, signature, encryptedData, iv, token );
     },
 
-    /**
-     * 登录成功
-     * @param data {object} 用户数据
-     */
-    onLoginSucceed( data ) {
-        G.ViewManager.replaceScene( ConfView.Scene.Lobby, data );
-    },
-
-    /**
-     * 事件 回调
-     */
-    onEvent( msg ) {
-        switch( msg.id ) {
-            case ConfEvent.LOGIN_SUCCEED:
-                this.onLoginSucceed( msg.data );
-                break;
-        }
-    },
 
     // update (dt) {},
 });

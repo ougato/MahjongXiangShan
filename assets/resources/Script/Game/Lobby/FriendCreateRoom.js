@@ -52,7 +52,7 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.NetManager.unProto( this, ConfNet.CREATE_ROOM );
+        G.NetManager.unProto( this, ConfNet.NET_CREATE_ROOM );
     },
 
     /**
@@ -73,7 +73,7 @@ cc.Class({
      * 注册
      */
     register() {
-        G.NetManager.addProto( this, ConfNet.CREATE_ROOM );
+        G.NetManager.addProto( this, ConfNet.NET_CREATE_ROOM );
     },
 
     /**
@@ -87,9 +87,7 @@ cc.Class({
      * 创建房间
      */
     onCreateRoom() {
-        let cmd = 301;
-        let data = {};
-        G.NetManager.send( cmd, data );
+        G.NetManager.send( ConfNet.NET_CREATE_ROOM, {} );
     },
 
     /**
@@ -100,6 +98,7 @@ cc.Class({
             Log.error( data.code );
             return ;
         }
+        G.NetManager.send( ConfNet.NET_JOIN, { roomId: data.roomId } );
     },
 
     /**
@@ -108,7 +107,7 @@ cc.Class({
      */
     onNet( msg ) {
         switch( msg.cmd ) {
-            case ConfNet.CREATE_ROOM:
+            case ConfNet.NET_CREATE_ROOM:
                 this.onCreateRoomSucceed( msg.data );
                 break;
         }

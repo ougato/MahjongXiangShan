@@ -8,10 +8,10 @@
  * 游戏 事件
  */
 const ConfEvent = {
-    // 网络连接成功
-    WEBSOCKET_OPEN: "WEBSOCKET_OPEN",
-    // 登录成功
-    LOGIN_SUCCEED: "LOGIN_SUCCEED",
+    // 连接成功 事件
+    EVENT_CONNECT_SUCCEED: "EVENT_CONNECT_SUCCEED",
+    // 登录成功 事件
+    EVENT_LOGIN_SUCCEED: "EVENT_LOGIN_SUCCEED",
 
 };
 

@@ -116,7 +116,7 @@ let EventManager = cc.Class({
     addDownloadEvent( callback ) {
         if( cc.sys.isMobile ) {
             downloader.on( "download", function( res ) {
-                if( Utils.isFunction( callback ) ) {
+                if( Utils.isFunction( callback ) && !Utils.isNull( res ) && Utils.isFunction( res.onProgressUpdate ) ) {
                     res.onProgressUpdate( function( res ) {
                         callback( res.progress, res.totalBytesWritten, res.totalBytesExpectedToWrite );
                     } );

@@ -8,19 +8,23 @@
  */
 const ProtocolIDs = {
     /** ------------------- 登录大厅 ------------------- */
+
     // 心跳
-    PING: 101,
+    NET_PING: 101,
     // 登录
-    LOGIN: 102,
+    NET_LOGIN: 102,
     // 广播
-    BROADCAST: 103,
+    NET_BROADCAST: 103,
 
     /** ------------------- 游戏匹配 ------------------- */
 
 
     /** ------------------- 游戏房卡 ------------------- */
-    CREATE_ROOM: 301,
 
+    // 创建房间
+    NET_CREATE_ROOM: 301,
+    // 加入房间
+    NET_JOIN: 302,
 };
 
 module.exports = ProtocolIDs;

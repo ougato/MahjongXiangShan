@@ -12,6 +12,10 @@ let Config = require( "Config" )
 let ConfEvent = require( "ConfEvent" );
 let ConfStore = require( "ConfStore" );
 let ConfNet = require( "ConfNet" );
+let ConfView = require( "ConfView" );
+let Log = require( "Log" );
+let DefLog = require( "DefLog" );
+let ConfGame = require( "ConfGame" );
 
 // 实例化对象
 let instance = null;
@@ -55,35 +59,46 @@ let Game = cc.Class({
      * 销毁
      */
     destroy() {
-        G.EventManager.unEvent( this, ConfEvent.WEBSOCKET_OPEN );
-        G.NetManager.unProto( this, ConfNet.LOGIN );
+        // 释放 连接成功 事件
+        G.EventManager.unEvent( this, ConfEvent.EVENT_CONNECT_SUCCEED );
+        // 释放 登录 网络
+        G.NetManager.unProto( this, ConfNet.NET_LOGIN );
+        // 释放 加入 网络
+        G.NetManager.unProto( this, ConfNet.NET_JOIN );
     },
 
     /**
      * 初始化游戏需要的模块
      */
     init() {
+        // 初始化数据
+        this.initData();
+        // 注册
         this.register();
-        // 初始化资源
-        this.initRes();
         // 进入游戏
         this.intoGame();
+    },
+
+    /**
+     * 初始化数据
+     */
+    initData() {
+        // 未完成 游戏ID
+        this.m_nUndoneGameId = null;
+        // 未完成 模式ID
+        this.m_nUndoneModeId = null;
     },
 
     /**
      * 注册
      */
     register() {
-        G.EventManager.addEvent( this, ConfEvent.WEBSOCKET_OPEN );
-        G.NetManager.addProto( this, ConfNet.LOGIN );
-
-    },
-
-    /**
-     * 初始化资源
-     */
-    initRes() {
-
+        // 添加 连接成功 事件
+        G.EventManager.addEvent( this, ConfEvent.EVENT_CONNECT_SUCCEED );
+        // 添加 登录 网络
+        G.NetManager.addProto( this, ConfNet.NET_LOGIN );
+        // 添加 加入 网络
+        G.NetManager.addProto( this, ConfNet.NET_JOIN );
     },
 
     /**
@@ -98,21 +113,58 @@ let Game = cc.Class({
     },
 
     /**
-     * 网络连接成功
+     * 连接成功 事件
      */
-    onOpen() {
-        let cmd =  ConfNet.LOGIN;
+    onEventConnectSucceed() {
         let data = {};
         data.token = G.StoreManager.get( ConfStore.Token );
         data.type = G.StoreManager.get( ConfStore.LoginMode );
-        G.NetManager.send( cmd, data );
+        G.NetManager.send( ConfNet.NET_LOGIN, data );
     },
 
     /**
      * 登录 回调
+     * @return {*}
      */
-    onLogin( data ) {
+    onNetLogin( data ) {
+        if( data.code < 0 ) {
+            G.ViewManager.openTips( Utils.format( G.I18N.get( 28 ), data.code ) );
+            return ;
+        }
 
+        // TODO: 保存用户数据 data.userInfo 到 数据管理器 DataManager
+        if( Utils.isNull( data.gameInfo ) ) {
+            G.ViewManager.replaceScene( ConfView.Scene.Lobby, data.userInfo );
+        } else {
+            this.m_nUndoneGameId = data.gameInfo.gameId;
+            this.m_nUndoneModeId = data.gameInfo.modeId;
+            G.NetManager.send( ConfNet.NET_JOIN, data.gameInfo.roomId );
+        }
+    },
+
+    /**
+     * 加入 回调
+     * @return {*}
+     */
+    onNetJoin( data ) {
+        if( data.code < 0 ) {
+            Log.warn( Utils.format( G.I18N.get( 29 ), data.code ) );
+            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+            return ;
+        }
+
+        // TODO: 保存房间数据 data.roomInfo 到 数据管理器 DataManager
+        switch( this.m_nUndoneModeId ) {
+            case ConfGame.ModeId.Friend:
+
+                break;
+            case ConfGame.ModeId.Match:
+
+                break;
+            default:
+                Log.error( DefLog[15] );
+                break;
+        }
     },
 
     /**
@@ -121,8 +173,8 @@ let Game = cc.Class({
      */
     onEvent( msg ) {
         switch( msg.id ) {
-            case ConfEvent.WEBSOCKET_OPEN:
-                this.onOpen();
+            case ConfEvent.EVENT_CONNECT_SUCCEED:
+                this.onEventConnectSucceed();
                 break;
         }
     },
@@ -133,8 +185,11 @@ let Game = cc.Class({
      */
     onNet( msg ) {
         switch( msg.cmd ) {
-            case ConfNet.LOGIN:
-                G.EventManager.sendEvent( ConfEvent.LOGIN_SUCCEED, msg.data );
+            case ConfNet.NET_LOGIN:
+                this.onNetLogin( msg.data );
+                break;
+            case ConfNet.NET_JOIN:
+                this.onNetJoin( msg.data );
                 break;
         }
     },

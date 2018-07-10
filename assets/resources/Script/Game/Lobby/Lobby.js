@@ -10,6 +10,7 @@
 let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
 let Log = require( "Log" );
+let Utils = require( "Utils" );
 
 cc.Class({
     extends: UIBase,
@@ -68,10 +69,9 @@ cc.Class({
             return ;
         }
 
-        let userInfo = data.UserInfo;
-        this.labelName.string = userInfo.name;
-        this.labelGold.string = userInfo.gold;
-        this.labelJewel.string = userInfo.diamond;
+        this.labelName.string = Utils.isNull( data.name ) ? "?" : data.name;
+        this.labelGold.string = Utils.isNull( data.gold ) ? "?" : data.gold;
+        this.labelJewel.string = Utils.isNull( data.diamond ) ? "?" : data.diamond;
     },
 
     /**

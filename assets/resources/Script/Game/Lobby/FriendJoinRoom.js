@@ -9,6 +9,8 @@
 
 let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
+let ConfNet = require( "ConfNet" );
+let Log = require( "Log" );
 
 cc.Class({
     extends: UIBase,
@@ -30,6 +32,13 @@ cc.Class({
         this.initData();
         this.initView();
         this.register();
+    },
+
+    /**
+     * 销毁
+     */
+    onDestroy() {
+        G.NetManager.unProto( this, ConfNet.NET_JOIN );
     },
 
     /**
@@ -64,7 +73,7 @@ cc.Class({
      * 注册
      */
     register() {
-
+        G.NetManager.addProto( this, ConfNet.NET_JOIN );
     },
 
     /**
@@ -75,8 +84,8 @@ cc.Class({
         if( this.m_strRoomNum.length < this.labelRoomNum.length ) {
             this.m_strRoomNum = this.m_strRoomNum + num;
             this.labelRoomNum[this.m_nIndex++].string = num;
-            if( this.m_strRoomNum === this.labelRoomNum.length ) {
-                // TODO: 加入房间号
+            if( this.m_strRoomNum.length === this.labelRoomNum.length ) {
+                G.NetManager.send( ConfNet.NET_JOIN, { roomId: this.m_strRoomNum } );
             }
         }
     },
@@ -124,6 +133,25 @@ cc.Class({
                 break;
             default:
                 this.inserRoomNum( num );
+                break;
+        }
+    },
+
+    /**
+     * 加入房间成功
+     * @param data {object} 房间信息
+     */
+    onJoinRoomSucceed( data ) {
+        Log.print( data );
+    },
+
+    /**
+     * 网络消息
+     */
+    onNet( msg ) {
+        switch( msg.code ) {
+            case ConfNet.NET_JOIN:
+                this.onJoinRoomSucceed( msg.data );
                 break;
         }
     },

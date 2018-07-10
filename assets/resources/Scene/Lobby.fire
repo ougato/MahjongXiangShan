@@ -771,7 +771,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 245,
+      "width": 240,
       "height": 88
     },
     "_rotationX": 0,
@@ -826,7 +826,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 42,
+      "width": 11,
       "height": 22
     },
     "_rotationX": 0,
@@ -861,7 +861,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "灭霸",
+    "_N$string": "?",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -1096,7 +1096,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -553.5,
-      "y": -25.6
+      "y": -28.3
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -1297,7 +1297,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 135,
+      "width": 17,
       "height": 32
     },
     "_rotationX": 0,
@@ -1332,7 +1332,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "12345678",
+    "_N$string": "?",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -1566,7 +1566,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -271,
-      "y": -26
+      "y": -28.3
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -1767,7 +1767,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 135,
+      "width": 17,
       "height": 32
     },
     "_rotationX": 0,
@@ -1802,7 +1802,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "12345678",
+    "_N$string": "?",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -2026,7 +2026,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -99.3,
-      "y": -25.1
+      "y": -28.1
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -2184,7 +2184,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -29.1,
-      "y": -30.1
+      "y": -33.1
     },
     "_skewX": 0,
     "_skewY": 0,

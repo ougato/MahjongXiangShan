@@ -58,7 +58,7 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.EventManager.unEvent( this, ConfEvent.LOGIN_SUCCEED );
+
     },
 
     /**
@@ -79,7 +79,7 @@ cc.Class({
      * 注册
      */
     register() {
-        G.EventManager.addEvent( this, ConfEvent.LOGIN_SUCCEED );
+
     },
 
     /**
@@ -123,11 +123,7 @@ cc.Class({
      * 登录界面
      */
     enterLogin() {
-        if( cc.sys.isMobile ) {
-            G.ViewManager.replaceScene( ConfView.Scene.LoginWXGame );
-        } else if( cc.sys.isBrowser || cc.sys.isNative ) {
-            G.ViewManager.replaceScene( ConfView.Scene.LoginBrowser )
-        }
+        G.ViewManager.replaceScene( ConfView.Scene.Login );
     },
 
     /**
@@ -164,25 +160,6 @@ cc.Class({
         }
         Log.print( "总进度：" +progress + "%" );
         Log.print( "文件大小：" + countSize + "/" + currSize );
-    },
-
-    /**
-     * 登录成功
-     * @param data {object} 用户数据
-     */
-    onLoginSucceed( data ) {
-        G.ViewManager.replaceScene( ConfView.Scene.Lobby, data );
-    },
-
-    /**
-     * 事件 回调
-     */
-    onEvent( msg ) {
-        switch( msg.id ) {
-            case ConfEvent.LOGIN_SUCCEED:
-                this.onLoginSucceed( msg.data );
-                break;
-        }
     },
 
     // update (dt) {},

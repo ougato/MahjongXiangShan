@@ -65,7 +65,7 @@ let NetManager = cc.Class({
         // 心跳超时定时器
         this.m_nPingTimerId = null;
         // 心跳消息ID
-        this.m_nPingCmd = ConfNet.PING;
+        this.m_nPingCmd = ConfNet.NET_PING;
         // 是否重连
         this.m_bIsReconnect = false;
         // 是否错误
@@ -160,7 +160,7 @@ let NetManager = cc.Class({
         G.ViewManager.closeLoading();
         this.startPingTimer();
         this.m_nReconectCount = 0;
-        G.EventManager.sendEvent( ConfEvent.WEBSOCKET_OPEN );
+        G.EventManager.sendEvent( ConfEvent.EVENT_CONNECT_SUCCEED );
     },
 
     /**
@@ -343,9 +343,9 @@ let NetManager = cc.Class({
         if( !Utils.isNull( this.m_nPingTimerId ) ) {
             this.stopPingTimer();
         }
-        this.send( ConfNet.PING );
+        this.send( ConfNet.NET_PING );
         this.m_nPingTimerId = setInterval( function() {
-            this.send( ConfNet.PING, {} );
+            this.send( ConfNet.NET_PING, {} );
         }.bind( this ), DefNet.PING_GAP * 1000 );
     },
 
