@@ -33,12 +33,12 @@ const SCENE_PATH = "Scene/";
  * 对话框提交ID
  */
 const DialogBoxIDs = {
-    // 确定
-    IDOK: 0,
+    // 重试
+    IDRETRY: 0,
     // 取消
     IDCANCEL: 1,
-    // 重试
-    IDRETRY: 2,
+    // 确定
+    IDOK: 2,
 };
 
 module.exports = {

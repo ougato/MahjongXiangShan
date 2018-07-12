@@ -146,11 +146,7 @@ let Utils = {
 
     /**
      * 格式化字符串
-     * let str = "a={0} b={1}"
-     * format( str, 1, 2 );
-     * "a=1 b=2"
      * @param str {string} 字符串
-     * @param [] 变长参数
      * @returns {*} 格式化后的字符串
      */
     format( str ) {
@@ -168,7 +164,6 @@ let Utils = {
             if( args.length > 0 ) {
                 for( let i = 0; i < args.length; ++i ) {
                     if( !this.isNull( args[i] ) ) {
-                        //let reg = new RegExp("({[" + i + "]})", "g");//这个在索引大于9时会有问题
                         let reg = new RegExp( "({)" + i + "(})", "g" );
                         result = result.replace( reg, args[i] );
                     }
