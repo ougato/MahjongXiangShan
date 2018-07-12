@@ -42,12 +42,22 @@ cc.Class({
      */
     initData() {
 
+        // 用户数据对象
+        this.m_objDataUser = G.DataManager.getData( "DataUser" );
+
     },
 
     /**
      * 初始化视图
      */
     initView() {
+        let name = this.m_objDataUser.getName();
+        let gold = this.m_objDataUser.getGold();
+        let diamond = this.m_objDataUser.getDiamond();
+
+        this.labelName.string = name;
+        this.labelGold.string = gold;
+        this.labelJewel.string = diamond;
 
     },
 
@@ -64,14 +74,16 @@ cc.Class({
      * @return {*}
      */
     refresh( data ) {
-        if( data.code < 0 ) {
-            Log.error( Utils.format( DefLog[14], data.code ) );
-            return ;
-        }
+        if( !Utils.isNull( data ) ) {
+            if( data.code < 0 ) {
+                Log.error( Utils.format( DefLog[14], data.code ) );
+                return ;
+            }
 
-        this.labelName.string = Utils.isNull( data.name ) ? "?" : data.name;
-        this.labelGold.string = Utils.isNull( data.gold ) ? "?" : data.gold;
-        this.labelJewel.string = Utils.isNull( data.diamond ) ? "?" : data.diamond;
+            this.labelName.string = Utils.isNull( data.name ) ? "?" : data.name;
+            this.labelGold.string = Utils.isNull( data.gold ) ? "?" : data.gold;
+            this.labelJewel.string = Utils.isNull( data.diamond ) ? "?" : data.diamond;
+        }
     },
 
     /**

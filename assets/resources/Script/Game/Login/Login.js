@@ -15,6 +15,10 @@ let ConfStore = require( "ConfStore" );
 let Config = require( "Config" );
 let ConfEvent = require( "ConfEvent" );
 let DefView = require( "DefView" );
+let ConfView = require( "ConfView" );
+let ConfNet = require( "ConfNet" );
+let ConfGame = require( "ConfGame" );
+let ConfCode = require( "ConfCode" );
 
 cc.Class({
     extends: UIBase,
@@ -44,6 +48,11 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
+        G.EventManager.unEvent( this, ConfEvent.EVENT_LOGIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_LOGIN_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
+
         if( !Utils.isNull( this.buttonGetUserInfo ) ) {
             this.buttonGetUserInfo.hide();
         }
@@ -83,7 +92,10 @@ cc.Class({
      * 注册
      */
     register() {
-
+        G.EventManager.addEvent( this, ConfEvent.EVENT_LOGIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_LOGIN_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_FAILED );
     },
 
     /**
@@ -178,11 +190,13 @@ cc.Class({
             },
             fail( err ) {
                 let ids = {};
-                ids[DefView.DialogBoxIDs.IDOK] = function() {
+                ids[DefView.DialogBoxIDs.IDRETRY] = function() {
                     self.wxLogin( callback );
+                    G.ViewManager.closeDialogBox();
                 };
                 ids[DefView.DialogBoxIDs.IDCANCEL] = function() {
-                    self.wxExitGame()
+                    self.wxExitGame();
+                    G.ViewManager.closeDialogBox();
                 };
 
                 G.ViewManager.openDialogBox( Utils.format( G.I18N.get( 18 ), err.errcode, err.errmsg ), ids );
@@ -228,6 +242,76 @@ cc.Class({
         return Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, rawData, signature, encryptedData, iv, token );
     },
 
+
+    /**
+     * 登录 成功
+     * @param data {*} 登录数据
+     */
+    onEventLoginSucceed( data ) {
+        if( Utils.isNull( data.gameInfo ) ) {
+            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+        } else {
+            G.NetManager.send( ConfNet.NET_JOIN, data.gameInfo.roomId );
+        }
+    },
+
+    /**
+     * 登录 失败
+     * @param data {*} 登录数据
+     */
+    onEventLoginFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+    },
+
+    /**
+     * 加入 成功
+     * @param data {*} 加入数据
+     */
+    onEventJoinSucceed( data ) {
+        let dataUser = G.DataManager.getData( "DataUser" );
+        switch( dataUser.getUndoneModeId() ) {
+            case ConfGame.ModeId.Friend:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend, null, function( view ) {
+                    view.reconnect();
+                } );
+                break;
+            case ConfGame.ModeId.Match:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch, null, function( view ) {
+                    view.reconnect();
+                } );
+                break;
+
+        }
+
+    },
+
+    /**
+     * 加入 失败
+     * @param data {*} 加入数据
+     */
+    onEventJoinFailed( data ) {
+        G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+    },
+
+    /**
+     * 监听事件 回调
+     */
+    onEvent( msg ) {
+        switch( msg.id ) {
+            case ConfEvent.EVENT_LOGIN_SUCCEED:
+                this.onEventLoginSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_LOGIN_FAILED:
+                this.onEventLoginFailed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_SUCCEED:
+                this.onEventLoginSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_FAILED:
+                this.onEventLoginFailed( msg.data );
+                break;
+        }
+    },
 
     // update (dt) {},
 });

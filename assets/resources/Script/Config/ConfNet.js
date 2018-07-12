@@ -22,7 +22,7 @@ const ProtocolIDs = {
     /** ------------------- 游戏房卡 ------------------- */
 
     // 创建房间
-    NET_CREATE_ROOM: 301,
+    NET_CREATE: 301,
     // 加入房间
     NET_JOIN: 302,
 };

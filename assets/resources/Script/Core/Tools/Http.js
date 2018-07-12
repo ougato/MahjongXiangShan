@@ -30,9 +30,6 @@ let Http = {
         let callback = null;
         let len = arguments.length;
 
-        Log.print( DefLog[11] );
-        Log.print( url );
-
         G.ViewManager.openLoading();
 
         let xhr = new XMLHttpRequest();
@@ -55,13 +52,14 @@ let Http = {
                 G.ViewManager.closeLoading();
                 if( xhr.status >= 200 && xhr.status < 400 ) {
                     let response = xhr.responseText;
+                    Log.print( DefLog[12] );
+                    Log.print( response );
+                    response.code < 0 && Log.warn( Utils.format( DefLog[20], response.code, ConfCode.Http[response.code.toString()] ) );
+
                     if( Utils.isJson( response ) ) {
                         response = JSON.parse( response );
                     }
-                    response.code < 0 && Log.print( Utils.format( G.I18N.get( 20 ), response.code, ConfCode[response.code.toString()] ) );
                     Utils.isFunction( callback ) && callback( response );
-                    Log.print( DefLog[12] );
-                    Log.print( response );
                 } else {
                     G.ViewManager.openTips( Utils.format( G.I18N.get( 2 ), ( xhr.status ) ) );
                 }
@@ -91,6 +89,9 @@ let Http = {
      * @param callback {function} 回调
      */
     post( url, data, callback ) {
+        Log.print( Utils.format( DefLog[11], "POST" ) );
+        Log.print( url );
+        Log.print( data );
         this._request( url, data, callback );
     },
 
@@ -100,6 +101,8 @@ let Http = {
      * @param callback {function} 回调
      */
     get( url, callback ) {
+        Log.print( Utils.format( DefLog[11], "GET" ) );
+        Log.print( url );
         this._request( url, callback );
     },
 };

@@ -8,10 +8,10 @@
  */
 const Scene = {
     Update: "Update",
-    LoginWXGame: "LoginWXGame",
-    LoginBrowser: "LoginBrowser",
     Login: "Login",
     Lobby: "Lobby",
+    MahjongFriend: "MahjongFriend",
+    MahjongMatch: "MahjongMatch",
 };
 
 /**

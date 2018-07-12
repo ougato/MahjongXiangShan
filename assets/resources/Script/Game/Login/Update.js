@@ -17,6 +17,9 @@ let DefView = require( "DefView" );
 let Config = require( "Config" );
 let ConfEvent = require( "ConfEvent" );
 let Log = require( "Log" );
+let ConfCode = require( "ConfCode" );
+let ConfNet = require( "ConfNet" );
+let ConfGame = require( "ConfGame" );
 
 cc.Class({
     extends: UIBase,
@@ -58,7 +61,10 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-
+        G.EventManager.unEvent( this, ConfEvent.EVENT_LOGIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_LOGIN_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
     },
 
     /**
@@ -79,7 +85,10 @@ cc.Class({
      * 注册
      */
     register() {
-
+        G.EventManager.addEvent( this, ConfEvent.EVENT_LOGIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_LOGIN_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_FAILED );
     },
 
     /**
@@ -96,11 +105,13 @@ cc.Class({
         if( this.isTokenExist() ) {
             Http.get( this.makeGetWSUrl(), function( data ) {
                 if ( data.code === 0 ) {
+                    G.StoreManager.set( ConfStore.Token, data.token );
                     G.NetManager.connect( data.loginws );
                 } else if( data.code === -4 ) {
                     let ids = {};
                     ids[DefView.DialogBoxIDs.IDOK] = function() {
                         this.enterLogin();
+                        G.ViewManager.closeDialogBox();
                     }.bind( this );
                     G.ViewManager.openDialogBox( G.I18N.get( 23 ), ids );
                 }
@@ -160,6 +171,81 @@ cc.Class({
         }
         Log.print( "总进度：" +progress + "%" );
         Log.print( "文件大小：" + countSize + "/" + currSize );
+    },
+
+    /**
+     * 登录 成功
+     * @param data {*} 登录数据
+     */
+    onEventLoginSucceed( data ) {
+        if( Utils.isNull( data.gameInfo ) ) {
+            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+        } else {
+            G.NetManager.send( ConfNet.NET_JOIN, data.gameInfo.roomId );
+        }
+    },
+
+    /**
+     * 登录 失败
+     * @param data {*} 登录数据
+     */
+    onEventLoginFailed( data ) {
+        let ids = {};
+        ids[DefView.DialogBoxIDs.IDOK] = function() {
+            G.ViewManager.replaceScene( ConfView.Scene.Login );
+            G.ViewManager.closeDialogBox();
+        };
+        G.ViewManager.openDialogBox( ConfCode.WebSocket[data.code.toString()], ids );
+    },
+
+    /**
+     * 加入 成功
+     * @param data {*} 加入数据
+     */
+    onEventJoinSucceed( data ) {
+        let dataUser = G.DataManager.getData( "DataUser" );
+        switch( dataUser.getUndoneModeId() ) {
+            case ConfGame.ModeId.Friend:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend, null, function( view ) {
+                    view.reconnect();
+                } );
+                break;
+            case ConfGame.ModeId.Match:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch, null, function( view ) {
+                    view.reconnect();
+                } );
+                break;
+
+        }
+
+    },
+
+    /**
+     * 加入 失败
+     * @param data {*} 加入数据
+     */
+    onEventJoinFailed( data ) {
+        G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+    },
+
+    /**
+     * 监听事件 回调
+     */
+    onEvent( msg ) {
+        switch( msg.id ) {
+            case ConfEvent.EVENT_LOGIN_SUCCEED:
+                this.onEventLoginSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_LOGIN_FAILED:
+                this.onEventLoginFailed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_SUCCEED:
+                this.onEventLoginSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_FAILED:
+                this.onEventLoginFailed( msg.data );
+                break;
+        }
     },
 
     // update (dt) {},

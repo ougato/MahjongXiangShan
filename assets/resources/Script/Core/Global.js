@@ -12,6 +12,7 @@ let EventManager = require( "EventManager" );
 let ViewManager = require( "ViewManager" );
 let StoreManager = require( "StoreManager" );
 let NetManager = require( "NetManager" );
+let DataManager = require( "DataManager" );
 
 let Proto = require( "Proto" );
 let I18N = require( "I18N" );
@@ -29,6 +30,8 @@ Global.ViewManager = ViewManager.getInstance();
 Global.StoreManager = StoreManager.getInstance();
 // 网络管理器
 Global.NetManager = NetManager.getInstance();
+// 数据管理器
+Global.DataManager = DataManager.getInstance();
 
 // 网络协议
 Global.Proto = Proto.getInstance();

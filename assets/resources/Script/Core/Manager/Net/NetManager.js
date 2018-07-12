@@ -12,10 +12,11 @@ let List = require( "List" );
 let DefNet = require( "DefNet" );
 let ConfNet = require( "ConfNet" );
 let Hash = require( "Hash" );
-let ConfEvent = require( "ConfEvent" );
+let ConfStore = require( "ConfStore" );
 let DefLog = require( "DefLog" );
 let Log = require( "Log" );
 let DefView = require( "DefView" );
+let ConfCode = require( "ConfCode" );
 
 // 实例化对象
 let instance = null;
@@ -64,8 +65,6 @@ let NetManager = cc.Class({
         this.m_nSendTimerId = null;
         // 心跳超时定时器
         this.m_nPingTimerId = null;
-        // 心跳消息ID
-        this.m_nPingCmd = ConfNet.NET_PING;
         // 是否重连
         this.m_bIsReconnect = false;
         // 是否错误
@@ -147,10 +146,10 @@ let NetManager = cc.Class({
     },
 
     /**
-     * 是否心跳ID
+     * 是否通知ID
      */
-    isPingCmd( cmd ) {
-        return cmd === this.m_nPingCmd;
+    isNoticeCmd( cmd ) {
+        return cmd === ConfNet.NET_PING || cmd === ConfNet.NET_BROADCAST;
     },
 
     /**
@@ -160,7 +159,10 @@ let NetManager = cc.Class({
         G.ViewManager.closeLoading();
         this.startPingTimer();
         this.m_nReconectCount = 0;
-        G.EventManager.sendEvent( ConfEvent.EVENT_CONNECT_SUCCEED );
+        let data = {};
+        data.token = G.StoreManager.get( ConfStore.Token );
+        data.type = G.StoreManager.get( ConfStore.LoginMode );
+        G.NetManager.send( ConfNet.NET_LOGIN, data );
     },
 
     /**
@@ -169,12 +171,20 @@ let NetManager = cc.Class({
      */
     onMessage( json ) {
         let jsonData = json.data;
+
+        if( !Utils.isNull( jsonData.data ) && !Utils.isNull( jsonData.data.code ) && jsonData.data.code < 0 ) {
+            Log.warn( Utils.format( DefLog[17], jsonData.data.code, ConfCode.WebSocket[jsonData.data.code.toString()] ) );
+        }
         if( Utils.isJson( jsonData ) ) {
             jsonData = JSON.parse( jsonData );
         }
 
+        Log.print( Utils.format( DefLog[10] ) );
+        Log.print( jsonData.cmd );
+        Log.print( jsonData.data );
+
         // 消息队列移除 并 关闭菊花
-        if( !this.isPingCmd( jsonData.cmd ) ) {
+        if( !this.isNoticeCmd( jsonData.cmd ) ) {
             this.m_hashSendData.clear();
             this.stopSendTimer();
             G.ViewManager.closeLoading();
@@ -193,10 +203,6 @@ let NetManager = cc.Class({
                 }
             } );
         }
-
-        Log.print( Utils.format( DefLog[10] ) );
-        Log.print( jsonData.cmd );
-        Log.print( jsonData.data );
     },
 
     /**
@@ -236,6 +242,10 @@ let NetManager = cc.Class({
             return ;
         }
 
+        Log.print( Utils.format( DefLog[9] ) );
+        Log.print( cmd );
+        Log.print( data );
+
         if( !Utils.isNumber( cmd ) ) {
             Log.error( DefLog[13] );
             return ;
@@ -247,7 +257,7 @@ let NetManager = cc.Class({
         msg.cmd = cmd;
         msg.data = data;
 
-        if( !this.isPingCmd( cmd ) ) {
+        if( !this.isNoticeCmd( cmd ) ) {
             G.ViewManager.openLoading();
             this.m_hashSendData.set( cmd, data );
         }
@@ -255,13 +265,10 @@ let NetManager = cc.Class({
         this.m_objWS.send( JSON.stringify( msg ) );
 
         // 启动发送定时器
-        if( !this.isPingCmd( cmd ) ) {
+        if( !this.isNoticeCmd( cmd ) ) {
             this.startSendTimer();
         }
 
-        Log.print( Utils.format( DefLog[9] ) );
-        Log.print( cmd );
-        Log.print( data );
     },
 
 

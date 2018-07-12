@@ -10,12 +10,7 @@
 let Utils = require( "Utils" );
 let Config = require( "Config" )
 let ConfEvent = require( "ConfEvent" );
-let ConfStore = require( "ConfStore" );
 let ConfNet = require( "ConfNet" );
-let ConfView = require( "ConfView" );
-let Log = require( "Log" );
-let DefLog = require( "DefLog" );
-let ConfGame = require( "ConfGame" );
 
 // 实例化对象
 let instance = null;
@@ -59,10 +54,10 @@ let Game = cc.Class({
      * 销毁
      */
     destroy() {
-        // 释放 连接成功 事件
-        G.EventManager.unEvent( this, ConfEvent.EVENT_CONNECT_SUCCEED );
         // 释放 登录 网络
         G.NetManager.unProto( this, ConfNet.NET_LOGIN );
+        // 释放 创建 网络
+        G.NetManager.unProto( this, ConfNet.NET_CREATE );
         // 释放 加入 网络
         G.NetManager.unProto( this, ConfNet.NET_JOIN );
     },
@@ -87,16 +82,18 @@ let Game = cc.Class({
         this.m_nUndoneGameId = null;
         // 未完成 模式ID
         this.m_nUndoneModeId = null;
+        // 未完成 房间ID
+        this.m_strUndoneRoomId = null;
     },
 
     /**
      * 注册
      */
     register() {
-        // 添加 连接成功 事件
-        G.EventManager.addEvent( this, ConfEvent.EVENT_CONNECT_SUCCEED );
         // 添加 登录 网络
         G.NetManager.addProto( this, ConfNet.NET_LOGIN );
+        // 添加 创建 网络
+        G.NetManager.addProto( this, ConfNet.NET_CREATE );
         // 添加 加入 网络
         G.NetManager.addProto( this, ConfNet.NET_JOIN );
     },
@@ -113,69 +110,88 @@ let Game = cc.Class({
     },
 
     /**
-     * 连接成功 事件
+     * 设置未完成的游戏ID
+     * @param id {number} 游戏ID
      */
-    onEventConnectSucceed() {
-        let data = {};
-        data.token = G.StoreManager.get( ConfStore.Token );
-        data.type = G.StoreManager.get( ConfStore.LoginMode );
-        G.NetManager.send( ConfNet.NET_LOGIN, data );
+    setUndoneGameId( id ) {
+        this.m_nUndoneGameId = id;
     },
 
     /**
-     * 登录 回调
-     * @return {*}
+     * 设置未完成的游戏ID
+     * @param id {number} 模式ID
+     */
+    setUndoneModeId( id ) {
+        this.m_nUndoneModeId = id;
+    },
+
+    /**
+     * 设置未完成的房间ID
+     * @param id {string} 房间ID
+     */
+    setUndoneRoomId( id ) {
+        this.m_nUndoneRoomId = id;
+    },
+
+    /**
+     * 获取未完成的游戏ID
+     * @return {number}
+     */
+    getUndoneModeId() {
+        return this.m_nUndoneGameId;
+    },
+
+    /**
+     * 获取未完成的模式ID
+     * @return {number}
+     */
+    getUndoneModeId() {
+        return this.m_nUndoneModeId;
+    },
+
+    /**
+     * 获取未完成的房间ID
+     * @return {string}
+     */
+    getUndoneRoomId() {
+        return this.m_nUndoneRoomId;
+    },
+
+    /**
+     * 登录 网络回调
+     * @param data {object} 登录数据
      */
     onNetLogin( data ) {
-        if( data.code < 0 ) {
-            G.ViewManager.openTips( Utils.format( G.I18N.get( 28 ), data.code ) );
-            return ;
-        }
-
-        // TODO: 保存用户数据 data.userInfo 到 数据管理器 DataManager
-        if( Utils.isNull( data.gameInfo ) ) {
-            G.ViewManager.replaceScene( ConfView.Scene.Lobby, data.userInfo );
+        if( data.code >= 0 ) {
+            Utils.isNull( data.userInfo ) || G.DataManager.getData( "DataUser" ).setUserInfo( data.userInfo );
+            Utils.isNull( data.gameInfo ) || G.DataManager.getData( "DataUser" ).setGameInfo( data.gameInfo );
+            G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_SUCCEED, data );
         } else {
-            this.m_nUndoneGameId = data.gameInfo.gameId;
-            this.m_nUndoneModeId = data.gameInfo.modeId;
-            G.NetManager.send( ConfNet.NET_JOIN, data.gameInfo.roomId );
+            G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_FAILED, data );
         }
     },
 
     /**
-     * 加入 回调
-     * @return {*}
+     * 创建 网络回调
+     * @param data {object} 创建数据
+     */
+    onNetCreate( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_CREATE_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_CREATE_FAILED, data );
+        }
+    },
+
+    /**
+     * 加入 网络回调
+     * @param data {object} 加入数据
      */
     onNetJoin( data ) {
-        if( data.code < 0 ) {
-            Log.warn( Utils.format( G.I18N.get( 29 ), data.code ) );
-            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
-            return ;
-        }
-
-        // TODO: 保存房间数据 data.roomInfo 到 数据管理器 DataManager
-        switch( this.m_nUndoneModeId ) {
-            case ConfGame.ModeId.Friend:
-
-                break;
-            case ConfGame.ModeId.Match:
-
-                break;
-            default:
-                Log.error( DefLog[15] );
-                break;
-        }
-    },
-
-    /**
-     * 事件 回调
-     * @param msg {object} 消息数据
-     */
-    onEvent( msg ) {
-        switch( msg.id ) {
-            case ConfEvent.EVENT_CONNECT_SUCCEED:
-                this.onEventConnectSucceed();
-                break;
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_FAILED, data );
         }
     },
 
@@ -187,6 +203,9 @@ let Game = cc.Class({
         switch( msg.cmd ) {
             case ConfNet.NET_LOGIN:
                 this.onNetLogin( msg.data );
+                break;
+            case ConfNet.NET_CREATE:
+                this.onNetCreate( msg.data );
                 break;
             case ConfNet.NET_JOIN:
                 this.onNetJoin( msg.data );

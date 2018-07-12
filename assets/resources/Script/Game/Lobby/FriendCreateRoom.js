@@ -11,6 +11,9 @@ let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
 let ConfNet = require( "ConfNet" );
 let Log = require( "Log" );
+let ConfEvent = require( "ConfEvent" );
+let ConfCode = require( "ConfCode" );
+let ConfGame = require( "ConfGame" );
 
 cc.Class({
     extends: UIBase,
@@ -52,7 +55,10 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.NetManager.unProto( this, ConfNet.NET_CREATE_ROOM );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_CREATE_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_CREATE_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
     },
 
     /**
@@ -73,7 +79,10 @@ cc.Class({
      * 注册
      */
     register() {
-        G.NetManager.addProto( this, ConfNet.NET_CREATE_ROOM );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_CREATE_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_CREATE_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_FAILED );
     },
 
     /**
@@ -87,13 +96,14 @@ cc.Class({
      * 创建房间
      */
     onCreateRoom() {
-        G.NetManager.send( ConfNet.NET_CREATE_ROOM, {} );
+        G.NetManager.send( ConfNet.NET_CREATE, {} );
     },
 
     /**
-     * 创建房间成功 回调
+     * 创建 成功
+     * @param data {object} 数据
      */
-    onCreateRoomSucceed( data ) {
+    onEventCreateSucceed( data ) {
         if( data.code < 0 ) {
             Log.error( data.code );
             return ;
@@ -102,17 +112,60 @@ cc.Class({
     },
 
     /**
-     * 网络 回调
-     * @param msg {object} 网络消息
+     * 创建 失败
+     * @param data {object} 数据
      */
-    onNet( msg ) {
-        switch( msg.cmd ) {
-            case ConfNet.NET_CREATE_ROOM:
-                this.onCreateRoomSucceed( msg.data );
+    onEventCreateFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+    },
+
+    /**
+     * 加入 成功
+     * @param data {object} 数据
+     */
+    onEventJoinSucceed( data ) {
+        // TODO: 服务器要把modeId发过来
+        // let modeId = data.roomInfo.deskInfo.modeId;
+
+        let modeId = ConfGame.ModeId.Friend;
+        switch( modeId ) {
+            case ConfGame.ModeId.Friend:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend );
+                break;
+            case ConfGame.ModeId.Match:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch );
                 break;
         }
     },
 
+    /**
+     * 加入 失败
+     * @param data {object} 数据
+     */
+    onEventJoinFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+    },
+
+    /**
+     * 事件 回调
+     * @param msg
+     */
+    onEvent( msg ) {
+        switch( msg.id ) {
+            case ConfEvent.EVENT_CREATE_SUCCEED:
+                this.onEventCreateSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_CREATE_FAILED:
+                this.onEventCreateFailed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_SUCCEED:
+                this.onEventJoinSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_FAILED:
+                this.onEventJoinFailed( msg.data );
+                break;
+        }
+    },
 
     // update (dt) {},
 });
