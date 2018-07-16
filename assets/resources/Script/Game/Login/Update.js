@@ -103,19 +103,19 @@ cc.Class({
      */
     checkToken() {
         if( this.isTokenExist() ) {
-            Http.get( this.makeGetWSUrl(), function( data ) {
-                if ( data.code === 0 ) {
-                    G.StoreManager.set( ConfStore.Token, data.token );
-                    G.NetManager.connect( data.loginws );
-                } else if( data.code === -4 ) {
-                    let ids = {};
-                    ids[DefView.DialogBoxIDs.IDOK] = function() {
-                        this.enterLogin();
-                        G.ViewManager.closeDialogBox();
-                    }.bind( this );
-                    G.ViewManager.openDialogBox( G.I18N.get( 23 ), ids );
-                }
-            }.bind( this ) );
+            let self = this;
+            if( cc.sys.isMobile ) {
+                wx.checkSession({
+                    success() {
+                        self.login();
+                    },
+                    fail() {
+                        self.enterLogin();
+                    },
+                })
+            } else {
+                self.login();
+            }
         } else {
             this.enterLogin();
         }
@@ -128,6 +128,33 @@ cc.Class({
     isTokenExist() {
         let token = G.StoreManager.get( ConfStore.Token );
         return !Utils.isNull( token ) && token.length > 0;
+    },
+
+    /**
+     * 登录游戏
+     */
+    login() {
+        Http.get( this.makeGetWSUrl(), function( data ) {
+            if ( data.code === 0 ) {
+                G.StoreManager.set( ConfStore.Token, data.token );
+                G.NetManager.connect( data.loginws );
+            } else {
+                let text = "";
+                if( data.code === -4 ) {
+                    text = G.I18N.get( 23 );
+                } else if ( data.code === -5 ) {
+                    text = G.I18N.get( 30 );
+                } else {
+                    text = G.I18N.get( 15 );
+                }
+                let ids = {};
+                ids[DefView.DialogBoxIDs.IDOK] = function() {
+                    this.enterLogin();
+                    G.ViewManager.closeDialogBox();
+                }.bind( this );
+                G.ViewManager.openDialogBox( text, ids );
+            }
+        }.bind( this ) );
     },
 
     /**
@@ -240,10 +267,10 @@ cc.Class({
                 this.onEventLoginFailed( msg.data );
                 break;
             case ConfEvent.EVENT_JOIN_SUCCEED:
-                this.onEventLoginSucceed( msg.data );
+                this.onEventJoinSucceed( msg.data );
                 break;
             case ConfEvent.EVENT_JOIN_FAILED:
-                this.onEventLoginFailed( msg.data );
+                this.onEventJoinFailed( msg.data );
                 break;
         }
     },

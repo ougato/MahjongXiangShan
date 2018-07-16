@@ -52,10 +52,6 @@ cc.Class({
         G.EventManager.unEvent( this, ConfEvent.EVENT_LOGIN_FAILED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
-
-        if( !Utils.isNull( this.buttonGetUserInfo ) ) {
-            this.buttonGetUserInfo.hide();
-        }
     },
 
     /**
@@ -64,6 +60,9 @@ cc.Class({
     initData() {
         // 微信获取用户信息组件
         this.buttonGetUserInfo = null;
+
+        // 清理登录缓存
+        this.clearLoginTemp();
     },
 
     /**
@@ -157,23 +156,29 @@ cc.Class({
      * @param res
      */
     onGetUserInfo( res ) {
-        let self = this;
         if( Utils.isWxSuccee( res.errMsg ) ) {
-            let userInfo = self.makeUserInfo( res );
-            G.StoreManager.set( ConfStore.UserInfo, userInfo );
-            self.wxLogin( function( res ) {
-                Http.get( self.makeGetTokenUrl( res.code ), function( data ) {
-                    if( data.code === 0 ) {
-                        G.StoreManager.set( ConfStore.Token, data.rd_session );
-                        G.StoreManager.set( ConfStore.LoginMode, 1 );
-                        Http.get( self.makeGetWSUrl(), function( data ) {
-                            if( data.code === 0 ) {
-                                G.NetManager.connect( data.loginws );
-                            }
-                        })
-                    }
+            let self = this;
+            if( Utils.isWxSuccee( res.errMsg ) ) {
+                G.StoreManager.set( ConfStore.UserInfo, self.makeUserInfo( res ) );
+                self.wxLogin( function( res ) {
+                    Http.get( self.makeGetTokenUrl( res.code ), function( data ) {
+                        if( data.code === 0 ) {
+                            G.StoreManager.set( ConfStore.Token, data.rd_session );
+                            G.StoreManager.set( ConfStore.LoginMode, 1 );
+                            Http.get( self.makeGetWSUrl(), function( data ) {
+                                if( data.code === 0 ) {
+                                    if( !Utils.isNull( self.buttonGetUserInfo ) ) {
+                                        self.buttonGetUserInfo.destroy();
+                                    }
+                                    G.NetManager.connect( data.loginws );
+                                }
+                            })
+                        }
+                    } );
                 } );
-            } );
+            }
+        } else {
+            G.ViewManager.openTips( G.I18N.get( 31 ) );
         }
     },
 
@@ -202,6 +207,15 @@ cc.Class({
                 G.ViewManager.openDialogBox( Utils.format( G.I18N.get( 18 ), err.errcode, err.errmsg ), ids );
             },
         } );
+    },
+
+    /**
+     * 清理登录缓存
+     */
+    clearLoginTemp() {
+        G.StoreManager.del( ConfStore.UserInfo );
+        G.StoreManager.del( ConfStore.Token );
+        G.StoreManager.del( ConfStore.LoginMode );
     },
 
     /**

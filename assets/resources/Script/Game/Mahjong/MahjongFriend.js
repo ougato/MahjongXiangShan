@@ -13,21 +13,8 @@ cc.Class({
     extends: UIBase,
 
     properties: {
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
+        labelTime: { default: null, type: cc.Label, tooltip: "时间" },
+        nodeWiFi: { default: null, type: cc.Node, tooltip: "网络" },
     },
 
     // LIFE-CYCLE CALLBACKS:

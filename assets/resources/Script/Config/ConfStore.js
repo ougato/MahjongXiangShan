@@ -8,6 +8,7 @@
  * 定义游戏存储Key
  */
 const ConfStore = {
+    // 登录模式
     LoginMode: "LoginMode",
     // 校验码
     Token: "Token",

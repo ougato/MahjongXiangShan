@@ -10,7 +10,9 @@
 let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
 let ConfNet = require( "ConfNet" );
-let Log = require( "Log" );
+let ConfEvent = require( "ConfEvent" );
+let ConfCode = require( "ConfCode" );
+let ConfGame = require( "ConfGame" )
 
 cc.Class({
     extends: UIBase,
@@ -137,21 +139,46 @@ cc.Class({
         }
     },
 
+
     /**
-     * 加入房间成功
-     * @param data {object} 房间信息
+     * 加入 成功
+     * @param data {object} 数据
      */
-    onJoinRoomSucceed( data ) {
-        Log.print( data );
+    onEventJoinSucceed( data ) {
+        // TODO: 服务器要把modeId发过来
+        // let modeId = data.roomInfo.deskInfo.modeId;
+
+        let modeId = ConfGame.ModeId.Friend;
+        switch( modeId ) {
+            case ConfGame.ModeId.Friend:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend );
+                break;
+            case ConfGame.ModeId.Match:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch );
+                break;
+        }
     },
 
     /**
-     * 网络消息
+     * 加入 失败
+     * @param data {object} 数据
      */
-    onNet( msg ) {
-        switch( msg.code ) {
-            case ConfNet.NET_JOIN:
-                this.onJoinRoomSucceed( msg.data );
+    onEventJoinFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+        this.clearRoomNum();
+    },
+
+    /**
+     * 事件 回调
+     * @param msg
+     */
+    onEvent( msg ) {
+        switch( msg.id ) {
+            case ConfEvent.EVENT_JOIN_SUCCEED:
+                this.onEventJoinSucceed( msg.data );
+                break;
+            case ConfEvent.EVENT_JOIN_FAILED:
+                this.onEventJoinFailed( msg.data );
                 break;
         }
     },
