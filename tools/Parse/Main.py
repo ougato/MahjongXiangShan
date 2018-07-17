@@ -1,16 +1,12 @@
 # coding = utf-8
 
-import os
-import configparser
 import SProtoParser
 import Config
-
-# 配置文件
-CONFIG_FILE_PATH = os.getcwd() + "\\" + "Config.ini"
+import Define
 
 def main():
-	config = Config.Config( CONFIG_FILE_PATH )
-	sprotoParser = SProtoParser.SProtoParser( config.get( "Path", "Protocol" ) )
+	config = Config.Config()
+	sprotoParser = SProtoParser.SProtoParser( config.get( Define.Section["Path"], Define.Option["Protocol"] ) )
 	sprotoParser.parse()
 
 if __name__ == "__main__":
