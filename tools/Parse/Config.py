@@ -61,7 +61,6 @@ class Config( configparser.ConfigParser ):
 	def addSection( self, section ):
 		self.m_config.add_section( section )
 
-
 	# 设置option
 	def set( self, section, optionK, optionV ):
 		self.m_config.set( section, optionK, optionV )
@@ -69,15 +68,15 @@ class Config( configparser.ConfigParser ):
 			self.m_config.write( fd )
 			fd.close()
 
-
 	# 获取option
-	def get( self, section, option ):
+	def get( self, section, option, text ):
 		try:
 			return self.m_config.get( section, option )
 		except configparser.NoSectionError:
 			self.addSection( section )
-
-		value = input("输入需要解析的Protocol文件路径地址：\n")
+		except configparser.NoOptionError:
+			None
+		value = input(text)
 		self.set(section, option, value)
 		with open( self.m_path, "w" ) as fd:
 			self.m_config.write( fd )

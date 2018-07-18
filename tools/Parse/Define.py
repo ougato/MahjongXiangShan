@@ -5,5 +5,6 @@ Section = {
 }
 
 Option = {
-    "Protocol": "Protocol",
+    "ProtocolInput": "ProtocolInput",
+    "ProtocolOutput": "ProtocolOutput",
 }
