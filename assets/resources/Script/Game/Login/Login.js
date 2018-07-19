@@ -73,16 +73,19 @@ cc.Class({
         this.nodeGuest.active = false;
         this.nodeWechat.active = false;
 
-        if( cc.sys.isMobile ) {
-            let button = this.createGetUserInfoButton();
-            button.onTap( this.onGetUserInfo.bind( this ) );
-            this.buttonGetUserInfo = button;
-        } else if( cc.sys.isBrowser || cc.sys.isNative ) {
-            if( Config.isDebug ) {
-                this.nodeGuest.active = true;
-            } else {
-                this.nodePhoneNumber.active = true;
-            }
+        switch( cc.sys.platform ) {
+            case cc.sys.WECHAT_GAME:
+                let button = this.createGetUserInfoButton();
+                button.onTap( this.onGetUserInfo.bind( this ) );
+                this.buttonGetUserInfo = button;
+                break;
+            default:
+                if( Config.isDebug ) {
+                    this.nodeGuest.active = true;
+                } else {
+                    this.nodePhoneNumber.active = true;
+                }
+                break;
         }
 
     },

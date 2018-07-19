@@ -11,6 +11,7 @@ let Utils = require( "Utils" );
 let Config = require( "Config" )
 let ConfEvent = require( "ConfEvent" );
 let ConfNet = require( "ConfNet" );
+let Protocol = require( "Protocol" );
 
 // 实例化对象
 let instance = null;

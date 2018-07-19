@@ -114,14 +114,16 @@ let EventManager = cc.Class({
      * @param callback {function} 回调函数
      */
     addDownloadEvent( callback ) {
-        if( cc.sys.isMobile ) {
-            downloader.on( "download", function( res ) {
-                if( Utils.isFunction( callback ) && !Utils.isNull( res ) && Utils.isFunction( res.onProgressUpdate ) ) {
-                    res.onProgressUpdate( function( res ) {
-                        callback( res.progress, res.totalBytesWritten, res.totalBytesExpectedToWrite );
-                    } );
-                }
-            }.bind( this ) );
+        switch( cc.sys.platform ) {
+            case cc.sys.WECHAT_GAME:
+                downloader.on( "download", function( res ) {
+                    if( Utils.isFunction( callback ) && !Utils.isNull( res ) && Utils.isFunction( res.onProgressUpdate ) ) {
+                        res.onProgressUpdate( function( res ) {
+                            callback( res.progress, res.totalBytesWritten, res.totalBytesExpectedToWrite );
+                        } );
+                    }
+                }.bind( this ) );
+                break;
         }
     },
 

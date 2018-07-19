@@ -104,17 +104,20 @@ cc.Class({
     checkToken() {
         if( this.isTokenExist() ) {
             let self = this;
-            if( cc.sys.isMobile ) {
-                wx.checkSession({
-                    success() {
-                        self.login();
-                    },
-                    fail() {
-                        self.enterLogin();
-                    },
-                })
-            } else {
-                self.login();
+            switch( cc.sys.platform ) {
+                case cc.sys.WECHAT_GAME:
+                    wx.checkSession({
+                        success() {
+                            self.login();
+                        },
+                        fail() {
+                            self.enterLogin();
+                        },
+                    });
+                    break;
+                default:
+                    self.login();
+                    break;
             }
         } else {
             this.enterLogin();
@@ -171,15 +174,17 @@ cc.Class({
         let userInfo = G.StoreManager.get( ConfStore.UserInfo );
         let token = G.StoreManager.get( ConfStore.Token );
         let url = "";
-        // TODO写完需要用到的参数
-        if (cc.sys.isMobile) {
-            url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, userInfo.rawData, userInfo.signature, userInfo.encryptedData, userInfo.iv, token );
-        } else if (cc.sys.isBrowser || cc.sys.isNative) {
-            if( Config.isDebug ) {
-                url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER_GUEST, token );
-            } else {
-                url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER, token );
-            }
+        switch( cc.sys.platform ) {
+            case cc.sys.WECHAT_GAME:
+                url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, userInfo.rawData, userInfo.signature, userInfo.encryptedData, userInfo.iv, token );
+                break;
+            default:
+                if( Config.isDebug ) {
+                    url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER_GUEST, token );
+                } else {
+                    url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER, token );
+                }
+                break;
         }
         return url;
     },

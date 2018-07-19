@@ -25,7 +25,7 @@ let AudioBase = cc.Class({
         // 音量
         this.m_fVolume = 1.0;
         // 状态
-        this.m_nState = DefAudio.STATE.INITIALZING;
+        this.m_nState = DefAudio.State.INITIALZING;
 
         // 赋值
         this.initData( arguments[0], arguments[1], arguments[2] );
@@ -55,7 +55,7 @@ let AudioBase = cc.Class({
     play() {
         let id = cc.audioEngine.play( cc.url.raw( this.m_strPath ), this.m_bIsLoop, this.m_fVolume );
         this.m_nId = id;
-        this.m_nState = DefAudio.STATE.PLAYING;
+        this.m_nState = DefAudio.State.PLAYING;
         return id;
     },
 
@@ -64,29 +64,29 @@ let AudioBase = cc.Class({
      */
     stop() {
         cc.audioEngine.stop( this.m_nId );
-        this.m_nState = DefAudio.STATE.INITIALZING;
+        this.m_nState = DefAudio.State.INITIALZING;
     },
 
     /**
      * 暂停
      */
     pause() {
-        if( this.m_nState !== DefAudio.STATE.PLAYING ) {
+        if( this.m_nState !== DefAudio.State.PLAYING ) {
             return ;
         }
         cc.audioEngine.pause( this.m_nId );
-        this.m_nState = DefAudio.STATE.PAUSE;
+        this.m_nState = DefAudio.State.PAUSE;
     },
 
     /**
      * 恢复
      */
     resume() {
-        if( this.m_nState !== DefAudio.STATE.PAUSE ) {
+        if( this.m_nState !== DefAudio.State.PAUSE ) {
             return ;
         }
         cc.audioEngine.resume( this.m_nId );
-        this.m_nState = DefAudio.STATE.PLAYING;
+        this.m_nState = DefAudio.State.PLAYING;
     },
 });
 

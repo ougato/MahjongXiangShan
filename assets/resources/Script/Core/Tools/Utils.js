@@ -186,6 +186,27 @@ let Utils = {
         return flag;
     },
 
+    /**
+     * 克隆
+     * @param variable {*} 任意类型变量
+     * @returns {*}
+     */
+    clone: function( variable ) {
+        let v = variable;
+        if( this.isArray( variable ) ) {
+            v = [];
+            for( let i = 0; i < variable.length; ++i ) {
+                v.push( this.clone( variable[i] ) );
+            }
+        } else if( this.isObject( variable ) ) {
+            v = {};
+            for( let key in variable ) {
+                v[key] = this.clone( variable[key] );
+            }
+        }
+        return v;
+    },
+
 };
 
 module.exports = Utils;
