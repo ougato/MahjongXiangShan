@@ -16,7 +16,7 @@ let Config = require( "Config" );
 let ConfEvent = require( "ConfEvent" );
 let DefView = require( "DefView" );
 let ConfView = require( "ConfView" );
-let ConfNet = require( "ConfNet" );
+let Protocol = require( "Protocol" );
 let ConfGame = require( "ConfGame" );
 let ConfCode = require( "ConfCode" );
 
@@ -268,7 +268,9 @@ cc.Class({
         if( Utils.isNull( data.gameInfo ) ) {
             G.ViewManager.replaceScene( ConfView.Scene.Lobby );
         } else {
-            G.NetManager.send( ConfNet.NET_JOIN, data.gameInfo.roomId );
+            let message = Utils.clone( Protocol.Join );
+            message.request.roomId = data.gameInfo.roomId;
+            G.NetManager.send( message.cmd, message.request );
         }
     },
 

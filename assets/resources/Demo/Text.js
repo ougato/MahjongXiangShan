@@ -53,7 +53,7 @@ cc.Class({
     onClick2() {
         let ws = G.NetManager.getWS();
 
-        let cmd = ConfNet.NET_LOGIN;
+        let cmd = Protocol.NET_LOGIN;
         let data = {};
         data.login = "我要登录";
         ws.send( cmd, data );

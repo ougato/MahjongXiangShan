@@ -10,7 +10,6 @@
 let Utils = require( "Utils" );
 let Config = require( "Config" )
 let ConfEvent = require( "ConfEvent" );
-let ConfNet = require( "ConfNet" );
 let Protocol = require( "Protocol" );
 
 // 实例化对象
@@ -56,11 +55,11 @@ let Game = cc.Class({
      */
     destroy() {
         // 释放 登录 网络
-        G.NetManager.unProto( this, ConfNet.NET_LOGIN );
+        G.NetManager.unProto( this, Protocol.Login.cmd );
         // 释放 创建 网络
-        G.NetManager.unProto( this, ConfNet.NET_CREATE );
+        G.NetManager.unProto( this, Protocol.Create.cmd );
         // 释放 加入 网络
-        G.NetManager.unProto( this, ConfNet.NET_JOIN );
+        G.NetManager.unProto( this, Protocol.Join.cmd );
     },
 
     /**
@@ -92,11 +91,11 @@ let Game = cc.Class({
      */
     register() {
         // 添加 登录 网络
-        G.NetManager.addProto( this, ConfNet.NET_LOGIN );
+        G.NetManager.addProto( this, Protocol.Login.cmd );
         // 添加 创建 网络
-        G.NetManager.addProto( this, ConfNet.NET_CREATE );
+        G.NetManager.addProto( this, Protocol.Create.cmd );
         // 添加 加入 网络
-        G.NetManager.addProto( this, ConfNet.NET_JOIN );
+        G.NetManager.addProto( this, Protocol.Join.cmd );
     },
 
     /**
@@ -202,13 +201,13 @@ let Game = cc.Class({
      */
     onNet( msg ) {
         switch( msg.cmd ) {
-            case ConfNet.NET_LOGIN:
+            case Protocol.Login.cmd:
                 this.onNetLogin( msg.data );
                 break;
-            case ConfNet.NET_CREATE:
+            case Protocol.Create.cmd:
                 this.onNetCreate( msg.data );
                 break;
-            case ConfNet.NET_JOIN:
+            case Protocol.Join.cmd:
                 this.onNetJoin( msg.data );
                 break;
         }

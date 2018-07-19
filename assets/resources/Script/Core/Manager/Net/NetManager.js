@@ -10,7 +10,7 @@
 let Utils = require( "Utils" );
 let List = require( "List" );
 let DefNet = require( "DefNet" );
-let ConfNet = require( "ConfNet" );
+let Protocol = require( "Protocol" );
 let Hash = require( "Hash" );
 let ConfStore = require( "ConfStore" );
 let DefLog = require( "DefLog" );
@@ -149,7 +149,7 @@ let NetManager = cc.Class({
      * 是否通知ID
      */
     isNoticeCmd( cmd ) {
-        return cmd === ConfNet.NET_PING || cmd === ConfNet.NET_BROADCAST;
+        return cmd === Protocol.Ping.cmd || cmd === Protocol.Broadcast.cmd;
     },
 
     /**
@@ -159,10 +159,11 @@ let NetManager = cc.Class({
         G.ViewManager.closeLoading();
         this.startPingTimer();
         this.m_nReconectCount = 0;
-        let data = {};
-        data.token = G.StoreManager.get( ConfStore.Token );
-        data.type = G.StoreManager.get( ConfStore.LoginMode );
-        G.NetManager.send( ConfNet.NET_LOGIN, data );
+
+        let message = Utils.clone( Protocol.Login );
+        message.request.token = G.StoreManager.get( ConfStore.Token );
+        message.request.type = G.StoreManager.get( ConfStore.LoginMode );
+        G.NetManager.send( message.cmd, message.request );
     },
 
     /**
@@ -350,9 +351,10 @@ let NetManager = cc.Class({
         if( !Utils.isNull( this.m_nPingTimerId ) ) {
             this.stopPingTimer();
         }
-        this.send( ConfNet.NET_PING );
+        let message = Utils.clone( Protocol.Ping );
+        this.send( message.cmd, message.request );
         this.m_nPingTimerId = setInterval( function() {
-            this.send( ConfNet.NET_PING, {} );
+            this.send( message.cmd, message.request );
         }.bind( this ), DefNet.PING_GAP * 1000 );
     },
 

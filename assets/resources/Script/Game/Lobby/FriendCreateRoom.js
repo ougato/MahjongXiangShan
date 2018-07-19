@@ -9,11 +9,12 @@
 
 let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
-let ConfNet = require( "ConfNet" );
+let Protocol = require( "Protocol" );
 let Log = require( "Log" );
 let ConfEvent = require( "ConfEvent" );
 let ConfCode = require( "ConfCode" );
 let ConfGame = require( "ConfGame" );
+let Utils = require( "Utils" );
 
 cc.Class({
     extends: UIBase,
@@ -96,7 +97,8 @@ cc.Class({
      * 创建房间
      */
     onCreateRoom() {
-        G.NetManager.send( ConfNet.NET_CREATE, {} );
+        let message = Utils.clone( Protocol.Create );
+        G.NetManager.send( message.cmd, message.request );
     },
 
     /**
@@ -108,7 +110,9 @@ cc.Class({
             Log.error( data.code );
             return ;
         }
-        G.NetManager.send( ConfNet.NET_JOIN, { roomId: data.roomId } );
+        let message = Utils.clone( Protocol.Join );
+        message.request.roomId = data.roomId;
+        G.NetManager.send( message.cmd, message.request );
     },
 
     /**

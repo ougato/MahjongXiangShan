@@ -9,10 +9,11 @@
 
 let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
-let ConfNet = require( "ConfNet" );
+let Protocol = require( "Protocol" );
 let ConfEvent = require( "ConfEvent" );
 let ConfCode = require( "ConfCode" );
-let ConfGame = require( "ConfGame" )
+let ConfGame = require( "ConfGame" );
+let Utils = require( "Utils" );
 
 cc.Class({
     extends: UIBase,
@@ -40,7 +41,7 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.NetManager.unProto( this, ConfNet.NET_JOIN );
+        G.NetManager.unProto( this, Protocol.Join.cmd );
     },
 
     /**
@@ -75,7 +76,7 @@ cc.Class({
      * 注册
      */
     register() {
-        G.NetManager.addProto( this, ConfNet.NET_JOIN );
+        G.NetManager.addProto( this, Protocol.Join.cmd );
     },
 
     /**
@@ -87,7 +88,9 @@ cc.Class({
             this.m_strRoomNum = this.m_strRoomNum + num;
             this.labelRoomNum[this.m_nIndex++].string = num;
             if( this.m_strRoomNum.length === this.labelRoomNum.length ) {
-                G.NetManager.send( ConfNet.NET_JOIN, { roomId: this.m_strRoomNum } );
+                let message = Utils.clone( Protocol.Login );
+                message.request.roomId = this.m_strRoomNum;
+                G.NetManager.send( message.cmd, message.request );
             }
         }
     },
