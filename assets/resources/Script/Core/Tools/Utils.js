@@ -191,7 +191,7 @@ let Utils = {
      * @param variable {*} 任意类型变量
      * @returns {*}
      */
-    clone: function( variable ) {
+    clone( variable ) {
         let v = variable;
         if( this.isArray( variable ) ) {
             v = [];

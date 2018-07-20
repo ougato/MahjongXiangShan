@@ -56,12 +56,6 @@ let DataUser = cc.Class({
         this.m_nGold = null;
         // 钻石
         this.m_nDiamond = null;
-        // 未完成的游戏ID
-        this.m_nUndoneGameId = null;
-        // 未完成的模式ID
-        this.m_nUndoneModeId = null;
-        // 未完成的房间ID
-        this.m_nUndoneRoomId = null;
 
     },
 
@@ -82,16 +76,6 @@ let DataUser = cc.Class({
         this.m_strPictureUrl = Utils.isNull( userInfo.pictureUrl ) ? "" : userInfo.pictureUrl;
         this.m_nGold = Utils.isNull( userInfo.gold ) ? 0 : userInfo.gold;
         this.m_nDiamond = Utils.isNull( userInfo.diamond ) ? 0 : userInfo.diamond;
-    },
-
-    /**
-     * 设置游戏信息
-     * @param gameInfo {object} 游戏信息
-     */
-    setGameInfo( gameInfo ) {
-        this.m_nUndoneGameId = Utils.isNull( gameInfo.gameId ) ? null : gameInfo.gameId;
-        this.m_nUndoneModeId = Utils.isNull( gameInfo.modeId ) ? null : gameInfo.modeId;
-        this.m_nUndoneRoomId = Utils.isNull( gameInfo.roomId ) ? null : gameInfo.roomId;
     },
 
     /**
@@ -174,53 +158,6 @@ let DataUser = cc.Class({
         return this.m_nDiamond;
     },
 
-    /**
-     * 设置未完成游戏ID
-     * @param gameId {number} 未完成游戏ID
-     */
-    setUndoneGameId( gameId ) {
-        this.m_nUndoneGameId = gameId;
-    },
-
-    /**
-     * 获取未完成游戏ID
-     * @return {number}
-     */
-    getUndoneGameId() {
-        return this.m_nUndoneGameId;
-    },
-
-    /**
-     * 设置未完成模式ID
-     * @param modeId {number} 未完成模式ID
-     */
-    setUndoneModeId( modeId ) {
-        this.m_nUndoneModeId = modeId;
-    },
-
-    /**
-     * 获取未完成模式ID
-     * @return {number}
-     */
-    getUndoneModeId() {
-        return this.m_nUndoneModeId;
-    },
-
-    /**
-     * 设置未完成房间ID
-     * @param roomId {string} 未完成房间ID
-     */
-    setUndoneRoomId( roomId ) {
-        this.m_nUndoneRoomId = roomId;
-    },
-
-    /**
-     * 获取未完成房间ID
-     * @return {string}
-     */
-    getUndoneRoomId() {
-        return this.m_nUndoneRoomId;
-    },
 });
 
 module.exports = DataUser;

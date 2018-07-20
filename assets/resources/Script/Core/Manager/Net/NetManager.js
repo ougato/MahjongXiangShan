@@ -160,10 +160,10 @@ let NetManager = cc.Class({
         this.startPingTimer();
         this.m_nReconectCount = 0;
 
-        let message = Utils.clone( Protocol.Login );
-        message.request.token = G.StoreManager.get( ConfStore.Token );
-        message.request.type = G.StoreManager.get( ConfStore.LoginMode );
-        G.NetManager.send( message.cmd, message.request );
+        let message = Protocol.getC2S( Protocol.Login );
+        message.data.token = G.StoreManager.get( ConfStore.Token );
+        message.data.type = G.StoreManager.get( ConfStore.LoginMode );
+        G.NetManager.send( message.cmd, message.data );
     },
 
     /**
@@ -351,10 +351,11 @@ let NetManager = cc.Class({
         if( !Utils.isNull( this.m_nPingTimerId ) ) {
             this.stopPingTimer();
         }
-        let message = Utils.clone( Protocol.Ping );
-        this.send( message.cmd, message.request );
+        let message = Protocol.getC2S( Protocol.Ping );
+
+        this.send( message.cmd, message.data );
         this.m_nPingTimerId = setInterval( function() {
-            this.send( message.cmd, message.request );
+            this.send( message.cmd, message.data );
         }.bind( this ), DefNet.PING_GAP * 1000 );
     },
 

@@ -1,3 +1,4 @@
+
 //
 // 注：预留001-100之间消息协议
 // 号、供服务器内部处理。
@@ -7,6 +8,94 @@
 //
 
 let Protocol = {};
+
+////////////////////////////////////////////////////// 方法接口 //////////////////////////////////////////////////////
+
+/**
+ * 判断是否类型为数组
+ * @param value
+ * @return {boolean}
+ */
+Protocol._isArray = function( value ) {
+    let flag = false;
+    if( typeof( value ) === "object" ) {
+        if( value instanceof Array ) {
+            flag = true;
+        }
+    }
+    return flag;
+};
+
+/**
+ * 判断是否类型为对象
+ * @param value
+ * @return {boolean}
+ */
+Protocol._isObject = function( value ) {
+    let flag = false;
+    if( typeof( value ) === "object" ) {
+        if( !(value instanceof Array) ) {
+            flag = true;
+        }
+    }
+    return flag;
+};
+
+/**
+ * 克隆
+ * @param variable {*} 任意类型变量
+ * @return {*}
+ */
+Protocol._clone = function( variable ) {
+    let v = variable;
+    if( Protocol._isArray( variable ) ) {
+        v = [];
+        for( let i = 0; i < variable.length; ++i ) {
+            v.push( Protocol._clone( variable[i] ) );
+        }
+    } else if( Protocol._isObject( variable ) ) {
+        v = {};
+        for( let key in variable ) {
+            v[key] = Protocol._clone( variable[key] );
+        }
+    }
+    return v;
+};
+
+/**
+ * 获取 客户端 需要的协议数据
+ * @param proto {object} 协议
+ * @return {object}
+ */
+Protocol.getC2S = function( proto ) {
+    proto = Protocol._clone( proto );
+    let message = {};
+    message.cmd = proto.cmd;
+    message.data = proto.request;
+    return message;
+};
+
+/**
+ * 获取 服务器 需要的协议数据
+ * @param proto {object} 协议
+ * @return {object}
+ */
+Protocol.getS2C = function( proto ) {
+    proto = Protocol._clone( proto );
+    let message = {};
+    message.cmd = proto.cmd;
+    message.data = proto.response;
+    return message;
+};
+
+/**
+ * 获取结构体
+ * @param struct {object} 结构
+ * @return {object}
+ */
+Protocol.getStruct = function( struct ) {
+    return Protocol._clone( struct );
+};
 
 ////////////////////////////////////////////////////// 公共结构 //////////////////////////////////////////////////////
 
@@ -22,7 +111,7 @@ Protocol.UserInfo = {
 // 牌信息
 Protocol.CardInfo = {
     card: [], // 牌（百位[以0开始 ID] 十位[0-筒 1-条 2-万 3-东南西北 4-春夏秋冬 5-梅兰竹菊 6-中发白] 个位[以0开始 点数]）
-    type: 0, // 类型（0-手牌 1-出牌 2-吃牌 3-碰牌 4-明杠 5-暗杠 6-巴杠 7-抢杠）
+    type: 0, // 类型（0-手牌 1-出牌 2-吃牌 3-碰牌 4-明杠 5-暗杠 6-巴杠 7-抢杠 8-摸牌）
 };
 
 
@@ -48,9 +137,9 @@ Protocol.PlayerState = {
 // 玩家信息
 Protocol.PlayerInfo = {
     seat: 0, // 座位号
-    userInfo: new Object( Protocol.UserInfo ), // 用户信息
+    userInfo: Protocol.getStruct( Protocol.UserInfo ), // 用户信息
     cardInfo: [], // 牌堆信息 CardInfo
-    stateInfo: new Object( Protocol.PlayerState ), // 玩家状态
+    stateInfo: Protocol.getStruct( Protocol.PlayerState ), // 玩家状态
 };
 
 // 桌子信息
@@ -60,15 +149,16 @@ Protocol.DeskInfo = {
 
 // 房间信息
 Protocol.RoomInfo = {
-    ruleInfo: new Object( Protocol.RuleInfo ), // 规则信息
+    ruleInfo: Protocol.getStruct( Protocol.RuleInfo ), // 规则信息
     modeId: 0, // 模式ID（0-好友 1-匹配）
     roomId: "", // 房间ID
+    state: 0, // 状态（0-未开始 1-游戏中 2-小结算 3-大结算）
 };
 
 // 游戏信息
 Protocol.GameInfo = {
-    roomInfo: new Object( Protocol.RoomInfo ), // 房间信息
-    deskInfo: new Object( Protocol.DeskInfo ), // 桌子信息
+    roomInfo: Protocol.getStruct( Protocol.RoomInfo ), // 房间信息
+    deskInfo: Protocol.getStruct( Protocol.DeskInfo ), // 桌子信息
     playerInfo: [], // 玩家信息 PlayerInfo,
 };
 
@@ -97,7 +187,7 @@ Protocol.Login = {
     },
     response: {
         code: "", // 返回码
-        userInfo: new Object( Protocol.UserInfo ), // 个人信息
+        userInfo: Protocol.getStruct( Protocol.UserInfo ), // 个人信息
         roomId: "", // 房间号
     },
 };
@@ -157,7 +247,7 @@ Protocol.Join = {
     },
     response: {
         code: 0, // 返回码
-        gameInfo: new Object( Protocol.GameInfo ), // 房间信息
+        gameInfo: Protocol.getStruct( Protocol.GameInfo ), // 房间信息
     },
 };
 
@@ -165,7 +255,46 @@ Protocol.Join = {
 Protocol.NoticeJoin = {
     cmd: 303,
     response: {
-        playerInfo: new Object( Protocol.PlayerInfo ), // 玩家信息
+        playerInfo: Protocol.getStruct( Protocol.PlayerInfo ), // 玩家信息
+    },
+};
+
+// 退出房间
+Protocol.Exit = {
+    cmd: 304,
+    request: {
+
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 通知退出房间
+Protocol.NoticeExit = {
+    cmd: 305,
+    response: {
+        seat: 0, // 座位号
+    },
+};
+
+// 解散房间
+Protocol.Disband = {
+    cmd: 306,
+    request: {
+        isAgree: false, // 是否同意
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 通知解散房间
+Protocol.NoticeDisband = {
+    cmd: 307,
+    response: {
+        seat: 0, // 座位号
+        isAgree: false, // 是否同意
     },
 };
 
@@ -221,7 +350,7 @@ Protocol.Dice = {
 Protocol.Deal = {
     cmd: 1006,
     response: {
-        cards: new Object( Protocol.CardInfo ), // 牌堆
+        cards: Protocol.getStruct( Protocol.CardInfo ), // 牌堆
     },
 };
 
@@ -229,7 +358,7 @@ Protocol.Deal = {
 Protocol.Draw = {
     cmd: 1007,
     response: {
-        card: new Object( Protocol.CardInfo ), // 牌值
+        card: Protocol.getStruct( Protocol.CardInfo ), // 牌值
     },
 };
 
@@ -253,7 +382,7 @@ Protocol.TipAction = {
 Protocol.Action = {
     cmd: 1010,
     request: {
-        type: new Object( Protocol.ActionInfo ), // 动作信息
+        type: Protocol.getStruct( Protocol.ActionInfo ), // 动作信息
         card: 0, // 当type==0时， card不为空，其它情况 card为空
     },
 };
@@ -263,7 +392,7 @@ Protocol.NoticeAction = {
     cmd: 1011,
     response: {
         type: 0,
-        card: [], //当type=2,3,4, *CardInfo
+        card: [], //当type=2,3,4, *CardInfo 
     },
 };
 

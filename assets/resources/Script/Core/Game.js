@@ -164,7 +164,6 @@ let Game = cc.Class({
     onNetLogin( data ) {
         if( data.code >= 0 ) {
             Utils.isNull( data.userInfo ) || G.DataManager.getData( "DataUser" ).setUserInfo( data.userInfo );
-            Utils.isNull( data.gameInfo ) || G.DataManager.getData( "DataUser" ).setGameInfo( data.gameInfo );
             G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_FAILED, data );
@@ -189,6 +188,9 @@ let Game = cc.Class({
      */
     onNetJoin( data ) {
         if( data.code >= 0 ) {
+            Utils.isNull( data.roomInfo ) || G.DataManager.getData( "DataRoom" ).setRoomInfo( data.roomInfo );
+            Utils.isNull( data.deskInfo ) || G.DataManager.getData( "DataDesk" ).setDeskInfo( data.deskInfo );
+            Utils.isNull( data.playerInfo ) || G.DataManager.getData( "DeskPlayer" ).setPlayerInfo( data.playerInfo );
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_FAILED, data );

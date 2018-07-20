@@ -97,8 +97,8 @@ cc.Class({
      * 创建房间
      */
     onCreateRoom() {
-        let message = Utils.clone( Protocol.Create );
-        G.NetManager.send( message.cmd, message.request );
+        let message = Protocol.getC2S( Protocol.Create );
+        G.NetManager.send( message.cmd, message.data );
     },
 
     /**
@@ -110,9 +110,9 @@ cc.Class({
             Log.error( data.code );
             return ;
         }
-        let message = Utils.clone( Protocol.Join );
-        message.request.roomId = data.roomId;
-        G.NetManager.send( message.cmd, message.request );
+        let message = Protocol.getC2S( Protocol.Join );
+        message.data.roomId = data.roomId;
+        G.NetManager.send( message.cmd, message.data );
     },
 
     /**
@@ -128,10 +128,7 @@ cc.Class({
      * @param data {object} 数据
      */
     onEventJoinSucceed( data ) {
-        // TODO: 服务器要把modeId发过来
-        // let modeId = data.roomInfo.deskInfo.modeId;
-
-        let modeId = ConfGame.ModeId.Friend;
+        let modeId = data.gameInfo.roomInfo.modeId;
         switch( modeId ) {
             case ConfGame.ModeId.Friend:
                 G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend );

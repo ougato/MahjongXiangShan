@@ -46,14 +46,87 @@ let DataRoom = cc.Class({
      * 构造
      */
     ctor() {
-
+        // 规则信息
+        this.m_objRuleInfo = {};
+        // 模式ID
+        this.m_nModeId = 0;
+        // 房间ID
+        this.m_strRoomId = "";
+        // 状态
+        this.m_nState = 0;
     },
 
     /**
      * 销毁
      */
     destroy() {
+        // 规则信息
+        this.m_objRuleInfo = null;
+        // 模式ID
+        this.m_nModeId = null;
+        // 房间ID
+        this.m_strRoomId = null;
+        // 状态
+        this.m_nState = null;
+    },
 
+    /**
+     * 设置房间信息
+     * @param data {object} 房间信息
+     */
+    setRoomInfo( data ) {
+        this.m_objRuleInfo = data.ruleInfo;
+        this.m_nModeId = data.modeId;
+        this.m_strRoomId = data.roomId;
+        this.m_nState = data.state;
+    },
+
+    /**
+     * 设置规则信息
+     * @param ruleInfo
+     */
+    setRuleInfo( ruleInfo ) {
+        this.m_objRuleInfo = ruleInfo;
+    },
+
+    /**
+     * 获取规则信息
+     * @returns {*}
+     */
+    getRuleInfo() {
+        return this.m_objRuleInfo;
+    },
+
+    /**
+     * 设置模式ID
+     * @param modeId
+     */
+    setModeId( modeId ) {
+        this.m_nModeId = modeId;
+    },
+
+    /**
+     * 获取模式ID
+     * @returns {number}
+     */
+    getModeId() {
+        return this.m_nModeId;
+    },
+
+    /**
+     * 设置房间ID
+     * @param roomId
+     */
+    setRoomId( roomId ) {
+        this.m_strRoomId = roomId;
+    },
+
+    /**
+     * 获取房间ID
+     * @returns {string}
+     */
+    getRoomId() {
+        return this.m_strRoomId;
     },
 
 });

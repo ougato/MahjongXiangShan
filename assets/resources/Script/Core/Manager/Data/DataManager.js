@@ -11,6 +11,8 @@
 let Utils = require( "Utils" );
 let DataUser = require( "DataUser" );
 let DataRoom = require( "DataRoom" );
+let DataDesk = require( "DataDesk" );
+let DataPlayer = require( "DataPlayer" );
 
 // 实例化对象
 let instance = null;
@@ -52,6 +54,8 @@ let DataManager = cc.Class({
         this.m_objDataList = new Map();
         this.m_objDataList.set( "DataUser", DataUser.getInstance() );
         this.m_objDataList.set( "DataRoom",DataRoom.getInstance() );
+        this.m_objDataList.set( "DataDesk", DataDesk.getInstance() );
+        this.m_objDataList.set( "DataPlayer", DataPlayer.getInstance() );
 
     },
 

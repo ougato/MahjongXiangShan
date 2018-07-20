@@ -180,6 +180,9 @@ cc.Class({
                 break;
             default:
                 if( Config.isDebug ) {
+                    if( Config.isMulti ) {
+                        token = "null";
+                    }
                     url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER_GUEST, token );
                 } else {
                     url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER, token );
@@ -210,12 +213,12 @@ cc.Class({
      * @param data {*} 登录数据
      */
     onEventLoginSucceed( data ) {
-        if( Utils.isNull( data.gameInfo ) ) {
-            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+        if( !Utils.isNull( data.roomId ) && data.roomId.length > 0 ) {
+            let message = Protocol.getC2S( Protocol.Join );
+            message.data.roomId = data.gameInfo.roomId;
+            G.NetManager.send( message.cmd, message.data );
         } else {
-            let message = Utils.clone( Protocol.Ping );
-            message.request.roomId = data.gameInfo.roomId;
-            G.NetManager.send( message.cmd, message.request );
+            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
         }
     },
 
@@ -237,21 +240,15 @@ cc.Class({
      * @param data {*} 加入数据
      */
     onEventJoinSucceed( data ) {
-        let dataUser = G.DataManager.getData( "DataUser" );
-        switch( dataUser.getUndoneModeId() ) {
+        let modeId = data.gameInfo.roomInfo.modeId;
+        switch( modeId ) {
             case ConfGame.ModeId.Friend:
-                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend, null, function( view ) {
-                    view.reconnect();
-                } );
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend );
                 break;
             case ConfGame.ModeId.Match:
-                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch, null, function( view ) {
-                    view.reconnect();
-                } );
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch );
                 break;
-
         }
-
     },
 
     /**
