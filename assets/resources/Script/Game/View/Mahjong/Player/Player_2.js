@@ -4,13 +4,13 @@
  */
 
 /**
- * 场景例子
+ * 玩家 上
  */
 
-let UIBase = require( "UIBase" );
+let PlayerBase = require( "PlayerBase" );
 
 cc.Class({
-    extends: UIBase,
+    extends: PlayerBase,
 
     properties: {
         // foo: {
@@ -32,44 +32,9 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
+    // onLoad () {},
+
     start () {
-
-    },
-
-    /**
-     * 加载
-     */
-    onLoad() {
-        this.initData();
-        this.initView();
-        this.register();
-    },
-
-    /**
-     * 销毁
-     */
-    onDestroy() {
-
-    },
-
-    /**
-     * 初始化数据
-     */
-    initData() {
-
-    },
-
-    /**
-     * 初始化视图
-     */
-    initView() {
-
-    },
-
-    /**
-     * 注册
-     */
-    register() {
 
     },
 

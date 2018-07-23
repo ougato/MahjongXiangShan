@@ -11,6 +11,7 @@ let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
 let Log = require( "Log" );
 let Utils = require( "Utils" );
+let ConfData = require( "ConfData" );
 
 cc.Class({
     extends: UIBase,
@@ -41,19 +42,17 @@ cc.Class({
      * 初始化数据
      */
     initData() {
-
         // 用户数据对象
-        this.m_objDataUser = G.DataManager.getData( "DataUser" );
-
+        this.m_objUserData = G.DataManager.getData( ConfData.UserData );
     },
 
     /**
      * 初始化视图
      */
     initView() {
-        let name = this.m_objDataUser.getName();
-        let gold = this.m_objDataUser.getGold();
-        let diamond = this.m_objDataUser.getDiamond();
+        let name = this.m_objUserData.getName();
+        let gold = this.m_objUserData.getGold();
+        let diamond = this.m_objUserData.getDiamond();
 
         this.labelName.string = name;
         this.labelGold.string = gold;
@@ -174,7 +173,7 @@ cc.Class({
      * 匹配对战 回调
      */
     onMatchBattle() {
-
+        G.ViewManager.openTips( G.I18N.get( 27 ) );
     },
 
     // update (dt) {},

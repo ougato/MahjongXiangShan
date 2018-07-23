@@ -5,7 +5,6 @@
 
 /**
  * 用户数据
- * @type {Function}
  */
 
 let Utils = require( "Utils" );
@@ -13,7 +12,7 @@ let Utils = require( "Utils" );
 // 实例化对象
 let instance = null;
 
-let DataUser = cc.Class({
+let UserData = cc.Class({
 
     /**
      * 静态
@@ -26,7 +25,7 @@ let DataUser = cc.Class({
          */
         getInstance() {
             if( Utils.isNull( instance ) ) {
-                instance = new DataUser();
+                instance = new UserData();
             }
             return instance;
         },
@@ -158,6 +157,22 @@ let DataUser = cc.Class({
         return this.m_nDiamond;
     },
 
+    /**
+     * 清理
+     */
+    clear() {
+        // 名字
+        this.m_strName = null;
+        // 性别
+        this.m_nSex = null;
+        // 头像连接
+        this.m_strPictureUrl = null;
+        // 金币
+        this.m_nGold = null;
+        // 钻石
+        this.m_nDiamond = null;
+    }
+
 });
 
-module.exports = DataUser;
+module.exports = UserData;

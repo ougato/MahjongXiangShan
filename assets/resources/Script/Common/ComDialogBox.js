@@ -33,6 +33,7 @@ cc.Class({
     onDisable() {
         this.m_strText = "";
         for( let i = 0; i < this.buttonCommit.length; ++i ) {
+            this.buttonCommit[i].node.setScale( 1, 1 );
             this.buttonCommit[i].node.active = false;
         }
     },

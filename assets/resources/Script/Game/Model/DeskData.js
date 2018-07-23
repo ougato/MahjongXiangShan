@@ -5,7 +5,6 @@
 
 /**
  * 房间数据
- * @type {Function}
  */
 
 let Utils = require( "Utils" );
@@ -13,7 +12,7 @@ let Utils = require( "Utils" );
 // 实例化对象
 let instance = null;
 
-let DataDesk = cc.Class({
+let DeskData = cc.Class({
 
     /**
      * 静态
@@ -26,7 +25,7 @@ let DataDesk = cc.Class({
          */
         getInstance() {
             if( Utils.isNull( instance ) ) {
-                instance = new DataDesk();
+                instance = new DeskData();
             }
             return instance;
         },
@@ -81,6 +80,14 @@ let DataDesk = cc.Class({
         return this.m_nDice;
     },
 
+    /**
+     * 清理
+     */
+    clear() {
+        // 骰子
+        this.m_nDice = null;
+    },
+
 });
 
-module.exports = DataDesk;
+module.exports = DeskData;

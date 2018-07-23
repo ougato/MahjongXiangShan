@@ -9,10 +9,10 @@
  */
 
 let Utils = require( "Utils" );
-let DataUser = require( "DataUser" );
-let DataRoom = require( "DataRoom" );
-let DataDesk = require( "DataDesk" );
-let DataPlayer = require( "DataPlayer" );
+let UserData = require( "UserData" );
+let RoomData = require( "RoomData" );
+let DeskData = require( "DeskData" );
+let PlayerData = require( "PlayerData" );
 
 // 实例化对象
 let instance = null;
@@ -52,10 +52,10 @@ let DataManager = cc.Class({
     ctor() {
         // 数据列表
         this.m_objDataList = new Map();
-        this.m_objDataList.set( "DataUser", DataUser.getInstance() );
-        this.m_objDataList.set( "DataRoom",DataRoom.getInstance() );
-        this.m_objDataList.set( "DataDesk", DataDesk.getInstance() );
-        this.m_objDataList.set( "DataPlayer", DataPlayer.getInstance() );
+        this.m_objDataList.set( "UserData", UserData.getInstance() );
+        this.m_objDataList.set( "RoomData",RoomData.getInstance() );
+        this.m_objDataList.set( "DeskData", DeskData.getInstance() );
+        this.m_objDataList.set( "PlayerData", PlayerData.getInstance() );
 
     },
 
@@ -72,7 +72,23 @@ let DataManager = cc.Class({
      */
     getData( fileDataName ) {
         return this.m_objDataList.get( fileDataName );
-    }
+    },
+
+    /**
+     * 清理数据
+     * @param fileDataName {string} [数据文件名]
+     */
+    clearData( fileDataName ) {
+        if( Utils.isNull( fileDataName ) ) {
+            this.m_objDataList.forEach( function( value ) {
+                if( Utils.isFunction( value.clear ) ) {
+                    value.clear();
+                }
+            } )
+        } else {
+            this.getData( fileDataName ).clear();
+        }
+    },
 
 });
 

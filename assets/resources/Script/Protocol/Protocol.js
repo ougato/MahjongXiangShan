@@ -101,6 +101,7 @@ Protocol.getStruct = function( struct ) {
 
 // 用户信息
 Protocol.UserInfo = {
+    userId: "",
     name: "", // 名字
     sex: false, // 性别
     pictureUrl: "", // 头像链接

@@ -4,7 +4,7 @@
  */
 
 /**
- * 场景例子
+ * 玩家 基类
  */
 
 let UIBase = require( "UIBase" );
@@ -30,46 +30,17 @@ cc.Class({
         // },
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
-    start () {
-
-    },
-
     /**
      * 加载
      */
-    onLoad() {
-        this.initData();
-        this.initView();
-        this.register();
-    },
-
-    /**
-     * 销毁
-     */
-    onDestroy() {
+    onLoad () {
 
     },
 
     /**
-     * 初始化数据
+     * 清理
      */
-    initData() {
-
-    },
-
-    /**
-     * 初始化视图
-     */
-    initView() {
-
-    },
-
-    /**
-     * 注册
-     */
-    register() {
+    clear() {
 
     },
 

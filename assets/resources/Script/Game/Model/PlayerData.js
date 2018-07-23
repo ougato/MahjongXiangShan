@@ -5,7 +5,6 @@
 
 /**
  * 玩家数据
- * @type {Function}
  */
 
 let Utils = require( "Utils" );
@@ -13,7 +12,7 @@ let Utils = require( "Utils" );
 // 实例化对象
 let instance = null;
 
-let DataPlayer = cc.Class({
+let PlayerData = cc.Class({
 
     /**
      * 静态
@@ -26,7 +25,7 @@ let DataPlayer = cc.Class({
          */
         getInstance() {
             if( Utils.isNull( instance ) ) {
-                instance = new DataPlayer();
+                instance = new PlayerData();
             }
             return instance;
         },
@@ -89,7 +88,7 @@ let DataPlayer = cc.Class({
      * 加入玩家
      * @param data {object} 玩家信息
      */
-    joinPlayer( data ) {
+    join( data ) {
         this.m_mapPlayerInfo.set( data.seat, data );
     },
 
@@ -97,10 +96,18 @@ let DataPlayer = cc.Class({
      * 退出玩家
      * @param seat {number} 座位号
      */
-    exitPlayer( seat ) {
+    exit( seat ) {
         this.m_mapPlayerInfo.delete( seat );
+    },
+
+    /**
+     * 清理玩家
+     */
+    clear() {
+        this.m_mapPlayerInfo.clear();
+        this.m_mapPlayerInfo = null;
     },
 
 });
 
-module.exports = DataPlayer;
+module.exports = PlayerData;

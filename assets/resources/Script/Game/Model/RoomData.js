@@ -5,7 +5,6 @@
 
 /**
  * 房间数据
- * @type {Function}
  */
 
 let Utils = require( "Utils" );
@@ -13,7 +12,7 @@ let Utils = require( "Utils" );
 // 实例化对象
 let instance = null;
 
-let DataRoom = cc.Class({
+let RoomData = cc.Class({
 
     /**
      * 静态
@@ -26,7 +25,7 @@ let DataRoom = cc.Class({
          */
         getInstance() {
             if( Utils.isNull( instance ) ) {
-                instance = new DataRoom();
+                instance = new RoomData();
             }
             return instance;
         },
@@ -129,6 +128,37 @@ let DataRoom = cc.Class({
         return this.m_strRoomId;
     },
 
+
+    /**
+     * 设置状态
+     * @param state {number} 房间状态
+     */
+    setState( state ) {
+        this.m_nState = state;
+    },
+
+    /**
+     * 获取状态
+     * @returns {number}
+     */
+    getState() {
+        return this.m_nState;
+    },
+
+    /**
+     * 清理
+     */
+    clear() {
+        // 规则信息
+        this.m_objRuleInfo = null;
+        // 模式ID
+        this.m_nModeId = null;
+        // 房间ID
+        this.m_strRoomId = null;
+        // 状态
+        this.m_nState = null;
+    },
+
 });
 
-module.exports = DataRoom;
+module.exports = RoomData;

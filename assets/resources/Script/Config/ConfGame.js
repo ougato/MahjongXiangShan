@@ -18,7 +18,22 @@ const ModeId = {
     Match: 1,
 };
 
+/**
+ * 房间状态
+ */
+const RoomState = {
+    // 未开始
+    NotStarted: 0,
+    // 游戏中
+    Playing: 1,
+    // 小结算
+    Closing: 2,
+    // 大结算
+    TotalClosing: 3,
+};
+
 module.exports = {
     GameId: GameId,
     ModeId: ModeId,
+    RoomState: RoomState,
 };

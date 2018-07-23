@@ -11,6 +11,7 @@ let Utils = require( "Utils" );
 let Config = require( "Config" )
 let ConfEvent = require( "ConfEvent" );
 let Protocol = require( "Protocol" );
+let ConfData = require( "ConfData" );
 
 // 实例化对象
 let instance = null;
@@ -60,6 +61,17 @@ let Game = cc.Class({
         G.NetManager.unProto( this, Protocol.Create.cmd );
         // 释放 加入 网络
         G.NetManager.unProto( this, Protocol.Join.cmd );
+        // 释放 通知加入房间
+        G.NetManager.unProto( this, Protocol.NoticeJoin.cmd );
+        // 释放 退出房间 网络
+        G.NetManager.unProto( this, Protocol.Exit.cmd );
+        // 释放 通知退出房间
+        G.NetManager.unProto( this, Protocol.NoticeExit.cmd );
+        // 释放 解散房间
+        G.NetManager.unProto( this, Protocol.Disband.cmd );
+        // 释放 通知解散房间
+        G.NetManager.unProto( this, Protocol.NoticeDisband.cmd );
+
     },
 
     /**
@@ -78,10 +90,6 @@ let Game = cc.Class({
      * 初始化数据
      */
     initData() {
-        // 未完成 游戏ID
-        this.m_nUndoneGameId = null;
-        // 未完成 模式ID
-        this.m_nUndoneModeId = null;
         // 未完成 房间ID
         this.m_strUndoneRoomId = null;
     },
@@ -96,6 +104,16 @@ let Game = cc.Class({
         G.NetManager.addProto( this, Protocol.Create.cmd );
         // 添加 加入 网络
         G.NetManager.addProto( this, Protocol.Join.cmd );
+        // 添加 通知加入房间
+        G.NetManager.addProto( this, Protocol.NoticeJoin.cmd );
+        // 添加 退出房间 网络
+        G.NetManager.addProto( this, Protocol.Exit.cmd );
+        // 添加 通知退出房间
+        G.NetManager.addProto( this, Protocol.NoticeExit.cmd );
+        // 添加 解散房间
+        G.NetManager.addProto( this, Protocol.Disband.cmd );
+        // 添加 通知解散房间
+        G.NetManager.addProto( this, Protocol.NoticeDisband.cmd );
     },
 
     /**
@@ -110,43 +128,11 @@ let Game = cc.Class({
     },
 
     /**
-     * 设置未完成的游戏ID
-     * @param id {number} 游戏ID
-     */
-    setUndoneGameId( id ) {
-        this.m_nUndoneGameId = id;
-    },
-
-    /**
-     * 设置未完成的游戏ID
-     * @param id {number} 模式ID
-     */
-    setUndoneModeId( id ) {
-        this.m_nUndoneModeId = id;
-    },
-
-    /**
      * 设置未完成的房间ID
      * @param id {string} 房间ID
      */
     setUndoneRoomId( id ) {
-        this.m_nUndoneRoomId = id;
-    },
-
-    /**
-     * 获取未完成的游戏ID
-     * @return {number}
-     */
-    getUndoneModeId() {
-        return this.m_nUndoneGameId;
-    },
-
-    /**
-     * 获取未完成的模式ID
-     * @return {number}
-     */
-    getUndoneModeId() {
-        return this.m_nUndoneModeId;
+        this.m_strUndoneRoomId = id;
     },
 
     /**
@@ -154,7 +140,7 @@ let Game = cc.Class({
      * @return {string}
      */
     getUndoneRoomId() {
-        return this.m_nUndoneRoomId;
+        return this.m_strUndoneRoomId;
     },
 
     /**
@@ -163,7 +149,7 @@ let Game = cc.Class({
      */
     onNetLogin( data ) {
         if( data.code >= 0 ) {
-            Utils.isNull( data.userInfo ) || G.DataManager.getData( "DataUser" ).setUserInfo( data.userInfo );
+            Utils.isNull( data.userInfo ) || G.DataManager.getData( ConfData.UserData ).setUserInfo( data.userInfo );
             G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_FAILED, data );
@@ -188,13 +174,61 @@ let Game = cc.Class({
      */
     onNetJoin( data ) {
         if( data.code >= 0 ) {
-            Utils.isNull( data.roomInfo ) || G.DataManager.getData( "DataRoom" ).setRoomInfo( data.roomInfo );
-            Utils.isNull( data.deskInfo ) || G.DataManager.getData( "DataDesk" ).setDeskInfo( data.deskInfo );
-            Utils.isNull( data.playerInfo ) || G.DataManager.getData( "DeskPlayer" ).setPlayerInfo( data.playerInfo );
+            Utils.isNull( data.roomInfo ) || G.DataManager.getData( ConfData.RoomData ).setRoomInfo( data.roomInfo );
+            Utils.isNull( data.deskInfo ) || G.DataManager.getData( ConfData.DeskData ).setDeskInfo( data.deskInfo );
+            Utils.isNull( data.playerInfo ) || G.DataManager.getData( ConfData.DeskPlayer ).setPlayerInfo( data.playerInfo );
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_FAILED, data );
         }
+    },
+
+    /**
+     * 通知加入 网络回调
+     * @param data {object} 通知加入数据
+     */
+    onNetNoticeJoin( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_JOIN, data );
+    },
+
+    /**
+     * 退出 网络回调
+     * @param data {object} 退出数据
+     */
+    onNetExit( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_EXIT_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_EXIT_FAILED, data );
+        }
+    },
+
+    /**
+     * 通知退出 网络回调
+     * @param data {object} 通知退出数据
+     */
+    onNetNoticeExit( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_EXIT, data );
+    },
+
+    /**
+     * 解散 网络回调
+     * @param data {object} 解散数据
+     */
+    onNetDisband( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_DISBAND_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_DISBAND_FAILED, data );
+        }
+    },
+
+    /**
+     * 通知解散 网络回调
+     * @param data {object} 通知解散数据
+     */
+    onNetNoticeDisband( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_DISBAND, data );
     },
 
     /**
@@ -212,6 +246,22 @@ let Game = cc.Class({
             case Protocol.Join.cmd:
                 this.onNetJoin( msg.data );
                 break;
+            case Protocol.NoticeJoin.cmd:
+                this.onNetNoticeJoin( msg.data );
+                break;
+            case Protocol.Exit.cmd:
+                this.onNetExit( msg.data );
+                break;
+            case Protocol.NoticeExit.cmd:
+                this.onNetNoticeExit( msg.data );
+                break;
+            case Protocol.Disband.cmd:
+                this.onNetDisband( msg.data );
+                break;
+            case Protocol.NoticeDisband.cmd:
+                this.onNetNoticeDisband( msg.data );
+                break;
+
         }
     },
 });
