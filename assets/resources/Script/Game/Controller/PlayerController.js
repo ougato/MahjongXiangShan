@@ -29,8 +29,8 @@ let PlayerController = cc.Class({
      * 加入
      */
     join( seat ) {
-        this.m_objPlayerData.join( seat );
-        this.m_objPlayerView.join( seat );
+        this.m_objPlayerData.join( seat, data );
+        this.m_objPlayerView.join( seat, data );
     },
 
     /**

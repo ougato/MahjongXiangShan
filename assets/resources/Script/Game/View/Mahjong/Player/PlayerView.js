@@ -8,6 +8,7 @@
  */
 
 let UIBase = require( "UIBase" );
+let Utils = require( "Utils" );
 
 cc.Class({
     extends: UIBase,
@@ -43,9 +44,9 @@ cc.Class({
      */
     initData() {
         // 玩家视图数组
-        this.m_arrPlayer = [];
+        this.m_arrScriptPlayer = [];
         for( let i = 0; i < this.nodePlayer.length; ++i ) {
-            this.m_arrPlayer[i] = this.nodePlayer[i].getComponent( "Player_" + i );
+            this.m_arrScriptPlayer[i] = this.nodePlayer[i].getComponent( "Player_" + i );
         }
 
     },
@@ -54,7 +55,7 @@ cc.Class({
      * 初始化视图
      */
     initView() {
-
+        this.clear();
     },
 
     /**
@@ -66,32 +67,27 @@ cc.Class({
 
     /**
      * 加入游戏
-     * @param seat
+     * @param seat {number} 座位号
+     * @param data {object} 玩家数据
      */
-    join( seat ) {
-        // TODO: 需要转换下 服务器座位号 到 本地座位号
-
+    join( seat, data ) {
+        this.m_arrScriptPlayer[seat].join( data );
     },
 
     /**
      * 退出游戏
+     * @param seat {number} 座位号
      */
     exit( seat ) {
-        // TODO: 需要转换下 服务器座位号 到 本地座位号
-        this.clear( seat );
+        this.m_arrScriptPlayer[seat].exit();
     },
 
     /**
-     *
+     * 清理所有玩家
      */
-    clear( seat ) {
-        // TODO: 需要转换下 服务器座位号 到 本地座位号
-        if( Utils.isNull( seat ) ) {
-            for( let i = 0; i < this.m_arrPlayer.length; ++i ) {
-                this.m_arrPlayer[i].clear();
-            }
-        } else {
-            this.m_arrPlayer[seat].clear();
+    clear() {
+        for( let i = 0; i < this.m_arrScriptPlayer.length; ++i ) {
+            this.m_arrScriptPlayer[i].clear();
         }
     },
 

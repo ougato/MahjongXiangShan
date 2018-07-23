@@ -272,7 +272,6 @@ let NetManager = cc.Class({
 
     },
 
-
     /**
      * 添加 网络协议
      * @param script {object} 脚本

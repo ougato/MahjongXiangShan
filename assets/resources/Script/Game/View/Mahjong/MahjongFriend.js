@@ -90,6 +90,17 @@ cc.Class({
     },
 
     /**
+     * 转换 服务器座位号 到 客户端座位号
+     * @param serverSeat {number} 服务器座位号
+     * @return {number} 客户端座位号
+     */
+    transSeat( serverSeat ) {
+        let clientSeat = serverSeat;
+
+        return clientSeat;
+    },
+
+    /**
      * 退出
      */
     exitRoom() {
@@ -136,6 +147,14 @@ cc.Class({
     },
 
     /**
+     * 加入房间 通知
+     * @param data
+     */
+    onEventNoticeJoin( data ) {
+        this.m_objPlayerController.join( this.transSeat( data.seat ), data );
+    },
+
+    /**
      * 退出房间 成功
      * @param data
      */
@@ -152,11 +171,11 @@ cc.Class({
     },
 
     /**
-     * 通知退出房间
+     * 退出房间 通知
      * @param data
      */
     onEventNoticeExit( data ) {
-        this.m_objPlayerController.exit( data.seat );
+        this.m_objPlayerController.exit( this.transSeat( data.seat ) );
     },
 
     /**
@@ -176,7 +195,7 @@ cc.Class({
     },
 
     /**
-     * 通知解散房间 成功
+     * 解散房间 通知
      * @param data
      */
     onEventNoticeDisband( data ) {
@@ -189,6 +208,9 @@ cc.Class({
      */
     onEvent( msg ) {
         switch( msg.id ) {
+            case ConfEvent.EVENT_NOTICE_JOIN:
+                this.onEventNoticeJoin( msg.data );
+                break;
             case ConfEvent.EVENT_EXIT_SUCCEED:
                 this.onEventExitSucceed( msg.data );
                 break;

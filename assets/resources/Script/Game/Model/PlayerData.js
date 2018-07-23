@@ -53,7 +53,8 @@ let PlayerData = cc.Class({
      * 销毁
      */
     destroy() {
-
+        this.m_mapPlayerInfo.clear();
+        this.m_mapPlayerInfo = null;
     },
 
     /**
@@ -86,10 +87,11 @@ let PlayerData = cc.Class({
 
     /**
      * 加入玩家
+     * @param seat {number} 座位号
      * @param data {object} 玩家信息
      */
-    join( data ) {
-        this.m_mapPlayerInfo.set( data.seat, data );
+    join( seat, data ) {
+        this.m_mapPlayerInfo.set( seat, data );
     },
 
     /**
@@ -105,7 +107,6 @@ let PlayerData = cc.Class({
      */
     clear() {
         this.m_mapPlayerInfo.clear();
-        this.m_mapPlayerInfo = null;
     },
 
 });

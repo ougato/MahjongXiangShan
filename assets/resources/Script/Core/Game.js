@@ -176,7 +176,7 @@ let Game = cc.Class({
         if( data.code >= 0 ) {
             Utils.isNull( data.roomInfo ) || G.DataManager.getData( ConfData.RoomData ).setRoomInfo( data.roomInfo );
             Utils.isNull( data.deskInfo ) || G.DataManager.getData( ConfData.DeskData ).setDeskInfo( data.deskInfo );
-            Utils.isNull( data.playerInfo ) || G.DataManager.getData( ConfData.DeskPlayer ).setPlayerInfo( data.playerInfo );
+            Utils.isNull( data.playerInfo ) || G.DataManager.getData( ConfData.PlayerData ).setPlayerInfo( data.playerInfo );
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_FAILED, data );
