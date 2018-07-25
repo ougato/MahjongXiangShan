@@ -140,6 +140,14 @@ let Game = cc.Class({
     },
 
     /**
+     * 获取本机时间
+     */
+    getDate() {
+        let date = new Date();
+        return Utils.pad( date.getHours(), 2 ) + ":" + Utils.pad( date.getMinutes(), 2 );
+    },
+
+    /**
      * 登录 网络回调
      * @param data {object} 登录数据
      */

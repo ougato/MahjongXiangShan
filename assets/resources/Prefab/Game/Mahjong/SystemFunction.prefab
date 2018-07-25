@@ -10,7 +10,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "SystemInfo",
+    "_name": "SystemFunction",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -29,10 +29,13 @@
     "_components": [
       {
         "__id__": 25
+      },
+      {
+        "__id__": 26
       }
     ],
     "_prefab": {
-      "__id__": 26
+      "__id__": 27
     },
     "_id": "",
     "_opacity": 255,
@@ -220,7 +223,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "68Qw2g+l9KFrTik8iMvIz7",
     "sync": false
@@ -311,7 +314,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "0corx6kxhBX4Zl6OSM/WAk",
     "sync": false
@@ -402,7 +405,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "eb3hknr4BNtLij0tT+HNyv",
     "sync": false
@@ -439,7 +442,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "b1afEsyBtCOoTtmu901EIu",
     "sync": false
@@ -546,7 +549,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "c8qYsUhatI8bvj7RZhJr1N",
     "sync": false
@@ -711,7 +714,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "54xKrO4YND6risHwubfDHW",
     "sync": false
@@ -748,10 +751,28 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "9budRk1+tAxYN6R8BooniR",
     "sync": false
+  },
+  {
+    "__type__": "b48b9z73lpLFKFU73EMGvV7",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "nodeRoot": null,
+    "spriteWiFi": null,
+    "sprite2G": null,
+    "sprite3G": null,
+    "sprite4G": null,
+    "spriteUnknown": null,
+    "spriteNone": null,
+    "labelTime": null,
+    "labelRemainCard": null
   },
   {
     "__type__": "cc.Sprite",
@@ -785,7 +806,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "bb81c6c6-9ce2-4ee0-9b01-7127ec9f39d4"
     },
     "fileId": "03yiZM7oRICLFjnFnDDM7m",
     "sync": false

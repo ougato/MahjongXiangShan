@@ -87,13 +87,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 992
-      },
-      {
         "__id__": 993
       },
       {
         "__id__": 994
+      },
+      {
+        "__id__": 995
       }
     ],
     "_prefab": null,
@@ -33821,7 +33821,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "SystemInfo",
+    "_name": "SystemFunction",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -33842,10 +33842,13 @@
     "_components": [
       {
         "__id__": 990
+      },
+      {
+        "__id__": 991
       }
     ],
     "_prefab": {
-      "__id__": 991
+      "__id__": 992
     },
     "_id": "03yiZM7oRICLFjnFnDDM7m",
     "_opacity": 255,
@@ -34032,9 +34035,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "68Qw2g+l9KFrTik8iMvIz7",
     "sync": false
   },
@@ -34123,9 +34124,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "0corx6kxhBX4Zl6OSM/WAk",
     "sync": false
   },
@@ -34214,9 +34213,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "eb3hknr4BNtLij0tT+HNyv",
     "sync": false
   },
@@ -34251,9 +34248,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "b1afEsyBtCOoTtmu901EIu",
     "sync": false
   },
@@ -34358,9 +34353,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "c8qYsUhatI8bvj7RZhJr1N",
     "sync": false
   },
@@ -34523,9 +34516,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "54xKrO4YND6risHwubfDHW",
     "sync": false
   },
@@ -34560,11 +34551,27 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "9budRk1+tAxYN6R8BooniR",
     "sync": false
+  },
+  {
+    "__type__": "b48b9z73lpLFKFU73EMGvV7",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 966
+    },
+    "_enabled": true,
+    "nodeRoot": null,
+    "spriteWiFi": null,
+    "sprite2G": null,
+    "sprite3G": null,
+    "sprite4G": null,
+    "spriteUnknown": null,
+    "spriteNone": null,
+    "labelTime": null,
+    "labelRemainCard": null
   },
   {
     "__type__": "cc.Sprite",
@@ -34597,9 +34604,7 @@
     "root": {
       "__id__": 966
     },
-    "asset": {
-      "__uuid__": "7c33668f-f10f-44ad-a754-63610a2e9ee1"
-    },
+    "asset": null,
     "fileId": "03yiZM7oRICLFjnFnDDM7m",
     "sync": false
   },
@@ -34627,9 +34632,7 @@
       "__id__": 2
     },
     "_enabled": true,
-    "nodeSystemInfo": {
-      "__id__": 966
-    },
+    "nodeSystemFunction": null,
     "nodePlayer": {
       "__id__": 41
     },

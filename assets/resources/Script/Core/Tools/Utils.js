@@ -207,6 +207,25 @@ let Utils = {
         return v;
     },
 
+    /**
+     * 字符串补0
+     * @param value {string|number} 字符串或者数字
+     * @param len {number} 长度
+     * @return {string} 完整字符串
+     */
+    pad( value, len ) {
+        if( this.isNumber( value ) ) {
+            value = value.toString();
+        }
+        if( this.isString( value ) ) {
+            for( let i = len; i < value.length; ++i ) {
+                value = "0" + value;
+            }
+        }
+        return value;
+    },
+
+
 };
 
 module.exports = Utils;

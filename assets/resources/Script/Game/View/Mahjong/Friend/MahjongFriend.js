@@ -21,7 +21,7 @@ cc.Class({
     extends: UIBase,
 
     properties: {
-        nodeSystemInfo: { default: null, type: cc.Node, tooltip: "系统信息" },
+        nodeSystemFunction: { default: null, type: cc.Node, tooltip: "系统信息" },
         nodePlayer: { default: null, type: cc.Node, tooltip: "玩家集合" },
         labelRoomId: { default: null, type: cc.Label, tooltip: "房间号" },
         nodeMenuItemMask: { default: null, type: cc.Node, tooltip: "菜单项遮罩节点" },

@@ -8,9 +8,9 @@
  */
 
 // 远程测试
-// const HOST = "http://47.106.125.21:9999";
+const HOST = "http://47.106.125.21:9999";
 // 本地测试
-const HOST = "http://192.168.1.119:9999";
+// const HOST = "http://192.168.1.119:9999";
 
 const ConfUrl = {
     GET_TOKEN_MOBILE: HOST + "/api/WeiXin/GetSession_key/{0}",
