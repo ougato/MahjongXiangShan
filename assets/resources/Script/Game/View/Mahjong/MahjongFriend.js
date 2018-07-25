@@ -23,6 +23,8 @@ cc.Class({
     properties: {
         nodeSystemInfo: { default: null, type: cc.Node, tooltip: "系统信息" },
         nodePlayer: { default: null, type: cc.Node, tooltip: "玩家集合" },
+        labelRoomId: { default: null, type: cc.Label, tooltip: "房间号" },
+        nodeMenuItemMask: { default: null, type: cc.Node, tooltip: "菜单项遮罩节点" },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -67,13 +69,18 @@ cc.Class({
     initData() {
         // 玩家控制器
         this.m_objPlayerController = new PlayerController( G.DataManager.getData( ConfData.PlayerData ), this.nodePlayer.getComponent( "PlayerView" ) );
+        // 房间数据
+        this.m_objRoomData = G.DataManager.getData( ConfData.RoomData );
+        // 菜单项开关
+        this.m_bMenuSW = false;
     },
 
     /**
      * 初始化视图
      */
     initView() {
-
+        this.labelRoomId.string = G.I18N.get( 35 ) + this.m_objRoomData.getRoomId();
+        this.nodeMenuItemMask.active = false;
     },
 
     /**
@@ -90,17 +97,6 @@ cc.Class({
     },
 
     /**
-     * 转换 服务器座位号 到 客户端座位号
-     * @param serverSeat {number} 服务器座位号
-     * @return {number} 客户端座位号
-     */
-    transSeat( serverSeat ) {
-        let clientSeat = serverSeat;
-
-        return clientSeat;
-    },
-
-    /**
      * 退出
      */
     exitRoom() {
@@ -111,14 +107,28 @@ cc.Class({
     /**
      * 解散房间
      */
-    disbankRoom() {
+    disbandRoom() {
         let message = Protocol.getC2S( Protocol.Disband );
         message.data.isAgree = true;
         G.NetManager.send( message.cmd, message.data );
     },
 
     /**
-     * 返回
+     * 隐藏菜单项
+     */
+    hideMenuItem() {
+        this.nodeMenuItemMask.active = false;
+    },
+
+    /**
+     * 显示菜单项
+     */
+    showMenuItem() {
+        this.nodeMenuItemMask.active = true;
+    },
+
+    /**
+     * 返回 按钮回调
      */
     onGoBack() {
         let dataRoom = G.DataManager.getData( ConfData.RoomData );
@@ -131,7 +141,7 @@ cc.Class({
             callback = this.exitRoom;
         } else if( state === ConfGame.RoomState.Playing || state === ConfGame.RoomState.Closing ) {
             text = G.I18N.get( 33 );
-            callback = this.disbankRoom;
+            callback = this.disbandRoom;
         }
 
         let ids = {};
@@ -147,11 +157,23 @@ cc.Class({
     },
 
     /**
+     * 菜单 按钮回调
+     */
+    onMenu() {
+        if( this.m_bMenuSW ) {
+            this.hideMenuItem();
+        } else {
+            this.showMenuItem();
+        }
+        this.m_bMenuSW = !this.m_bMenuSW;
+    },
+
+    /**
      * 加入房间 通知
      * @param data
      */
     onEventNoticeJoin( data ) {
-        this.m_objPlayerController.join( this.transSeat( data.seat ), data );
+        this.m_objPlayerController.join( G.Game.transSeat( data.seat ), data );
     },
 
     /**
@@ -174,8 +196,8 @@ cc.Class({
      * 退出房间 通知
      * @param data
      */
-    onEventNoticeExit( data ) {
-        this.m_objPlayerController.exit( this.transSeat( data.seat ) );
+    onEventBroadcastExit( data ) {
+        this.m_objPlayerController.exit( G.Game.transSeat( data.seat ) );
     },
 
     /**
@@ -198,7 +220,7 @@ cc.Class({
      * 解散房间 通知
      * @param data
      */
-    onEventNoticeDisband( data ) {
+    onEventBroadcastDisband( data ) {
 
     },
 
@@ -218,7 +240,7 @@ cc.Class({
                 this.onEventExitFailed( msg.data );
                 break;
             case ConfEvent.EVENT_NOTICE_EXIT:
-                this.onEventNoticeExit( msg.data );
+                this.onEventBroadcastExit( msg.data );
                 break;
             case ConfEvent.EVENT_DISBAND_SUCCEED:
                 this.onEventDisbandSucceed( msg.data );
@@ -227,10 +249,9 @@ cc.Class({
                 this.onEventDisbandFailed( msg.data );
                 break;
             case ConfEvent.EVENT_NOTICE_DISBAND:
-                this.onEventNoticeDisband( msg.data );
+                this.onEventBroadcastDisband( msg.data );
                 break;
         }
-
     },
 
     // update (dt) {},

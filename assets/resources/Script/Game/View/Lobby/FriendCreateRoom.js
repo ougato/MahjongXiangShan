@@ -66,7 +66,8 @@ cc.Class({
      * 初始化数据
      */
     initData() {
-
+        // 房间人数
+        this.m_nPlayerNum = 4;
     },
 
     /**
@@ -97,7 +98,12 @@ cc.Class({
      * 创建房间
      */
     onCreateRoom() {
+        let ruleInfo = Protocol.getStruct( Protocol.RuleInfo );
+        ruleInfo.playerNum = this.m_nPlayerNum;
+
         let message = Protocol.getC2S( Protocol.Create );
+        message.data.ruleInfo = ruleInfo;
+
         G.NetManager.send( message.cmd, message.data );
     },
 

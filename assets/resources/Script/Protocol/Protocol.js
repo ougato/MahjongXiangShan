@@ -1,11 +1,13 @@
 
 //
-// 注：预留001-100之间消息协议
-// 号、供服务器内部处理。
+// 注：预留001-100之间消息协议号、供服务器内部处理。
 //
 // Copyright (c) 2018-03
-// 
 //
+// 说明：
+// Notice 通知协议（其他玩家可收到，自己无法收到此协议）
+// Push 推送协议（只有自己能收到此协议）
+// Broadcast 广播协议（所有房间内玩家均可收到此协议）
 
 let Protocol = {};
 
@@ -123,7 +125,7 @@ Protocol.ActionInfo = {
 
 // 规则信息
 Protocol.RuleInfo = {
-
+    playerNum: 0, // 玩家数量
 };
 
 // 玩家状态
@@ -189,7 +191,6 @@ Protocol.Login = {
     response: {
         code: "", // 返回码
         userInfo: Protocol.getStruct( Protocol.UserInfo ), // 个人信息
-        roomId: "", // 房间号
     },
 };
 
@@ -232,10 +233,10 @@ Protocol.UnMatch = {
 Protocol.Create = {
     cmd: 301,
     request: {
-
+        ruleInfo: Protocol.getStruct( Protocol.RuleInfo ),
     },
     response: {
-        code: "", // 返回码
+        code: 0, // 返回码
         roomId: "", // 房间号
     },
 };
@@ -260,9 +261,17 @@ Protocol.NoticeJoin = {
     },
 };
 
+// 推送加入房间
+Protocol.PushJoin = {
+    cmd: 304,
+    response: {
+        roomId: "", // 房间号
+    }
+};
+
 // 退出房间
 Protocol.Exit = {
-    cmd: 304,
+    cmd: 305,
     request: {
 
     },
@@ -271,9 +280,9 @@ Protocol.Exit = {
     },
 };
 
-// 通知退出房间
-Protocol.NoticeExit = {
-    cmd: 305,
+// 广播退出房间
+Protocol.BroadcastExit = {
+    cmd: 306,
     response: {
         seat: 0, // 座位号
     },
@@ -281,7 +290,7 @@ Protocol.NoticeExit = {
 
 // 解散房间
 Protocol.Disband = {
-    cmd: 306,
+    cmd: 307,
     request: {
         isAgree: false, // 是否同意
     },
@@ -290,12 +299,13 @@ Protocol.Disband = {
     },
 };
 
-// 通知解散房间
-Protocol.NoticeDisband = {
-    cmd: 307,
+// 广播解散房间
+Protocol.BroadcastDisband = {
+    cmd: 308,
     response: {
         seat: 0, // 座位号
         isAgree: false, // 是否同意
+        isDisband: false, // 是否解散
     },
 };
 
@@ -323,16 +333,16 @@ Protocol.UnReady = {
     },
 };
 
-// 通知开始准备
-Protocol.NoticeReady = {
+// 广播开始准备
+Protocol.BroadcastReady = {
     cmd: 1003,
     response: {
         seat: 0, // 座位号
     },
 };
 
-// 通知取消准备
-Protocol.NoticeUnReady = {
+// 广播取消准备
+Protocol.BroadcastUnReady = {
     cmd: 1004,
     response: {
         seat: 0, // 座位号
@@ -383,6 +393,10 @@ Protocol.TipAction = {
 Protocol.Action = {
     cmd: 1010,
     request: {
+        type: Protocol.getStruct( Protocol.ActionInfo ), // 动作信息
+        card: 0, // 当type==0时， card不为空，其它情况 card为空
+    },
+    response: {
         type: Protocol.getStruct( Protocol.ActionInfo ), // 动作信息
         card: 0, // 当type==0时， card不为空，其它情况 card为空
     },

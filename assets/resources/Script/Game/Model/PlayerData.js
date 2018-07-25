@@ -59,21 +59,19 @@ let PlayerData = cc.Class({
 
     /**
      * 设置玩家信息
+     * @param seat {number} 客户端座位号
      * @param data {array} 玩家信息
      */
-    setPlayerInfo( data ) {
-        for( let i = 0; i < data.length; ++i ) {
-            let playerInfo = data[i];
-            this.m_mapPlayerInfo.set( playerInfo.seat, playerInfo );
-        }
+    setPlayerData( seat, data ) {
+        this.m_mapPlayerInfo.set( seat, data );
     },
 
     /**
      * 获取玩家信息
-     * @param seat {number} [座位号]
+     * @param seat {number} [客户端座位号]
      * @return {*}
      */
-    getPlayerInfo( seat ) {
+    getPlayerData( seat ) {
         if( Utils.isNull( seat ) ) {
             return this.m_mapPlayerInfo;
         } else {
@@ -87,7 +85,7 @@ let PlayerData = cc.Class({
 
     /**
      * 加入玩家
-     * @param seat {number} 座位号
+     * @param seat {number} 客户端座位号
      * @param data {object} 玩家信息
      */
     join( seat, data ) {
@@ -96,7 +94,7 @@ let PlayerData = cc.Class({
 
     /**
      * 退出玩家
-     * @param seat {number} 座位号
+     * @param seat {number} 客户端座位号
      */
     exit( seat ) {
         this.m_mapPlayerInfo.delete( seat );

@@ -45,6 +45,8 @@ let UserData = cc.Class({
      * 构造
      */
     ctor() {
+        // 用户ID
+        this.m_nUserId = null;
         // 名字
         this.m_strName = null;
         // 性别
@@ -70,12 +72,30 @@ let UserData = cc.Class({
      * @param userInfo {object} 用户信息
      */
     setUserInfo( userInfo ) {
+        this.m_nUserId = Utils.isNull( userInfo.userId ) ? "" : userInfo.userId;
         this.m_strName = Utils.isNull( userInfo.name ) ? "?" : userInfo.name;
         this.m_nSex = Utils.isNull( userInfo.sex ) ? 1 : userInfo.sex;
         this.m_strPictureUrl = Utils.isNull( userInfo.pictureUrl ) ? "" : userInfo.pictureUrl;
         this.m_nGold = Utils.isNull( userInfo.gold ) ? 0 : userInfo.gold;
         this.m_nDiamond = Utils.isNull( userInfo.diamond ) ? 0 : userInfo.diamond;
     },
+
+    /**
+     * 设置ID
+     * @param id {string} ID
+     */
+    setUserId( id ) {
+        this.m_nUserId = id;
+    },
+
+    /**
+     * 获取ID
+     * @return {number} ID
+     */
+    getUserId() {
+        return this.m_nUserId;
+    },
+
 
     /**
      * 设置名字

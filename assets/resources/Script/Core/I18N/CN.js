@@ -43,6 +43,7 @@ const language = {
     32: "是否退出房间",
     33: "正在游戏中，是否解散房间",
     34: "退出房间失败",
+    35: "房间号:"
 };
 
 module.exports = language;

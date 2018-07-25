@@ -27,14 +27,17 @@ let PlayerController = cc.Class({
 
     /**
      * 加入
+     * @param seat {number} 座位号
+     * @param data {object} 玩家数据
      */
-    join( seat ) {
+    join( seat, data ) {
         this.m_objPlayerData.join( seat, data );
         this.m_objPlayerView.join( seat, data );
     },
 
     /**
      * 退出
+     * @param seat {number} 座位号
      */
     exit( seat ) {
         this.m_objPlayerData.exit( seat );

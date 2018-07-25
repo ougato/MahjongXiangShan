@@ -65,12 +65,12 @@ let Game = cc.Class({
         G.NetManager.unProto( this, Protocol.NoticeJoin.cmd );
         // 释放 退出房间 网络
         G.NetManager.unProto( this, Protocol.Exit.cmd );
-        // 释放 通知退出房间
-        G.NetManager.unProto( this, Protocol.NoticeExit.cmd );
+        // 释放 广播退出房间
+        G.NetManager.unProto( this, Protocol.BroadcastExit.cmd );
         // 释放 解散房间
         G.NetManager.unProto( this, Protocol.Disband.cmd );
         // 释放 通知解散房间
-        G.NetManager.unProto( this, Protocol.NoticeDisband.cmd );
+        G.NetManager.unProto( this, Protocol.BroadcastDisband.cmd );
 
     },
 
@@ -109,11 +109,11 @@ let Game = cc.Class({
         // 添加 退出房间 网络
         G.NetManager.addProto( this, Protocol.Exit.cmd );
         // 添加 通知退出房间
-        G.NetManager.addProto( this, Protocol.NoticeExit.cmd );
+        G.NetManager.addProto( this, Protocol.BroadcastExit.cmd );
         // 添加 解散房间
         G.NetManager.addProto( this, Protocol.Disband.cmd );
         // 添加 通知解散房间
-        G.NetManager.addProto( this, Protocol.NoticeDisband.cmd );
+        G.NetManager.addProto( this, Protocol.BroadcastDisband.cmd );
     },
 
     /**
@@ -128,19 +128,15 @@ let Game = cc.Class({
     },
 
     /**
-     * 设置未完成的房间ID
-     * @param id {string} 房间ID
+     * 转换 服务器座位号 到 客户端座位号
+     * @param serverSeat {number} 服务器座位号
+     * @return {number} 客户端座位号
      */
-    setUndoneRoomId( id ) {
-        this.m_strUndoneRoomId = id;
-    },
-
-    /**
-     * 获取未完成的房间ID
-     * @return {string}
-     */
-    getUndoneRoomId() {
-        return this.m_strUndoneRoomId;
+    transSeat( serverSeat ) {
+        let roomData = G.DataManager.getData( ConfData.RoomData );
+        let maxPlayer = roomData.getRuleInfo().playerNum;
+        let selfSeat = roomData.getSelfSeat();
+        return ( ( ( maxPlayer - ( selfSeat ) + ( serverSeat ) ) % maxPlayer ) );
     },
 
     /**
@@ -174,9 +170,21 @@ let Game = cc.Class({
      */
     onNetJoin( data ) {
         if( data.code >= 0 ) {
-            Utils.isNull( data.roomInfo ) || G.DataManager.getData( ConfData.RoomData ).setRoomInfo( data.roomInfo );
-            Utils.isNull( data.deskInfo ) || G.DataManager.getData( ConfData.DeskData ).setDeskInfo( data.deskInfo );
-            Utils.isNull( data.playerInfo ) || G.DataManager.getData( ConfData.PlayerData ).setPlayerInfo( data.playerInfo );
+            let gameInfo = data.gameInfo;
+            Utils.isNull( gameInfo.roomInfo ) || G.DataManager.getData( ConfData.RoomData ).setRoomInfo( gameInfo.roomInfo );
+            Utils.isNull( gameInfo.deskInfo ) || G.DataManager.getData( ConfData.DeskData ).setDeskInfo( gameInfo.deskInfo );
+            if( !Utils.isNull( gameInfo.playerInfo ) ) {
+                let playerInfo = gameInfo.playerInfo;
+                let playerData = G.DataManager.getData( ConfData.PlayerData );
+                let userData = G.DataManager.getData( ConfData.UserData );
+                let roomData = G.DataManager.getData( ConfData.RoomData );
+                for( let i = 0; i < playerInfo.length; ++i ) {
+                    playerData.setPlayerData( this.transSeat( playerInfo[i].seat ), playerInfo[i] );
+                    if( playerInfo[i].userInfo.userId === userData.getUserId() ) {
+                        roomData.setSelfSeat( playerInfo[i].seat );
+                    }
+                }
+            }
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_FAILED, data );
@@ -207,7 +215,7 @@ let Game = cc.Class({
      * 通知退出 网络回调
      * @param data {object} 通知退出数据
      */
-    onNetNoticeExit( data ) {
+    onNetBroadcastExit( data ) {
         G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_EXIT, data );
     },
 
@@ -227,7 +235,7 @@ let Game = cc.Class({
      * 通知解散 网络回调
      * @param data {object} 通知解散数据
      */
-    onNetNoticeDisband( data ) {
+    onNetBroadcastDisband( data ) {
         G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_DISBAND, data );
     },
 
@@ -252,14 +260,14 @@ let Game = cc.Class({
             case Protocol.Exit.cmd:
                 this.onNetExit( msg.data );
                 break;
-            case Protocol.NoticeExit.cmd:
-                this.onNetNoticeExit( msg.data );
+            case Protocol.BroadcastExit.cmd:
+                this.onNetBroadcastExit( msg.data );
                 break;
             case Protocol.Disband.cmd:
                 this.onNetDisband( msg.data );
                 break;
-            case Protocol.NoticeDisband.cmd:
-                this.onNetNoticeDisband( msg.data );
+            case Protocol.BroadcastDisband.cmd:
+                this.onNetBroadcastDisband( msg.data );
                 break;
 
         }

@@ -8,6 +8,7 @@
  */
 
 let UIBase = require( "UIBase" );
+let ConfData = require( "ConfData" );
 let Utils = require( "Utils" );
 
 cc.Class({
@@ -55,7 +56,7 @@ cc.Class({
      * 初始化视图
      */
     initView() {
-        this.clear();
+
     },
 
     /**

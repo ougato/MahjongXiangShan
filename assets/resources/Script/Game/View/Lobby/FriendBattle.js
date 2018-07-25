@@ -47,6 +47,13 @@ cc.Class({
     },
 
     /**
+     * 销毁
+     */
+    onDestroy() {
+
+    },
+
+    /**
      * 初始化数据
      */
     initData() {
@@ -71,6 +78,7 @@ cc.Class({
      * 返回
      */
     onGoBack() {
+        // this.node.destroy();
         G.ViewManager.closePrefab( ConfView.Prefab.FriendBattle );
     },
 

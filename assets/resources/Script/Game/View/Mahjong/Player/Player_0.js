@@ -30,11 +30,40 @@ cc.Class({
         // },
     },
 
-    // LIFE-CYCLE CALLBACKS:
+    /**
+     * 初始化数据
+     */
+    initData() {
+        // 客户端座位号
+        this.m_nSeat = 0;
 
-    // onLoad () {},
+        // 调用父类方法
+        this._super();
+    },
 
-    start () {
+    /**
+     * 初始化视图
+     */
+    initView() {
+
+        // 调用父类方法
+        this._super();
+    },
+
+    /**
+     * 注册
+     */
+    register() {
+
+        // 调用父类方法
+        this._super();
+    },
+
+    /**
+     * 初始化麻将牌
+     */
+    initCard() {
+        cc.log( "初始化麻将_0" );
 
     },
 

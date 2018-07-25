@@ -13,7 +13,6 @@ let Protocol = require( "Protocol" );
 let ConfEvent = require( "ConfEvent" );
 let ConfCode = require( "ConfCode" );
 let ConfGame = require( "ConfGame" );
-let Utils = require( "Utils" );
 
 cc.Class({
     extends: UIBase,
@@ -41,7 +40,10 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.NetManager.unProto( this, Protocol.Join.cmd );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
+
+        cc.systemEvent.off( cc.SystemEvent.EventType.KEY_DOWN );
     },
 
     /**
@@ -65,18 +67,13 @@ cc.Class({
     },
 
     /**
-     * 销毁
-     */
-    onDestroy() {
-        this.m_strRoomNum = "";
-        this.m_nIndex = 0;
-    },
-
-    /**
      * 注册
      */
     register() {
-        G.NetManager.addProto( this, Protocol.Join.cmd );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_FAILED );
+
+        cc.systemEvent.on( cc.SystemEvent.EventType.KEY_DOWN, this.onKey.bind( this ) );
     },
 
     /**
@@ -179,6 +176,50 @@ cc.Class({
                 break;
             case ConfEvent.EVENT_JOIN_FAILED:
                 this.onEventJoinFailed( msg.data );
+                break;
+        }
+    },
+
+    /**
+     * 键盘 回调
+     */
+    onKey( event ) {
+        switch( event.keyCode ) {
+            case cc.KEY.space:
+                this.clearRoomNum();
+                break;
+            case cc.KEY.backspace: case cc.KEY.Delete:
+                this.deleteLastRoomNum();
+                break;
+            case cc.KEY.num0: case cc.KEY["0"]:
+                this.inserRoomNum( "0" );
+                break;
+            case cc.KEY.num1: case cc.KEY["1"]:
+                this.inserRoomNum( "1" );
+                break;
+            case cc.KEY.num2: case cc.KEY["2"]:
+                this.inserRoomNum( "2" );
+                break;
+            case cc.KEY.num3: case cc.KEY["3"]:
+                this.inserRoomNum( "3" );
+                break;
+            case cc.KEY.num4: case cc.KEY["4"]:
+                this.inserRoomNum( "4" );
+                break;
+            case cc.KEY.num5: case cc.KEY["5"]:
+                this.inserRoomNum( "5" );
+                break;
+            case cc.KEY.num6: case cc.KEY["6"]:
+                this.inserRoomNum( "6" );
+                break;
+            case cc.KEY.num7: case cc.KEY["7"]:
+                this.inserRoomNum( "7" );
+                break;
+            case cc.KEY.num8: case cc.KEY["8"]:
+                this.inserRoomNum( "8" );
+                break;
+            case cc.KEY.num9: case cc.KEY["9"]:
+                this.inserRoomNum( "9" );
                 break;
         }
     },
