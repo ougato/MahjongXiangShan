@@ -21,13 +21,13 @@ let PlayerController = cc.Class({
      * 销毁
      */
     destroy() {
-        this.m_objPlayerData.clear();
-        this.m_objPlayerView.clear();
+        this.m_objPlayerData = null;
+        this.m_objPlayerView = null;
     },
 
     /**
      * 加入
-     * @param seat {number} 座位号
+     * @param seat {number} 客户端座位号
      * @param data {object} 玩家数据
      */
     join( seat, data ) {
@@ -37,11 +37,21 @@ let PlayerController = cc.Class({
 
     /**
      * 退出
-     * @param seat {number} 座位号
+     * @param seat {number} 客户端座位号
      */
     exit( seat ) {
         this.m_objPlayerData.exit( seat );
         this.m_objPlayerView.exit( seat );
+    },
+
+    /**
+     * 准备
+     * @param seat {number} 客户端座位号
+     * @param isReady {boolean} 是否准备
+     */
+    ready( seat, isReady ) {
+        this.m_objPlayerData.ready( seat, isReady );
+        this.m_objPlayerView.ready( seat, isReady );
     },
 
 });

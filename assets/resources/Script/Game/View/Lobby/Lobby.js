@@ -12,6 +12,11 @@ let ConfView = require( "ConfView" );
 let Log = require( "Log" );
 let Utils = require( "Utils" );
 let ConfData = require( "ConfData" );
+let ConfEvent = require( "ConfEvent" );
+let DefView = require( "DefView" );
+let Protocol = require( "Protocol" );
+let ConfGame = require( "ConfGame" );
+let ConfCode = require( "ConfCode" );
 
 cc.Class({
     extends: UIBase,
@@ -36,6 +41,16 @@ cc.Class({
         this.initData();
         this.initView();
         this.register();
+    },
+
+    /**
+     * 销毁
+     */
+    onDestroy() {
+        G.EventManager.unEvent( this, ConfEvent.EVENT_CREATE_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_PUSH_JOIN );
     },
 
     /**
@@ -64,7 +79,10 @@ cc.Class({
      * 注册
      */
     register() {
-
+        G.EventManager.addEvent( this, ConfEvent.EVENT_CREATE_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_PUSH_JOIN );
     },
 
     /**
@@ -174,6 +192,85 @@ cc.Class({
      */
     onMatchBattle() {
         G.ViewManager.openTips( G.I18N.get( 27 ) );
+    },
+
+    /**
+     * 创建 成功
+     * @param data {object} 数据
+     */
+    onEventCreateSucceed( data ) {
+        if( data.code < 0 ) {
+            Log.error( data.code );
+            return ;
+        }
+        let message = Protocol.getC2S( Protocol.Join );
+        message.data.roomId = data.roomId;
+        G.NetManager.send( message.cmd, message.data );
+    },
+
+    /**
+     * 加入 成功
+     * @param data {object} 数据
+     */
+    onEventJoinSucceed( data ) {
+        let modeId = data.gameInfo.roomInfo.modeId;
+        switch( modeId ) {
+            case ConfGame.ModeId.Friend:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend );
+                break;
+            case ConfGame.ModeId.Match:
+                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch );
+                break;
+        }
+    },
+
+    /**
+     * 加入 失败
+     * @param data {object} 数据
+     */
+    onEventJoinFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+    },
+
+    /**
+     * 推送加入事件 回调
+     */
+    onEventPushJoin( data ) {
+        G.ViewManager.closeAllPrefab();
+
+        let ids = {};
+        ids[DefView.DialogBoxIDs.IDOK] = function() {
+            let message = Protocol.getC2S( Protocol.Join );
+            message.data.roomId = data.roomId;
+            G.NetManager.send( message.cmd, message.data );
+            G.ViewManager.closeDialogBox();
+        }.bind( this );
+        ids[DefView.DialogBoxIDs.IDCANCEL] = function() {
+            G.ViewManager.closeDialogBox();
+        }.bind( this );
+
+        G.ViewManager.openDialogBox( G.I18N.get( 36 ), ids );
+    },
+
+    /**
+     * 事件 回调
+     * @param event
+     */
+    onEvent( event ) {
+        switch( event.id ) {
+            case ConfEvent.EVENT_CREATE_SUCCEED:
+                this.onEventCreateSucceed( event.data );
+                break;
+            case ConfEvent.EVENT_JOIN_SUCCEED:
+                this.onEventJoinSucceed( event.data );
+                break;
+            case ConfEvent.EVENT_JOIN_FAILED:
+                this.onEventJoinFailed( event.data );
+                break;
+            case ConfEvent.EVENT_PUSH_JOIN:
+                this.onEventPushJoin( event.data );
+                break;
+        }
     },
 
     // update (dt) {},

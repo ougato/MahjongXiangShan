@@ -16,6 +16,7 @@ let ConfView = require( "ConfView" );
 let ConfData = require( "ConfData" );
 let ConfCode = require( "ConfCode" );
 let PlayerController = require( "PlayerController" );
+let ConfNet = require( "ConfNet" );
 
 cc.Class({
     extends: UIBase,
@@ -25,12 +26,13 @@ cc.Class({
         nodePlayer: { default: null, type: cc.Node, tooltip: "玩家集合" },
         labelRoomId: { default: null, type: cc.Label, tooltip: "房间号" },
         nodeMenuItemMask: { default: null, type: cc.Node, tooltip: "菜单项遮罩节点" },
+        buttonReady: { default: null, type: cc.Button, tooltip: "准备" },
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     start () {
-
+        this.m_objScriptSystemFunction.setTime();
     },
 
     /**
@@ -49,24 +51,28 @@ cc.Class({
         G.EventManager.unEvent( this, ConfEvent.EVENT_NOTICE_JOIN );
         G.EventManager.unEvent( this, ConfEvent.EVENT_EXIT_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_EXIT_FAILED );
-        G.EventManager.unEvent( this, ConfEvent.EVENT_NOTICE_EXIT );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_EXIT );
         G.EventManager.unEvent( this, ConfEvent.EVENT_DISBAND_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_DISBAND_FAILED );
-        G.EventManager.unEvent( this, ConfEvent.EVENT_NOTICE_DISBAND );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DISBAND );
 
         // 清理游戏数据
         G.DataManager.clearData( ConfData.DeskData );
         G.DataManager.clearData( ConfData.PlayerData );
         G.DataManager.clearData( ConfData.RoomData );
 
-        // 释放控制器
-        this.m_objPlayerController.destroy();
+        this.m_objScriptSystemFunction = null;
+        this.m_objPlayerController = null;
+        this.m_objRoomData = null;
+        this.m_bMenuSW = null;
     },
 
     /**
      * 初始化数据
      */
     initData() {
+        // 系统功能脚本
+        this.m_objScriptSystemFunction = this.nodeSystemFunction.getComponent( "SystemFunction" );
         // 玩家控制器
         this.m_objPlayerController = new PlayerController( G.DataManager.getData( ConfData.PlayerData ), this.nodePlayer.getComponent( "PlayerView" ) );
         // 房间数据
@@ -90,10 +96,19 @@ cc.Class({
         G.EventManager.addEvent( this, ConfEvent.EVENT_NOTICE_JOIN );
         G.EventManager.addEvent( this, ConfEvent.EVENT_EXIT_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_EXIT_FAILED );
-        G.EventManager.addEvent( this, ConfEvent.EVENT_NOTICE_EXIT );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_EXIT );
         G.EventManager.addEvent( this, ConfEvent.EVENT_DISBAND_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_DISBAND_FAILED );
-        G.EventManager.addEvent( this, ConfEvent.EVENT_NOTICE_DISBAND );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DISBAND );
+    },
+
+    /**
+     * 是否自己座位号
+     * @param seat {number} 服务器座位号
+     * @return {boolean}
+     */
+    isSelfSeat( seat ) {
+        return G.DataManager.getData( ConfData.PlayerData ).getSelfSeat() === seat;
     },
 
     /**
@@ -152,8 +167,14 @@ cc.Class({
             callback();
             G.ViewManager.closeDialogBox();
         };
-
         G.ViewManager.openDialogBox( text, ids );
+    },
+
+    /**
+     * 帮助 按钮回调
+     */
+    onHelp() {
+        G.ViewManager.openTips( G.I18N.get( 27 ) );
     },
 
     /**
@@ -169,6 +190,42 @@ cc.Class({
     },
 
     /**
+     * 托管 按钮回调
+     */
+    onEntrust() {
+        G.ViewManager.openTips( G.I18N.get( 27 ) );
+    },
+
+    /**
+     * 设置  按钮回调
+     */
+    onSetting() {
+        G.ViewManager.openTips( G.I18N.get( 27 ) );
+    },
+
+    /**
+     * 消息 按钮回调
+     */
+    onMessage() {
+        G.ViewManager.openTips( G.I18N.get( 27 ) );
+    },
+
+    /**
+     * 提示 按钮回调
+     */
+    onHint() {
+        G.ViewManager.openTips( G.I18N.get( 27 ) );
+    },
+
+    /**
+     * 准备 按钮回调
+     */
+    onReady() {
+        let message = Protocol.getC2S( Protocol.BroadcastReady );
+        G.NetManager.send( message.cmd, message.data );
+    },
+
+    /**
      * 加入房间 通知
      * @param data
      */
@@ -181,7 +238,10 @@ cc.Class({
      * @param data
      */
     onEventExitSucceed( data ) {
-        G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+        // 等待服务器发送 广播 退出房间 消息
+        // 在这个回调方法内处理退出房间 动作
+        //
+        // onEventBroadcastExit
     },
 
     /**
@@ -193,11 +253,15 @@ cc.Class({
     },
 
     /**
-     * 退出房间 通知
+     * 退出房间 广播
      * @param data
      */
     onEventBroadcastExit( data ) {
-        this.m_objPlayerController.exit( G.Game.transSeat( data.seat ) );
+        if( this.isSelfSeat( data.seat ) ) {
+            G.ViewManager.replaceScene( ConfView.Scene.Lobby );
+        } else {
+            this.m_objPlayerController.exit( G.Game.transSeat( data.seat ) );
+        }
     },
 
     /**
@@ -217,7 +281,7 @@ cc.Class({
     },
 
     /**
-     * 解散房间 通知
+     * 解散房间 广播
      * @param data
      */
     onEventBroadcastDisband( data ) {
@@ -225,31 +289,70 @@ cc.Class({
     },
 
     /**
-     * 事件 回调
-     * @param msg
+     * 准备 成功
+     * @param data
      */
-    onEvent( msg ) {
-        switch( msg.id ) {
+    onEventReadySucceed( data ) {
+        // 等待服务器发送 广播 准备 消息
+        // 在这个回调方法内处理准备 动作
+        //
+        // onEventBroadcastReady
+    },
+
+    /**
+     * 准备 失败
+     * @param data
+     */
+    onEventReadyFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+    },
+
+    /**
+     * 准备 广播
+     * @param data
+     */
+    onEventBroadcastReady( data ) {
+        if( this.isSelfSeat( data.seat ) ) {
+            this.buttonReady.node.active = false;
+        }
+        this.m_objPlayerController.ready( G.Game.transSeat( data.seat ), true );
+    },
+
+    /**
+     * 事件 回调
+     * @param event
+     */
+    onEvent( event ) {
+        switch( event.id ) {
             case ConfEvent.EVENT_NOTICE_JOIN:
-                this.onEventNoticeJoin( msg.data );
+                this.onEventNoticeJoin( event.data );
                 break;
             case ConfEvent.EVENT_EXIT_SUCCEED:
-                this.onEventExitSucceed( msg.data );
+                this.onEventExitSucceed( event.data );
                 break;
             case ConfEvent.EVENT_EXIT_FAILED:
-                this.onEventExitFailed( msg.data );
+                this.onEventExitFailed( event.data );
                 break;
-            case ConfEvent.EVENT_NOTICE_EXIT:
-                this.onEventBroadcastExit( msg.data );
+            case ConfEvent.EVENT_BROADCAST_EXIT:
+                this.onEventBroadcastExit( event.data );
                 break;
             case ConfEvent.EVENT_DISBAND_SUCCEED:
-                this.onEventDisbandSucceed( msg.data );
+                this.onEventDisbandSucceed( event.data );
                 break;
             case ConfEvent.EVENT_DISBAND_FAILED:
-                this.onEventDisbandFailed( msg.data );
+                this.onEventDisbandFailed( event.data );
                 break;
-            case ConfEvent.EVENT_NOTICE_DISBAND:
-                this.onEventBroadcastDisband( msg.data );
+            case ConfEvent.EVENT_BROADCAST_DISBAND:
+                this.onEventBroadcastDisband( event.data );
+                break;
+            case ConfEvent.EVENT_READY_SUCCEED:
+                this.onEventReadySucceed( event.data );
+                break;
+            case ConfEvent.EVENT_READY_FAILED:
+                this.onEventReadyFailed( event.data );
+                break;
+            case ConfEvent.EVENT_BROADCAST_READY:
+                this.onEventBroadcastReady( event.data );
                 break;
         }
     },

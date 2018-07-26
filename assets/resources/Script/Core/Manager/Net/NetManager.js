@@ -148,7 +148,7 @@ let NetManager = cc.Class({
     /**
      * 是否通知ID
      */
-    isNoticeCmd( cmd ) {
+    isPassiveCmd( cmd ) {
         return cmd === Protocol.Ping.cmd || cmd === Protocol.Broadcast.cmd;
     },
 
@@ -185,7 +185,7 @@ let NetManager = cc.Class({
         Log.print( jsonData.data );
 
         // 消息队列移除 并 关闭菊花
-        if( !this.isNoticeCmd( jsonData.cmd ) ) {
+        if( !this.isPassiveCmd( jsonData.cmd ) ) {
             this.m_hashSendData.clear();
             this.stopSendTimer();
             G.ViewManager.closeLoading();
@@ -258,7 +258,7 @@ let NetManager = cc.Class({
         msg.cmd = cmd;
         msg.data = data;
 
-        if( !this.isNoticeCmd( cmd ) ) {
+        if( !this.isPassiveCmd( cmd ) ) {
             G.ViewManager.openLoading();
             this.m_hashSendData.set( cmd, data );
         }
@@ -266,7 +266,7 @@ let NetManager = cc.Class({
         this.m_objWS.send( JSON.stringify( msg ) );
 
         // 启动发送定时器
-        if( !this.isNoticeCmd( cmd ) ) {
+        if( !this.isPassiveCmd( cmd ) ) {
             this.startSendTimer();
         }
 
@@ -347,6 +347,9 @@ let NetManager = cc.Class({
      * 开始心跳
      */
     startPingTimer() {
+        if( DefNet.PING_GAP <= 0 ) {
+            return ;
+        }
         if( !Utils.isNull( this.m_nPingTimerId ) ) {
             this.stopPingTimer();
         }

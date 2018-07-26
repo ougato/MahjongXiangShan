@@ -191,6 +191,7 @@ Protocol.Login = {
     response: {
         code: "", // 返回码
         userInfo: Protocol.getStruct( Protocol.UserInfo ), // 个人信息
+        roomId: "", // 房间号
     },
 };
 

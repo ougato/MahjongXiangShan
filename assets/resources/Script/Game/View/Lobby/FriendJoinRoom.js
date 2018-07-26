@@ -11,8 +11,6 @@ let UIBase = require( "UIBase" );
 let ConfView = require( "ConfView" );
 let Protocol = require( "Protocol" );
 let ConfEvent = require( "ConfEvent" );
-let ConfCode = require( "ConfCode" );
-let ConfGame = require( "ConfGame" );
 
 cc.Class({
     extends: UIBase,
@@ -40,7 +38,6 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-        G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_JOIN_FAILED );
 
         cc.systemEvent.off( cc.SystemEvent.EventType.KEY_DOWN );
@@ -70,7 +67,6 @@ cc.Class({
      * 注册
      */
     register() {
-        G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_JOIN_FAILED );
 
         cc.systemEvent.on( cc.SystemEvent.EventType.KEY_DOWN, this.onKey.bind( this ) );
@@ -139,43 +135,22 @@ cc.Class({
         }
     },
 
-
-    /**
-     * 加入 成功
-     * @param data {object} 数据
-     */
-    onEventJoinSucceed( data ) {
-        let modeId = data.gameInfo.roomInfo.modeId;
-        switch( modeId ) {
-            case ConfGame.ModeId.Friend:
-                G.ViewManager.replaceScene( ConfView.Scene.MahjongFriend );
-                break;
-            case ConfGame.ModeId.Match:
-                G.ViewManager.replaceScene( ConfView.Scene.MahjongMatch );
-                break;
-        }
-    },
-
     /**
      * 加入 失败
      * @param data {object} 数据
      */
     onEventJoinFailed( data ) {
-        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
         this.clearRoomNum();
     },
 
     /**
      * 事件 回调
-     * @param msg
+     * @param event
      */
-    onEvent( msg ) {
-        switch( msg.id ) {
-            case ConfEvent.EVENT_JOIN_SUCCEED:
-                this.onEventJoinSucceed( msg.data );
-                break;
+    onEvent( event ) {
+        switch( event.id ) {
             case ConfEvent.EVENT_JOIN_FAILED:
-                this.onEventJoinFailed( msg.data );
+                this.onEventJoinFailed( event.data );
                 break;
         }
     },

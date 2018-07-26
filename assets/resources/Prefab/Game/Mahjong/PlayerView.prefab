@@ -9497,11 +9497,32 @@
       "__id__": 2
     },
     "_enabled": true,
+    "nodePlayer": {
+      "__id__": 2
+    },
+    "nodeAvatar": {
+      "__id__": 251
+    },
+    "nodeCard": {
+      "__id__": 3
+    },
     "labelGold": {
       "__id__": 254
     },
     "spriteAvatar": {
       "__id__": 264
+    },
+    "nodeActionCard": {
+      "__id__": 4
+    },
+    "nodeStrandCard": {
+      "__id__": 6
+    },
+    "nodeLieCard": {
+      "__id__": 106
+    },
+    "nodeProneCard": {
+      "__id__": 192
     }
   },
   {
@@ -16671,8 +16692,33 @@
       "__id__": 271
     },
     "_enabled": true,
-    "labelGold": null,
-    "spriteAvatar": null
+    "nodePlayer": {
+      "__id__": 271
+    },
+    "nodeAvatar": {
+      "__id__": 464
+    },
+    "nodeCard": {
+      "__id__": 272
+    },
+    "labelGold": {
+      "__id__": 467
+    },
+    "spriteAvatar": {
+      "__id__": 477
+    },
+    "nodeActionCard": {
+      "__id__": 273
+    },
+    "nodeStrandCard": {
+      "__id__": 275
+    },
+    "nodeLieCard": {
+      "__id__": 333
+    },
+    "nodeProneCard": {
+      "__id__": 419
+    }
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -24779,8 +24825,33 @@
       "__id__": 484
     },
     "_enabled": true,
-    "labelGold": null,
-    "spriteAvatar": null
+    "nodePlayer": {
+      "__id__": 484
+    },
+    "nodeAvatar": {
+      "__id__": 691
+    },
+    "nodeCard": {
+      "__id__": 485
+    },
+    "labelGold": {
+      "__id__": 694
+    },
+    "spriteAvatar": {
+      "__id__": 704
+    },
+    "nodeActionCard": {
+      "__id__": 486
+    },
+    "nodeStrandCard": {
+      "__id__": 488
+    },
+    "nodeLieCard": {
+      "__id__": 546
+    },
+    "nodeProneCard": {
+      "__id__": 632
+    }
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -31949,8 +32020,33 @@
       "__id__": 711
     },
     "_enabled": true,
-    "labelGold": null,
-    "spriteAvatar": null
+    "nodePlayer": {
+      "__id__": 712
+    },
+    "nodeAvatar": {
+      "__id__": 904
+    },
+    "nodeCard": {
+      "__id__": 712
+    },
+    "labelGold": {
+      "__id__": 907
+    },
+    "spriteAvatar": {
+      "__id__": 917
+    },
+    "nodeActionCard": {
+      "__id__": 713
+    },
+    "nodeStrandCard": {
+      "__id__": 715
+    },
+    "nodeLieCard": {
+      "__id__": 773
+    },
+    "nodeProneCard": {
+      "__id__": 859
+    }
   },
   {
     "__type__": "cc.PrefabInfo",

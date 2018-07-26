@@ -9,15 +9,18 @@
 
 let UIBase = require( "UIBase" );
 let ConfNet = require( "ConfNet" );
+let Utils = require( "Utils" );
 
 // 每个功能的间隔宽度（p）
-const GAP_WIDTH = 5;
+const GAP_WIDTH = 10;
 // 系统信息
 const SYSTEM_FUNCTION = {
-    Net: 0,
-    Time: 1,
-    RemainCard: 2,
+    Net: "Net",
+    Time: "Time",
+    RemainCard: "RemainCard",
 };
+// 获取事件间隔（s）
+const GET_TIME_GAP = 30;
 
 cc.Class({
     extends: UIBase,
@@ -51,7 +54,11 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
-
+        this.m_objFunction = null;
+        if( !Utils.isNull( this.m_nGetTimeTimerId ) ) {
+            clearInterval( this.m_nGetTimeTimerId );
+            this.m_nGetTimeTimerId = null;
+        }
     },
 
     /**
@@ -60,6 +67,8 @@ cc.Class({
     initData() {
         // 系统功能
         this.m_objFunction = {};
+        // 获取时间定时器
+        this.m_nGetTimeTimerId = null;
     },
 
     /**
@@ -74,6 +83,7 @@ cc.Class({
         this.spriteNone.node.active = false;
         this.labelTime.node.active = false;
         this.labelRemainCard.node.active = false;
+        this.labelRemainCard.node.parent.active = false;
         this.nodeRoot.active = false;
     },
 
@@ -88,9 +98,11 @@ cc.Class({
      * 添加网络
      * @param type {number} 网络类型
      */
-    addNet( type ) {
-        this.m_objFunction[SYSTEM_FUNCTION.Net].node.active = false;
-        this.m_objFunction[SYSTEM_FUNCTION.Net] = null;
+    setNet( type ) {
+        if( !Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.Net] ) ) {
+            this.m_objFunction[SYSTEM_FUNCTION.Net].node.active = false;
+            this.m_objFunction[SYSTEM_FUNCTION.Net] = null;
+        }
 
         switch( type ) {
             case ConfNet.WiFi:
@@ -115,6 +127,9 @@ cc.Class({
 
                 break;
         }
+        if( !Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.Net] ) ) {
+            this.m_objFunction[SYSTEM_FUNCTION.Net].node.active = true;
+        }
         this.updateSystemFunction();
     },
 
@@ -122,38 +137,71 @@ cc.Class({
      * 删除网络
      */
     delNet() {
-        this.m_objFunction[SYSTEM_FUNCTION.Net].node.active = false;
-        this.m_objFunction[SYSTEM_FUNCTION.Net] = null;
-        this.updateSystemFunction();
+        if( !Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.Net] ) ) {
+            this.m_objFunction[SYSTEM_FUNCTION.Net].node.active = false;
+            this.m_objFunction[SYSTEM_FUNCTION.Net] = null;
+            delete this.m_objFunction[SYSTEM_FUNCTION.Net];
+            this.updateSystemFunction();
+        }
     },
 
     /**
      * 添加时间
      */
-    addTime() {
+    setTime() {
+        this.labelTime.string = G.Game.getDate();
+        this.m_nGetTimeTimerId = setInterval( function() {
+            this.labelTime.string = G.Game.getDate();
+        }.bind( this ), GET_TIME_GAP * 1000 );
 
+        if( Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.Time] ) ) {
+            this.labelTime.node.active = true;
+            this.m_objFunction[SYSTEM_FUNCTION.Time] = this.labelTime;
+        }
+        this.updateSystemFunction();
     },
 
     /**
      * 删除时间
      */
     delTime() {
-
+        if( Utils.isNull( this.m_nGetTimeTimerId ) ) {
+            clearInterval( this.m_nGetTimeTimerId );
+            this.m_nGetTimeTimerId = null;
+        }
+        if( !Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.Time] ) ) {
+            this.m_objFunction[SYSTEM_FUNCTION.Time].node.active = false;
+            this.m_objFunction[SYSTEM_FUNCTION.Time] = null;
+            delete this.m_objFunction[SYSTEM_FUNCTION.Time];
+            this.updateSystemFunction();
+        }
     },
 
     /**
      * 添加剩余牌
      * @param num {number} 剩余牌数
      */
-    addRemainCard( num ) {
-
+    setRemainCard( num ) {
+        this.labelRemainCard.string = num;
+        if( Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.RemainCard] ) ) {
+            this.labelRemainCard.node.active = true;
+            this.labelRemainCard.node.parent.active = true;
+            this.m_objFunction[SYSTEM_FUNCTION.RemainCard] = this.labelRemainCard;
+        }
+        this.updateSystemFunction();
     },
 
     /**
      * 删除剩余牌
      */
     delRemainCard() {
-
+        if( !Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.RemainCard] ) ) {
+            this.m_objFunction[SYSTEM_FUNCTION.RemainCard].node.active = false;
+            this.m_objFunction[SYSTEM_FUNCTION.RemainCard].node.parent.active = false;
+            this.m_objFunction[SYSTEM_FUNCTION.RemainCard] = null;
+            delete this.m_objFunction[SYSTEM_FUNCTION.RemainCard];
+            this.updateSystemFunction();
+        }
     },
 
     /**
@@ -161,7 +209,7 @@ cc.Class({
      */
     getSize() {
         let size = 0;
-        for( let key in object ) {
+        for( let _ in this.m_objFunction ) {
             ++size;
         }
         return size;
@@ -173,28 +221,28 @@ cc.Class({
     updateSystemFunction() {
         let frameWidth = GAP_WIDTH;
 
-        for( key in object ) {
+        for( let key in this.m_objFunction ) {
+            let value = this.m_objFunction[key];
             if( key === SYSTEM_FUNCTION.Net ) {
-                value.node.setPositionX( frameWidth + ( value.node.width * 0.5 ) );
-                frameWidth = frameWidth + value.node.width + GAP_WIDTH;
+                value.node.setPosition( frameWidth + ( value.node.width * 0.5 ), 0 );
+                frameWidth = frameWidth + value.node.width;
             } else if( key === SYSTEM_FUNCTION.Time ) {
-                value.node.setPositionX( frameWidth + ( value.node.width * 0.5 ) );
-                frameWidth = frameWidth + value.node.width + GAP_WIDTH;
+                value.node.setPosition( frameWidth + ( value.node.width * 0.5 ), 0 );
+                frameWidth = frameWidth + value.node.width;
             } else if( key === SYSTEM_FUNCTION.RemainCard ) {
-                let parent = value.node.parent();
-                let parentWorldX = parent.getWorldPosition().x;
-                let childWorldX = value.getWorldPosition().x;
-                let gapWidth = childWorldX - parentWorldX;
-                parent.setPositionX( frameWidth + ( parent.width ) );
-                frameWidth = frameWidth + parent.width + gapWidth + value.width;
+                let parent = value.node.parent;
+                let gapWidth = value.node.getPositionX() - ( parent.width * 0.5 );
+                parent.setPosition( frameWidth + ( parent.width * 0.5 ), 0 );
+                frameWidth = frameWidth + parent.width + gapWidth + value.node.width;
             }
-            value.node.width = frameWidth;
+            frameWidth += GAP_WIDTH;
         }
 
-        if( this.getSize() <= 0 ) {
-            this.nodeRoot.active = false;
-        } else {
+        if( this.getSize() > 0 ) {
+            this.nodeRoot.width = frameWidth;
             this.nodeRoot.active = true;
+        } else {
+            this.nodeRoot.active = false;
         }
     },
 

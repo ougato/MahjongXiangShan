@@ -24,6 +24,7 @@ cc.Class({
         nodeStrandCard: { default: null, type: cc.Node, tooltip: "站立牌节点" },
         nodeLieCard: { default: null, type: cc.Node, tooltip: "躺牌节点" },
         nodeProneCard: { default: null, type: cc.Node, tooltip: "卧牌节点" },
+        spriteReady: { default: null, type: cc.Sprite, tooltip: "准备" },
     },
 
     start () {
@@ -63,6 +64,8 @@ cc.Class({
             this.initAvatar();
             this.initCard();
         }
+
+        this.spriteReady.node.active = false;
     },
 
     /**
@@ -91,6 +94,13 @@ cc.Class({
      */
     exit() {
         this.clear();
+    },
+
+    /**
+     * 准备
+     */
+    ready() {
+        this.spriteReady.node.active = true;
     },
 
     /**

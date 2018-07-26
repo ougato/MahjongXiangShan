@@ -218,7 +218,7 @@ let Utils = {
             value = value.toString();
         }
         if( this.isString( value ) ) {
-            for( let i = len; i < value.length; ++i ) {
+            for( let i = value.length; i < len; ++i ) {
                 value = "0" + value;
             }
         }

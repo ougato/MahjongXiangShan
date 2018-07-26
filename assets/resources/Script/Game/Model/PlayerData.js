@@ -47,6 +47,8 @@ let PlayerData = cc.Class({
     ctor() {
         // 玩家信息
         this.m_mapPlayerInfo = new Map();
+        // 自己服务器座位号
+        this.m_nSelfSeat = 0;
     },
 
     /**
@@ -55,6 +57,7 @@ let PlayerData = cc.Class({
     destroy() {
         this.m_mapPlayerInfo.clear();
         this.m_mapPlayerInfo = null;
+        this.m_nSelfSeat = null;
     },
 
     /**
@@ -84,6 +87,22 @@ let PlayerData = cc.Class({
     },
 
     /**
+     * 设置自己 服务器 座位号
+     * @param seat {number} 服务器座位号
+     */
+    setSelfSeat( seat ) {
+        this.m_nSelfSeat = seat;
+    },
+
+    /**
+     * 获取自己 服务器 座位号
+     * @returns {number} 服务器座位号
+     */
+    getSelfSeat() {
+        return this.m_nSelfSeat;
+    },
+
+    /**
      * 加入玩家
      * @param seat {number} 客户端座位号
      * @param data {object} 玩家信息
@@ -101,10 +120,46 @@ let PlayerData = cc.Class({
     },
 
     /**
+     * 退出玩家
+     * @param seat {number} 客户端座位号
+     * @param isReady {boolean} 是否准备
+     */
+    ready( seat, isReady ) {
+        this.setReady( seat, isReady );
+    },
+
+    /**
+     * 设置玩家是否准备
+     * @param seat {number} 客户端座位号
+     * @param isReady {boolean} 是否准备
+     */
+    setReady( seat, isReady ) {
+        let player = this.m_mapPlayerInfo.get( seat );
+        if( !Utils.isNull( player ) ) {
+            player.stateInfo.isReady = isReady;
+        }
+    },
+
+    /**
+     * 获取玩家是否准备
+     * @param seat {number} 客户端座位号
+     * @return {boolean|*}
+     */
+    getReady( seat ) {
+        let player = this.m_mapPlayerInfo.get( seat );
+        let isReady = null;
+        if( !Utils.isNull( player ) ) {
+            isReady = player.stateInfo.isReady;
+        }
+        return isReady;
+    },
+
+    /**
      * 清理玩家
      */
     clear() {
         this.m_mapPlayerInfo.clear();
+        this.m_nSelfSeat = null;
     },
 
 });

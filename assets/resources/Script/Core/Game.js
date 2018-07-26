@@ -63,14 +63,20 @@ let Game = cc.Class({
         G.NetManager.unProto( this, Protocol.Join.cmd );
         // 释放 通知加入房间
         G.NetManager.unProto( this, Protocol.NoticeJoin.cmd );
+        // 添加 推送加入房间
+        G.NetManager.unProto( this, Protocol.PushJoin.cmd );
         // 释放 退出房间 网络
         G.NetManager.unProto( this, Protocol.Exit.cmd );
         // 释放 广播退出房间
         G.NetManager.unProto( this, Protocol.BroadcastExit.cmd );
         // 释放 解散房间
         G.NetManager.unProto( this, Protocol.Disband.cmd );
-        // 释放 通知解散房间
+        // 释放 广播解散房间
         G.NetManager.unProto( this, Protocol.BroadcastDisband.cmd );
+        // 释放 准备 网络
+        G.NetManager.unProto( this, Protocol.Ready.cmd );
+        // 释放 广播准备 网络
+        G.NetManager.unProto( this, Protocol.BroadcastReady.cmd );
 
     },
 
@@ -90,8 +96,7 @@ let Game = cc.Class({
      * 初始化数据
      */
     initData() {
-        // 未完成 房间ID
-        this.m_strUndoneRoomId = null;
+
     },
 
     /**
@@ -106,14 +111,21 @@ let Game = cc.Class({
         G.NetManager.addProto( this, Protocol.Join.cmd );
         // 添加 通知加入房间
         G.NetManager.addProto( this, Protocol.NoticeJoin.cmd );
+        // 添加 推送加入房间
+        G.NetManager.addProto( this, Protocol.PushJoin.cmd );
         // 添加 退出房间 网络
         G.NetManager.addProto( this, Protocol.Exit.cmd );
-        // 添加 通知退出房间
+        // 添加 广播退出房间
         G.NetManager.addProto( this, Protocol.BroadcastExit.cmd );
         // 添加 解散房间
         G.NetManager.addProto( this, Protocol.Disband.cmd );
-        // 添加 通知解散房间
+        // 添加 广播解散房间
         G.NetManager.addProto( this, Protocol.BroadcastDisband.cmd );
+        // 添加 准备 网络
+        G.NetManager.addProto( this, Protocol.Ready.cmd );
+        // 添加 广播准备 网络
+        G.NetManager.addProto( this, Protocol.BroadcastReady.cmd );
+
     },
 
     /**
@@ -134,8 +146,9 @@ let Game = cc.Class({
      */
     transSeat( serverSeat ) {
         let roomData = G.DataManager.getData( ConfData.RoomData );
+        let playerData = G.DataManager.getData( ConfData.PlayerData );
         let maxPlayer = roomData.getRuleInfo().playerNum;
-        let selfSeat = roomData.getSelfSeat();
+        let selfSeat = playerData.getSelfSeat();
         return ( ( ( maxPlayer - ( selfSeat ) + ( serverSeat ) ) % maxPlayer ) );
     },
 
@@ -185,11 +198,10 @@ let Game = cc.Class({
                 let playerInfo = gameInfo.playerInfo;
                 let playerData = G.DataManager.getData( ConfData.PlayerData );
                 let userData = G.DataManager.getData( ConfData.UserData );
-                let roomData = G.DataManager.getData( ConfData.RoomData );
                 for( let i = 0; i < playerInfo.length; ++i ) {
                     playerData.setPlayerData( this.transSeat( playerInfo[i].seat ), playerInfo[i] );
                     if( playerInfo[i].userInfo.userId === userData.getUserId() ) {
-                        roomData.setSelfSeat( playerInfo[i].seat );
+                        playerData.setSelfSeat( playerInfo[i].seat );
                     }
                 }
             }
@@ -208,6 +220,14 @@ let Game = cc.Class({
     },
 
     /**
+     * 推送加入 网络回调
+     * @param data {object} 推送加入数据
+     */
+    onNetPushJoin( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_PUSH_JOIN, data );
+    },
+
+    /**
      * 退出 网络回调
      * @param data {object} 退出数据
      */
@@ -220,11 +240,11 @@ let Game = cc.Class({
     },
 
     /**
-     * 通知退出 网络回调
-     * @param data {object} 通知退出数据
+     * 广播退出 网络回调
+     * @param data {object} 广播退出数据
      */
     onNetBroadcastExit( data ) {
-        G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_EXIT, data );
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_EXIT, data );
     },
 
     /**
@@ -240,11 +260,31 @@ let Game = cc.Class({
     },
 
     /**
-     * 通知解散 网络回调
-     * @param data {object} 通知解散数据
+     * 广播解散 网络回调
+     * @param data {object} 广播解散数据
      */
     onNetBroadcastDisband( data ) {
-        G.EventManager.sendEvent( ConfEvent.EVENT_NOTICE_DISBAND, data );
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_DISBAND, data );
+    },
+
+    /**
+     * 准备 网络回调
+     * @param data {object} 准备数据
+     */
+    onNetReady( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_READY_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_READY_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播准备 网络回调
+     * @param data {object} 广播准备数据
+     */
+    onNetBroadcastReady( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_READY, data );
     },
 
     /**
@@ -265,6 +305,9 @@ let Game = cc.Class({
             case Protocol.NoticeJoin.cmd:
                 this.onNetNoticeJoin( msg.data );
                 break;
+            case Protocol.PushJoin.cmd:
+                this.onNetPushJoin( msg.data );
+                break;
             case Protocol.Exit.cmd:
                 this.onNetExit( msg.data );
                 break;
@@ -276,6 +319,12 @@ let Game = cc.Class({
                 break;
             case Protocol.BroadcastDisband.cmd:
                 this.onNetBroadcastDisband( msg.data );
+                break;
+            case Protocol.Ready.cmd:
+                this.onNetReady( msg.data );
+                break;
+            case Protocol.BroadcastReady.cmd:
+                this.onNetBroadcastReady( msg.data );
                 break;
 
         }

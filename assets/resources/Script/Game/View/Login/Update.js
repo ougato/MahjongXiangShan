@@ -215,7 +215,7 @@ cc.Class({
     onEventLoginSucceed( data ) {
         if( !Utils.isNull( data.roomId ) && data.roomId.length > 0 ) {
             let message = Protocol.getC2S( Protocol.Join );
-            message.data.roomId = data.gameInfo.roomId;
+            message.data.roomId = data.roomId;
             G.NetManager.send( message.cmd, message.data );
         } else {
             G.ViewManager.replaceScene( ConfView.Scene.Lobby );
@@ -262,19 +262,19 @@ cc.Class({
     /**
      * 监听事件 回调
      */
-    onEvent( msg ) {
-        switch( msg.id ) {
+    onEvent( event ) {
+        switch( event.id ) {
             case ConfEvent.EVENT_LOGIN_SUCCEED:
-                this.onEventLoginSucceed( msg.data );
+                this.onEventLoginSucceed( event.data );
                 break;
             case ConfEvent.EVENT_LOGIN_FAILED:
-                this.onEventLoginFailed( msg.data );
+                this.onEventLoginFailed( event.data );
                 break;
             case ConfEvent.EVENT_JOIN_SUCCEED:
-                this.onEventJoinSucceed( msg.data );
+                this.onEventJoinSucceed( event.data );
                 break;
             case ConfEvent.EVENT_JOIN_FAILED:
-                this.onEventJoinFailed( msg.data );
+                this.onEventJoinFailed( event.data );
                 break;
         }
     },

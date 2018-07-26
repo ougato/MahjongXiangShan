@@ -68,7 +68,7 @@ cc.Class({
 
     /**
      * 加入游戏
-     * @param seat {number} 座位号
+     * @param seat {number} 客户端座位号
      * @param data {object} 玩家数据
      */
     join( seat, data ) {
@@ -77,10 +77,18 @@ cc.Class({
 
     /**
      * 退出游戏
-     * @param seat {number} 座位号
+     * @param seat {number} 客户端座位号
      */
     exit( seat ) {
         this.m_arrScriptPlayer[seat].exit();
+    },
+
+    /**
+     * 准备
+     * @param seat {number} 客户端座位号
+     */
+    ready( seat ) {
+        this.m_arrScriptPlayer[seat].ready();
     },
 
     /**

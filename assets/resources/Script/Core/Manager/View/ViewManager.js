@@ -228,6 +228,19 @@ let ViewManager = cc.Class({
     },
 
     /**
+     * 关闭所有预制体
+     */
+    closeAllPrefab() {
+        this.m_mapPrefab.forEach( function( value, key, map ) {
+            if( !Utils.isNull( value ) ) {
+                value.destroy();
+            }
+        } );
+        this.m_mapPrefab.clear();
+        this.m_listPrefab.clear();
+    },
+
+    /**
      * 获取当前预制体
      * @param pathName {string} 预制名（prefab后的 路径+预制名）
      * @returns {object|null} 1.当前预制体 2.根据pathName找到的预制体

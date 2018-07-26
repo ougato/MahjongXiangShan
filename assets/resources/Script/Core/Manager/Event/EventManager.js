@@ -99,10 +99,10 @@ let EventManager = cc.Class({
             scriptList.forEach( function( script ) {
                 if( Utils.isObject( script ) ) {
                     if( Utils.isFunction( script.onEvent ) ) {
-                        let msg = {};
-                        msg.id = id;
-                        msg.data = data;
-                        script.onEvent( msg );
+                        let event = {};
+                        event.id = id;
+                        event.data = data;
+                        script.onEvent( event );
                     }
                 }
             } );

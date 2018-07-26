@@ -45,8 +45,6 @@ let RoomData = cc.Class({
      * 构造
      */
     ctor() {
-        // 自己服务器座位号
-        this.m_nSelfSeat = 0;
         // 规则信息
         this.m_objRuleInfo = {};
         // 模式ID
@@ -61,8 +59,6 @@ let RoomData = cc.Class({
      * 销毁
      */
     destroy() {
-        // 自己服务器座位号
-        this.m_nSelfSeat = null;
         // 规则信息
         this.m_objRuleInfo = null;
         // 模式ID
@@ -71,22 +67,6 @@ let RoomData = cc.Class({
         this.m_strRoomId = null;
         // 状态
         this.m_nState = null;
-    },
-
-    /**
-     * 设置自己 服务器 座位号
-     * @param seat {number} 服务器座位号
-     */
-    setSelfSeat( seat ) {
-        this.m_nSelfSeat = seat;
-    },
-
-    /**
-     * 获取自己 服务器 座位号
-     * @returns {number} 服务器座位号
-     */
-    getSelfSeat() {
-        return this.m_nSelfSeat;
     },
 
     /**
@@ -169,8 +149,6 @@ let RoomData = cc.Class({
      * 清理
      */
     clear() {
-        // 自己服务器座位号
-        this.m_nSelfSeat = null;
         // 规则信息
         this.m_objRuleInfo = null;
         // 模式ID
