@@ -155,6 +155,31 @@ let PlayerData = cc.Class({
     },
 
     /**
+     * 设置玩家金币
+     * @param seat {number} 客户端座位号
+     * @param gold {number} 金币
+     */
+    setGold( seat, gold ) {
+        let player = this.m_mapPlayerInfo.get( seat );
+        if( !Utils.isNull( player ) ) {
+            player.userInfo.gold = gold;
+        }
+    },
+
+    /**
+     * 获取玩家金币
+     * @return {number}
+     */
+    getGold() {
+        let player = this.m_mapPlayerInfo.get( seat );
+        let gold = null;
+        if( !Utils.isNull( player ) ) {
+            gold = player.userInfo.gold;
+        }
+        return gold;
+    },
+
+    /**
      * 清理玩家
      */
     clear() {

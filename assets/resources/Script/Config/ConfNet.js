@@ -8,12 +8,12 @@
  */
 
 const ConfNet = {
-    WiFi: 0,
-    _2G: 1,
-    _3G: 2,
-    _4G: 3,
-    Unknown: 4,
-    None: 5,
+    WiFi: "wifi",
+    _2G: "2g",
+    _3G: "3g",
+    _4G: "4g",
+    Unknown: "unknown",
+    None: "none",
 };
 
 module.exports = ConfNet;

@@ -123,7 +123,7 @@ cc.Class({
 
         return wx.createUserInfoButton({
             type: 'image',
-            image: 'http://47.106.125.21/cocos/origin/Atlas/Login/Button_1.png',
+            image: 'http://47.106.125.21/cocos/origin/Atlas/Common/Button_1_1.png',
             style: style,
         });
     },

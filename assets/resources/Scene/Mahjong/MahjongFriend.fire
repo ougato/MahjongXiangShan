@@ -90,13 +90,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 1016
-      },
-      {
         "__id__": 1017
       },
       {
         "__id__": 1018
+      },
+      {
+        "__id__": 1019
       }
     ],
     "_prefab": null,
@@ -35386,7 +35386,7 @@
       "__id__": 1010
     },
     "_enabled": true,
-    "transition": 0,
+    "transition": 3,
     "pressedColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -35402,8 +35402,12 @@
       "a": 255
     },
     "duration": 0.1,
-    "zoomScale": 1.2,
-    "clickEvents": [],
+    "zoomScale": 1.1,
+    "clickEvents": [
+      {
+        "__id__": 1016
+      }
+    ],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": false,
     "_N$normalColor": {
@@ -35441,6 +35445,15 @@
     "_N$target": {
       "__id__": 1010
     }
+  },
+  {
+    "__type__": "cc.ClickEvent",
+    "target": {
+      "__id__": 2
+    },
+    "component": "MahjongFriend",
+    "handler": "onReady",
+    "customEventData": ""
   },
   {
     "__type__": "cc.Canvas",

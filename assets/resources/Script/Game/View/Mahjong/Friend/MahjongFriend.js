@@ -17,6 +17,7 @@ let ConfData = require( "ConfData" );
 let ConfCode = require( "ConfCode" );
 let PlayerController = require( "PlayerController" );
 let ConfNet = require( "ConfNet" );
+let Log = require( "Log" );
 
 cc.Class({
     extends: UIBase,
@@ -33,6 +34,7 @@ cc.Class({
 
     start () {
         this.m_objScriptSystemFunction.setTime();
+        this.initNetState();
     },
 
     /**
@@ -79,6 +81,25 @@ cc.Class({
         this.m_objRoomData = G.DataManager.getData( ConfData.RoomData );
         // 菜单项开关
         this.m_bMenuSW = false;
+        // 网络状态
+        this.m_strNetState = null;
+    },
+
+    /**
+     * 初始化网络状态
+     */
+    initNetState() {
+        if( cc.sys.platform === cc.sys.WECHAT_GAME ) {
+            wx.getNetworkType( {
+                success( res ) {
+                    this.m_objScriptSystemFunction.setNetState( res.networkType );
+                    this.m_strNetState = res.networkType;
+                },
+                fail() {
+                    Log.warn( G.I18N.get( 37 ) );
+                },
+            } )
+        }
     },
 
     /**
@@ -226,6 +247,14 @@ cc.Class({
     },
 
     /**
+     * 网络改变 事件
+     * @param data {string} 网络类型
+     */
+    onEventNetChange( data ) {
+        this.m_objScriptSystemFunction.setNetState( data );
+    },
+
+    /**
      * 加入房间 通知
      * @param data
      */
@@ -324,6 +353,9 @@ cc.Class({
      */
     onEvent( event ) {
         switch( event.id ) {
+            case ConfEvent.EVENT_NET_CHANGE:
+                this.onEventNetChange( event.data );
+                break;
             case ConfEvent.EVENT_NOTICE_JOIN:
                 this.onEventNoticeJoin( event.data );
                 break;

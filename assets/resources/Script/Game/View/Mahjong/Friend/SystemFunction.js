@@ -95,16 +95,16 @@ cc.Class({
     },
 
     /**
-     * 添加网络
-     * @param type {number} 网络类型
+     * 设置网络状态
+     * @param state {number} 网络类型
      */
-    setNet( type ) {
+    setNetState( state ) {
         if( !Utils.isNull( this.m_objFunction[SYSTEM_FUNCTION.Net] ) ) {
             this.m_objFunction[SYSTEM_FUNCTION.Net].node.active = false;
             this.m_objFunction[SYSTEM_FUNCTION.Net] = null;
         }
 
-        switch( type ) {
+        switch( state ) {
             case ConfNet.WiFi:
                 this.m_objFunction[SYSTEM_FUNCTION.Net] = this.spriteWiFi;
                 break;
@@ -146,7 +146,7 @@ cc.Class({
     },
 
     /**
-     * 添加时间
+     * 设置时间
      */
     setTime() {
         this.labelTime.string = G.Game.getDate();
@@ -178,7 +178,7 @@ cc.Class({
     },
 
     /**
-     * 添加剩余牌
+     * 设置剩余牌
      * @param num {number} 剩余牌数
      */
     setRemainCard( num ) {

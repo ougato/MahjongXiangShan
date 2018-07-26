@@ -10,6 +10,7 @@
 let UIBase = require( "UIBase" );
 let ConfData = require( "ConfData" );
 let Utils = require( "Utils" );
+let ConfGame = require( "ConfGame" );
 
 cc.Class({
     extends: UIBase,
@@ -56,16 +57,66 @@ cc.Class({
     },
 
     /**
+     * 初始化未开始
+     */
+    initNotStarted() {
+        this.spriteReady.node.active = this.m_objPlayerData.stateInfo.isReady;
+
+    },
+
+    /**
+     * 初始化已开始
+     */
+    initStarted() {
+        this.spriteReady.node.active = false;
+        let cardInfo = this.m_objPlayerData.cardInfo;
+        if( !Utils.isNull( cardInfo ) && cardInfo.length > 0 ) {
+            for( let i = 0; cardInfo.length; ++i ) {
+                cc.log( cardInfo[i] )
+            }
+        }
+    },
+
+    /**
      * 初始化视图
      */
     initView() {
-        this.clear();
-        if( !Utils.isNull( this.m_objPlayerData ) ) {
-            this.initAvatar();
-            this.initCard();
-        }
-
+        this.nodePlayer.active = false;
+        this.nodeAvatar.active = false;
+        this.nodeCard.active = false;
+        this.nodeActionCard.active = false;
+        this.nodeStrandCard.active = false;
+        this.nodeLieCard.active = false;
+        this.nodeProneCard.active = false;
         this.spriteReady.node.active = false;
+
+        if( !Utils.isNull( this.m_objPlayerData ) ) {
+            this.labelGold.string = this.m_objPlayerData.userInfo.gold;
+
+            let state = G.DataManager.getData( ConfData.RoomData ).getState();
+            switch( state ) {
+                case ConfGame.RoomState.NotStarted:
+                    this.initNotStarted();
+                    break;
+                case ConfGame.RoomState.Playing:
+                    this.initStarted();
+                    break;
+                case ConfGame.RoomState.Closing:
+                    if( this.m_objPlayerData.stateInfo.isReady ) {
+                        this.initNotStarted();
+                    } else {
+                        this.initStarted();
+                    }
+                    break;
+                case ConfGame.RoomState.TotalClosing:
+                    this.initStarted();
+                    break;
+
+            }
+            this.nodeAvatar.active = true;
+            this.nodeCard.active = true;
+            this.nodePlayer.active = true;
+        }
     },
 
     /**
@@ -104,15 +155,6 @@ cc.Class({
     },
 
     /**
-     * 初始化头像
-     */
-    initAvatar() {
-        this.labelGold.string = this.m_objPlayerData.userInfo.gold;
-
-        this.nodeAvatar.active = true;
-    },
-
-    /**
      * 清理头像
      */
     clearAvatar() {
@@ -123,6 +165,7 @@ cc.Class({
      * 清理牌
      */
     clearCard() {
+        this.nodeCard.active = false;
         this.nodeActionCard.active = false;
         this.nodeStrandCard.active = false;
         this.nodeLieCard.active = false;

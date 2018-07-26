@@ -8,6 +8,8 @@
  * 游戏 事件
  */
 const ConfEvent = {
+    // 网络改变 事件
+    EVENT_NET_CHANGE: "EVENT_NET_CHANGE",
     // 登录成功 事件
     EVENT_LOGIN_SUCCEED: "EVENT_LOGIN_SUCCEED",
     // 登录失败 事件

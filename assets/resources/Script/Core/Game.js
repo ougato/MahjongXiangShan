@@ -136,7 +136,10 @@ let Game = cc.Class({
             let script = view.getNode().getComponent( view.getName() );
             script.checkToken();
             script.addDownloadEvent();
-        } );
+            if( cc.sys.platform === cc.sys.WECHAT_GAME ) {
+                wx.onNetworkStatusChange( this.onNetChange.bind( this ) );
+            }
+        }.bind( this ) );
     },
 
     /**
@@ -158,6 +161,15 @@ let Game = cc.Class({
     getDate() {
         let date = new Date();
         return Utils.pad( date.getHours(), 2 ) + ":" + Utils.pad( date.getMinutes(), 2 );
+    },
+
+    /**
+     * 网络状态改变
+     */
+    onNetChange( isConnected, networkType ) {
+        if( isConnected ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_NET_CHANGE, networkType );
+        }
     },
 
     /**
