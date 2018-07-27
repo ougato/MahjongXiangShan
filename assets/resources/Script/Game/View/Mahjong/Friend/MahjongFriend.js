@@ -16,8 +16,8 @@ let ConfView = require( "ConfView" );
 let ConfData = require( "ConfData" );
 let ConfCode = require( "ConfCode" );
 let PlayerController = require( "PlayerController" );
-let ConfNet = require( "ConfNet" );
 let Log = require( "Log" );
+let Utils = require( "Utils" );
 
 cc.Class({
     extends: UIBase,
@@ -50,6 +50,7 @@ cc.Class({
      * 销毁
      */
     onDestroy() {
+        G.EventManager.unEvent( this, ConfEvent.EVENT_NET_CHANGE );
         G.EventManager.unEvent( this, ConfEvent.EVENT_NOTICE_JOIN );
         G.EventManager.unEvent( this, ConfEvent.EVENT_EXIT_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_EXIT_FAILED );
@@ -57,6 +58,9 @@ cc.Class({
         G.EventManager.unEvent( this, ConfEvent.EVENT_DISBAND_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_DISBAND_FAILED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DISBAND );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_READY_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_READY_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_READY );
 
         // 清理游戏数据
         G.DataManager.clearData( ConfData.DeskData );
@@ -89,11 +93,12 @@ cc.Class({
      * 初始化网络状态
      */
     initNetState() {
-        if( cc.sys.platform === cc.sys.WECHAT_GAME ) {
+        if( Utils.isWeChatGame() ) {
+            let self = this;
             wx.getNetworkType( {
                 success( res ) {
-                    this.m_objScriptSystemFunction.setNetState( res.networkType );
-                    this.m_strNetState = res.networkType;
+                    self.m_objScriptSystemFunction.setNetState( res.networkType );
+                    self.m_strNetState = res.networkType;
                 },
                 fail() {
                     Log.warn( G.I18N.get( 37 ) );
@@ -114,6 +119,7 @@ cc.Class({
      * 注册
      */
     register() {
+        G.EventManager.addEvent( this, ConfEvent.EVENT_NET_CHANGE );
         G.EventManager.addEvent( this, ConfEvent.EVENT_NOTICE_JOIN );
         G.EventManager.addEvent( this, ConfEvent.EVENT_EXIT_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_EXIT_FAILED );
@@ -121,6 +127,10 @@ cc.Class({
         G.EventManager.addEvent( this, ConfEvent.EVENT_DISBAND_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_DISBAND_FAILED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DISBAND );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_READY_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_READY_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_READY );
+
     },
 
     /**
@@ -242,7 +252,7 @@ cc.Class({
      * 准备 按钮回调
      */
     onReady() {
-        let message = Protocol.getC2S( Protocol.BroadcastReady );
+        let message = Protocol.getC2S( Protocol.Ready );
         G.NetManager.send( message.cmd, message.data );
     },
 

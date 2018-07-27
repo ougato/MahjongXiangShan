@@ -300,7 +300,9 @@ function downloadRemoteFile (item, callback) {
             callback(null, null);
         }
     });
-    downloader.emit( "download", downloadTask );
+    if( downloadTask % 10 === 0 ) {
+        downloader.emit( "download", downloadTask );
+    }
 }
 
 // function downloadRemoteTextFile (item, callback) {

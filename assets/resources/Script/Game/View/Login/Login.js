@@ -73,21 +73,17 @@ cc.Class({
         this.nodeGuest.active = false;
         this.nodeWechat.active = false;
 
-        switch( cc.sys.platform ) {
-            case cc.sys.WECHAT_GAME:
-                let button = this.createGetUserInfoButton();
-                button.onTap( this.onGetUserInfo.bind( this ) );
-                this.buttonGetUserInfo = button;
-                break;
-            default:
-                if( Config.isDebug ) {
-                    this.nodeGuest.active = true;
-                } else {
-                    this.nodePhoneNumber.active = true;
-                }
-                break;
+        if( Utils.isWeChatGame() ) {
+            let button = this.createGetUserInfoButton();
+            button.onTap( this.onGetUserInfo.bind( this ) );
+            this.buttonGetUserInfo = button;
+        } else {
+            if( Config.isDebug ) {
+                this.nodeGuest.active = true;
+            } else {
+                this.nodePhoneNumber.active = true;
+            }
         }
-
     },
 
     /**
@@ -159,29 +155,33 @@ cc.Class({
      * @param res
      */
     onGetUserInfo( res ) {
+        this.buttonGetUserInfo.hide();
         if( Utils.isWxSuccee( res.errMsg ) ) {
+            G.StoreManager.set( ConfStore.UserInfo, this.makeUserInfo( res ) );
             let self = this;
-            if( Utils.isWxSuccee( res.errMsg ) ) {
-                G.StoreManager.set( ConfStore.UserInfo, self.makeUserInfo( res ) );
-                self.wxLogin( function( res ) {
-                    Http.get( self.makeGetTokenUrl( res.code ), function( data ) {
-                        if( data.code === 0 ) {
-                            G.StoreManager.set( ConfStore.Token, data.rd_session );
-                            G.StoreManager.set( ConfStore.LoginMode, 1 );
-                            Http.get( self.makeGetWSUrl(), function( data ) {
-                                if( data.code === 0 ) {
-                                    if( !Utils.isNull( self.buttonGetUserInfo ) ) {
-                                        self.buttonGetUserInfo.destroy();
-                                    }
-                                    G.NetManager.connect( data.loginws );
+            this.wxLogin( function( res ) {
+                Http.get( self.makeGetTokenUrl( res.code ), function( data ) {
+                    if( data.code === 0 ) {
+                        G.StoreManager.set( ConfStore.Token, data.rd_session );
+                        G.StoreManager.set( ConfStore.LoginMode, 1 );
+                        Http.get( self.makeGetWSUrl(), function( data ) {
+                            if( data.code === 0 ) {
+                                if( !Utils.isNull( self.buttonGetUserInfo ) ) {
+                                    self.buttonGetUserInfo.destroy();
                                 }
-                            })
-                        }
-                    } );
+                                G.NetManager.connect( data.loginws );
+                            } else {
+                                self.buttonGetUserInfo.show();
+                            }
+                        })
+                    } else {
+                        self.buttonGetUserInfo.show();
+                    }
                 } );
-            }
+            } );
         } else {
             G.ViewManager.openTips( G.I18N.get( 31 ) );
+            this.buttonGetUserInfo.show();
         }
     },
 

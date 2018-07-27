@@ -225,6 +225,20 @@ let Utils = {
         return value;
     },
 
+    /**
+     * 是否微信小游戏
+     */
+    isWeChatGame() {
+        return cc.sys.platform === cc.sys.WECHAT_GAME || cc.sys.platform === cc.sys.BROWSER_TYPE_WECHAT_GAME;
+    },
+
+    /**
+     * 是否QQ小游戏
+     */
+    isQQGame() {
+        return cc.sys.platform === cc.sys.QQ_PLAY || cc.sys.platform === cc.sys.BROWSER_TYPE_QQ_PLAY;
+    },
+
 
 };
 

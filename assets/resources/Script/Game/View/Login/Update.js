@@ -92,32 +92,18 @@ cc.Class({
     },
 
     /**
-     * 添加下载事件
-     */
-    addDownloadEvent() {
-        G.EventManager.addDownloadEvent( this.onPercent );
-    },
-
-    /**
      * 检测token
      */
     checkToken() {
         if( this.isTokenExist() ) {
             let self = this;
-            switch( cc.sys.platform ) {
-                case cc.sys.WECHAT_GAME:
-                    wx.checkSession({
-                        success() {
-                            self.login();
-                        },
-                        fail() {
-                            self.enterLogin();
-                        },
-                    });
-                    break;
-                default:
-                    self.login();
-                    break;
+            if( Utils.isWeChatGame() ) {
+                wx.checkSession({
+                    success() { self.login(); },
+                    fail() { self.enterLogin(); },
+                });
+            } else {
+                self.login();
             }
         } else {
             this.enterLogin();
@@ -174,20 +160,17 @@ cc.Class({
         let userInfo = G.StoreManager.get( ConfStore.UserInfo );
         let token = G.StoreManager.get( ConfStore.Token );
         let url = "";
-        switch( cc.sys.platform ) {
-            case cc.sys.WECHAT_GAME:
-                url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, userInfo.rawData, userInfo.signature, userInfo.encryptedData, userInfo.iv, token );
-                break;
-            default:
-                if( Config.isDebug ) {
-                    if( Config.isMulti ) {
-                        token = "null";
-                    }
-                    url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER_GUEST, token );
-                } else {
-                    url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER, token );
+        if( Utils.isWeChatGame() ) {
+            url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_MOBILE, userInfo.rawData, userInfo.signature, userInfo.encryptedData, userInfo.iv, token );
+        } else {
+            if( Config.isDebug ) {
+                if( Config.isMulti ) {
+                    token = "null";
                 }
-                break;
+                url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER_GUEST, token );
+            } else {
+                url = Utils.format( ConfUrl.GET_WEBSOCKET_URL_BROWSER, token );
+            }
         }
         return url;
     },

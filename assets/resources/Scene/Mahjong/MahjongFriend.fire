@@ -35491,7 +35491,9 @@
     "nodeMenuItemMask": {
       "__id__": 14
     },
-    "buttonReady": null
+    "buttonReady": {
+      "__id__": 1015
+    }
   },
   {
     "__type__": "cc.BlockInputEvents",

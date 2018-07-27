@@ -86,6 +86,8 @@ let Game = cc.Class({
     init() {
         // 初始化数据
         this.initData();
+        // 初始化设备
+        this.initDevice();
         // 注册
         this.register();
         // 进入游戏
@@ -97,6 +99,16 @@ let Game = cc.Class({
      */
     initData() {
 
+    },
+
+    /**
+     * 初始化设备
+     */
+    initDevice() {
+        if( Utils.isWeChatGame() ) {
+            this.initWeChatDebug();
+            this.initWeChatScreenKeepOn();
+        }
     },
 
     /**
@@ -133,13 +145,53 @@ let Game = cc.Class({
      */
     intoGame() {
         G.ViewManager.replaceScene( Config.defaultScene, null, function( view ) {
+            this.listenerLoadProgress();
             let script = view.getNode().getComponent( view.getName() );
             script.checkToken();
-            script.addDownloadEvent();
-            if( cc.sys.platform === cc.sys.WECHAT_GAME ) {
+            if( Utils.isWeChatGame() ) {
                 wx.onNetworkStatusChange( this.onNetChange.bind( this ) );
             }
         }.bind( this ) );
+    },
+
+    /**
+     * 初始化微信是否调试
+     */
+    initWeChatDebug() {
+        wx.setEnableDebug( {
+            enableDebug: true,
+            success( res ) {},
+            fail( res ) {},
+            complete( res ) {},
+        } )
+    },
+
+    /**
+     * 初始化屏幕是否常亮
+     */
+    initWeChatScreenKeepOn() {
+        wx.setKeepScreenOn( {
+            keepScreenOn: true,
+            success( res ) {},
+            fail( res ) {},
+            complete( res ) {},
+        } )
+    },
+
+    /**
+     * 监听加载进度
+     */
+    listenerLoadProgress() {
+        if( Utils.isWeChatGame() ) {
+            cc.loader.onProgress = function( completedCount, totalCount, item ) {
+                let currPercent = Math.floor( ( completedCount / totalCount ) * 100 );
+                if( completedCount !== totalCount ) {
+                    G.ViewManager.openProgressBar( currPercent );
+                } else {
+                    G.ViewManager.closeProgressBar();
+                }
+            };
+        }
     },
 
     /**
@@ -164,12 +216,27 @@ let Game = cc.Class({
     },
 
     /**
-     * 网络状态改变
+     * 查找自己的服务器座位号
+     * @param playerInfo
+     * @returns {*}
      */
-    onNetChange( isConnected, networkType ) {
-        if( isConnected ) {
-            G.EventManager.sendEvent( ConfEvent.EVENT_NET_CHANGE, networkType );
+    findSelfSeat( playerInfo ) {
+        let selfSeat = null;
+        for( let i = 0; i < playerInfo.length; ++i ) {
+            if( playerInfo[i].userInfo.userId === G.DataManager.getData( ConfData.UserData ).getUserId() ) {
+                selfSeat = playerInfo[i].seat;
+                break;
+            }
         }
+        return selfSeat;
+    },
+
+    /**
+     * 网络状态改变
+     * @param res {object} 回调数据
+     */
+    onNetChange( res ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_NET_CHANGE, res.networkType );
     },
 
     /**
@@ -209,12 +276,9 @@ let Game = cc.Class({
             if( !Utils.isNull( gameInfo.playerInfo ) ) {
                 let playerInfo = gameInfo.playerInfo;
                 let playerData = G.DataManager.getData( ConfData.PlayerData );
-                let userData = G.DataManager.getData( ConfData.UserData );
+                playerData.setSelfSeat( this.findSelfSeat( playerInfo ) );
                 for( let i = 0; i < playerInfo.length; ++i ) {
                     playerData.setPlayerData( this.transSeat( playerInfo[i].seat ), playerInfo[i] );
-                    if( playerInfo[i].userInfo.userId === userData.getUserId() ) {
-                        playerData.setSelfSeat( playerInfo[i].seat );
-                    }
                 }
             }
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
