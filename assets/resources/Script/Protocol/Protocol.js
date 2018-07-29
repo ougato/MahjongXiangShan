@@ -113,7 +113,7 @@ Protocol.UserInfo = {
 
 // 牌信息
 Protocol.CardInfo = {
-    card: [], // 牌（百位[以0开始 ID] 十位[0-筒 1-条 2-万 3-东南西北 4-春夏秋冬 5-梅兰竹菊 6-中发白] 个位[以0开始 点数]）
+    card: 0, // 牌（百位[以0开始 ID] 十位[0-筒 1-条 2-万 3-东南西北 4-春夏秋冬 5-梅兰竹菊 6-中发白] 个位[以0开始 点数]）
     type: 0, // 类型（0-手牌 1-出牌 2-吃牌 3-碰牌 4-明杠 5-暗杠 6-巴杠 7-抢杠 8-摸牌）
 };
 
@@ -189,7 +189,7 @@ Protocol.Login = {
         type: 0, // 登录类型（0-游客 1-微信小游戏 2.手机号）
     },
     response: {
-        code: "", // 返回码
+        code: 0, // 返回码
         userInfo: Protocol.getStruct( Protocol.UserInfo ), // 个人信息
         roomId: "", // 房间号
     },
@@ -350,58 +350,71 @@ Protocol.BroadcastUnReady = {
     },
 };
 
-// 骰子
-Protocol.Dice = {
+// 广播骰子
+Protocol.BroadcastDice = {
     cmd: 1005,
     response: {
         dice: 0, // 骰子
     },
 };
 
-// 发牌
-Protocol.Deal = {
+// 广播发牌
+Protocol.BroadcastDeal = {
     cmd: 1006,
     response: {
-        cards: Protocol.getStruct( Protocol.CardInfo ), // 牌堆
+        cards: [], // 牌堆
     },
 };
 
-// 摸牌
-Protocol.Draw = {
+// 广播摸牌
+Protocol.BroadcastDraw = {
     cmd: 1007,
     response: {
-        card: Protocol.getStruct( Protocol.CardInfo ), // 牌值
+        seat: 0, // 座位
+        card: 0, // 牌值
     },
 };
 
-//通知摸牌
-Protocol.NoticeDraw = {
+// 出牌
+Protocol.Discard = {
+    cmd: 1008,
+    request: {
+        card: 0, // 牌值
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 广播出牌
+Protocol.BroadcastDiscard = {
     cmd: 1008,
     response: {
         seat: 0, // 座位
+        card: 0, // 牌值
     },
 };
 
-// 提示 吃碰杠听胡
-Protocol.TipAction = {
+// 推送 吃碰杠听胡
+Protocol.PushAction = {
     cmd: 1009,
     response: {
-        types: [], // 动作信息集 *ActionInfo
+        actions: [], // 动作信息集 [ 0-吃，1-碰，2-杠，3-听，4-胡 ]
     },
 };
 
-// 出牌0，吃1，碰2，杠3，听4，胡5
+// 吃碰杠听胡
 Protocol.Action = {
     cmd: 1010,
     request: {
-        type: Protocol.getStruct( Protocol.ActionInfo ), // 动作信息
+        action: 0, // 动作信息 [ 0-吃，1-碰，2-杠，3-听，4-胡 ]
         card: 0, // 当type==0时， card不为空，其它情况 card为空
     },
     response: {
-        type: Protocol.getStruct( Protocol.ActionInfo ), // 动作信息
         card: 0, // 当type==0时， card不为空，其它情况 card为空
     },
 };
+
 
 // 通知 准备0，取消准备1，抓牌,2, 出牌3，吃4，碰5，暗杠6，明杠7，巴杠8，抢杠9，听,10，胡11，
 Protocol.NoticeAction = {
