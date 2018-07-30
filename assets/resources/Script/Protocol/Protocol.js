@@ -113,14 +113,14 @@ Protocol.UserInfo = {
 
 // 牌信息
 Protocol.CardInfo = {
-    card: 0, // 牌（百位[以0开始 ID] 十位[0-筒 1-条 2-万 3-东南西北 4-春夏秋冬 5-梅兰竹菊 6-中发白] 个位[以0开始 点数]）
-    type: 0, // 类型（0-手牌 1-出牌 2-吃牌 3-碰牌 4-明杠 5-暗杠 6-巴杠 7-抢杠 8-摸牌）
+    card: [], // [001, 020, 003] 牌（百位[以0开始 ID] 十位[0-筒 1-条 2-万 3-东南西北 4-春夏秋冬 5-梅兰竹菊 6-中发白] 个位[以0开始 点数]）
+    type: 0, // 类型（0-手牌 1-出牌 2-吃牌 3-碰牌 4-明杠 5-暗杠 6-巴杠 7-抢杠 8-摸牌 9-自摸 10-点炮）
 };
-
 
 // 动作信息
 Protocol.ActionInfo = {
-    type: 0, // 类型（准备0，取消准备1，抓牌2，出牌3，吃4，碰5，暗杠6，明杠7，巴杠8，抢杠9，听10，胡11）
+    cards: [], // [ AAAA, BBBB, CCC ]
+    action: 0, // 动作信息 [ 0-吃，1-碰，2-杠，3-听，4-胡，5-过 ]
 };
 
 // 规则信息
@@ -143,6 +143,12 @@ Protocol.PlayerInfo = {
     userInfo: Protocol.getStruct( Protocol.UserInfo ), // 用户信息
     cardInfo: [], // 牌堆信息 CardInfo
     stateInfo: Protocol.getStruct( Protocol.PlayerState ), // 玩家状态
+};
+
+// 手牌信息
+Protocol.HoldCardInfo = {
+    seat: 0, // 座位号
+    cards: [], // 手牌组
 };
 
 // 桌子信息
@@ -312,7 +318,7 @@ Protocol.BroadcastDisband = {
 
 ////////////////////////////////////////////////////// 游戏开始 //////////////////////////////////////////////////////
 
-// 开始准备
+// 准备
 Protocol.Ready = {
     cmd: 1001,
     request: {
@@ -334,7 +340,7 @@ Protocol.UnReady = {
     },
 };
 
-// 广播开始准备
+// 广播准备
 Protocol.BroadcastReady = {
     cmd: 1003,
     response: {
@@ -358,8 +364,8 @@ Protocol.BroadcastDice = {
     },
 };
 
-// 广播发牌
-Protocol.BroadcastDeal = {
+// 推送发牌
+Protocol.PushDeal = {
     cmd: 1006,
     response: {
         cards: [], // 牌堆
@@ -388,40 +394,144 @@ Protocol.Discard = {
 
 // 广播出牌
 Protocol.BroadcastDiscard = {
-    cmd: 1008,
+    cmd: 1009,
     response: {
         seat: 0, // 座位
         card: 0, // 牌值
     },
 };
 
-// 推送 吃碰杠听胡
-Protocol.PushAction = {
-    cmd: 1009,
-    response: {
-        actions: [], // 动作信息集 [ 0-吃，1-碰，2-杠，3-听，4-胡 ]
-    },
-};
-
-// 吃碰杠听胡
-Protocol.Action = {
+// 广播本轮操作人
+Protocol.BroadcastController = {
     cmd: 1010,
-    request: {
-        action: 0, // 动作信息 [ 0-吃，1-碰，2-杠，3-听，4-胡 ]
-        card: 0, // 当type==0时， card不为空，其它情况 card为空
-    },
     response: {
-        card: 0, // 当type==0时， card不为空，其它情况 card为空
+        seat: 0, // 座位
     },
 };
 
-
-// 通知 准备0，取消准备1，抓牌,2, 出牌3，吃4，碰5，暗杠6，明杠7，巴杠8，抢杠9，听,10，胡11，
-Protocol.NoticeAction = {
+// 推送 吃碰杠听胡过
+Protocol.PushAction = {
     cmd: 1011,
     response: {
-        type: 0,
-        card: [], //当type=2,3,4, *CardInfo 
+        actions: [], // 动作信息集 [] ActionInfo
+    },
+};
+
+// 吃
+Protocol.Chi = {
+    cmd: 1012,
+    request: {
+        cards: [], // 牌组
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 广播 吃
+Protocol.BroadcastChi = {
+    cmd: 1013,
+    response: {
+        seat: 0, // 座位号
+        cards: [], // 牌组
+    },
+};
+
+// 碰
+Protocol.Peng = {
+    cmd: 1014,
+    request: {
+        cards: [], // 牌组
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 广播 碰
+Protocol.BroadcastPeng = {
+    cmd: 1015,
+    response: {
+        seat: 0, // 座位号
+        cards: [], // 牌组
+    },
+};
+
+// 杠
+Protocol.Gang = {
+    cmd: 1016,
+    request: {
+        cards: [], // 牌组
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 广播 杠
+Protocol.BroadcastGang = {
+    cmd: 1017,
+    response: {
+        seat: 0, // 座位号
+        type: 0, // 0-明杠 1-暗杠 2-巴杠 3-抢杠
+        cards: [], // 牌组
+    },
+};
+
+// 听
+Protocol.Ting = {
+    cmd: 1018,
+    request: {
+
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 广播 听
+Protocol.BroadcastTing = {
+    cmd: 1019,
+    response: {
+        seat: 0, // 座位号
+    },
+};
+
+// 胡
+Protocol.Hu = {
+    cmd: 1020,
+    request: {
+        card: 0, // 胡牌
+    },
+    response: {
+        code: 0, // 返回码
+    },
+};
+
+// 广播 胡
+Protocol.BroadcastHu = {
+    cmd: 1021,
+    response: {
+        seatHu: 0, // 胡牌 座位号
+        seatDianPao: 0, // 点炮 座位号
+        huCard: 0, // 胡 牌值
+        holdCardInfo: [], // 手牌 信息 HoldCardInfo
+    },
+};
+
+// 广播 小结算
+Protocol.BroadcastClosing = {
+    cmd: 1022,
+    response: {
+
+    },
+};
+
+// 广播 大结算
+Protocol.BroadcastTotalClosing = {
+    cmd: 1023,
+    response: {
+
     },
 };
 

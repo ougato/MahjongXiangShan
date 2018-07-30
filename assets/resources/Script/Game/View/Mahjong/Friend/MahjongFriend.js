@@ -61,6 +61,31 @@ cc.Class({
         G.EventManager.unEvent( this, ConfEvent.EVENT_READY_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_READY_FAILED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_READY );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DICE );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_PUSH_DEAL );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DRAW );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_DISCARD_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_DISCARD_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DISCARD );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_CONTROLLER );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_PUSH_ACTION );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_CHI_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_CHI_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_CHI );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_PENG_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_PENG_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_PENG );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_GANG_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_GANG_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_GANG );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_TING_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_TING_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_TING );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_HU_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_HU_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_HU );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_CLOSING );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_TOTAL_CLOSING );
 
         // 清理游戏数据
         G.DataManager.clearData( ConfData.DeskData );
@@ -130,6 +155,33 @@ cc.Class({
         G.EventManager.addEvent( this, ConfEvent.EVENT_READY_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_READY_FAILED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_READY );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DICE );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_PUSH_DEAL );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DRAW );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_DISCARD_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_DISCARD_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DISCARD );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_CONTROLLER );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_PUSH_ACTION );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_CHI_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_CHI_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_CHI );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_PENG_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_PENG_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_PENG );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_GANG_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_GANG_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_GANG );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_TING_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_TING_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_TING );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_HU_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_HU_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_HU );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_CLOSING );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_TOTAL_CLOSING );
+
+
 
     },
 
@@ -358,6 +410,198 @@ cc.Class({
     },
 
     /**
+     * 发牌 推送
+     * @param data
+     */
+    onEventPushDeal( data ) {
+
+    },
+
+    /**
+     * 摸牌 广播
+     * @param data
+     */
+    onEventBroadcastDraw( data ) {
+
+    },
+
+    /**
+     * 出牌 成功
+     * @param data
+     */
+    onEventDiscardSucceed( data ) {
+
+    },
+
+    /**
+     * 出牌 失败
+     * @param data
+     */
+    onEventDiscardFailed( data ) {
+
+    },
+
+    /**
+     * 出牌 广播
+     * @param data
+     */
+    onEventBroadcastDiscard( data ) {
+
+    },
+
+    /**
+     * 本轮操作人 广播
+     * @param data
+     */
+    onEventBroadcastController( data ) {
+
+    },
+
+    /**
+     * 吃碰杠听胡过 推送
+     * @param data
+     */
+    onEventPushAction( data ) {
+
+    },
+
+    /**
+     * 吃 成功
+     * @param data
+     */
+    onEventChiSucceed( data ) {
+
+    },
+
+    /**
+     * 吃 失败
+     * @param data
+     */
+    onEventChiFailed( data ) {
+
+    },
+
+    /**
+     * 吃 广播
+     * @param data
+     */
+    onEventBroadcastChi( data ) {
+
+    },
+
+    /**
+     * 碰 成功
+     * @param data
+     */
+    onEventPengSucceed( data ) {
+
+    },
+
+    /**
+     * 碰 失败
+     * @param data
+     */
+    onEventPengFailed( data ) {
+
+    },
+
+    /**
+     * 碰 广播
+     * @param data
+     */
+    onEventBroadcastPeng( data ) {
+
+    },
+
+    /**
+     * 杠 成功
+     * @param data
+     */
+    onEventGangSucceed( data ) {
+
+    },
+
+    /**
+     * 杠 失败
+     * @param data
+     */
+    onEventGangFailed( data ) {
+
+    },
+
+    /**
+     * 杠 广播
+     * @param data
+     */
+    onEventBroadcastGang( data ) {
+
+    },
+
+    /**
+     * 听 成功
+     * @param data
+     */
+    onEventTingSucceed( data ) {
+
+    },
+
+    /**
+     * 听 失败
+     * @param data
+     */
+    onEventTingFailed( data ) {
+
+    },
+
+    /**
+     * 听 广播
+     * @param data
+     */
+    onEventBroadcastTing( data ) {
+
+    },
+
+    /**
+     * 胡 成功
+     * @param data
+     */
+    onEventHuSucceed( data ) {
+
+    },
+
+    /**
+     * 胡 失败
+     * @param data
+     */
+    onEventHuFailed( data ) {
+
+    },
+
+    /**
+     * 胡 广播
+     * @param data
+     */
+    onEventBroadcastHu( data ) {
+
+    },
+
+    /**
+     * 小结算 广播
+     * @param data
+     */
+    onEventBroadcastClosing( data ) {
+
+    },
+
+    /**
+     * 大结算 广播
+     * @param data
+     */
+    onEventBroadcastTotalClosing( data ) {
+
+    },
+
+    /**
      * 事件 回调
      * @param event
      */
@@ -395,6 +639,78 @@ cc.Class({
                 break;
             case ConfEvent.EVENT_BROADCAST_READY:
                 this.onEventBroadcastReady( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_PUSH_DEAL:
+                this.onEventPushDeal( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_DRAW:
+                this.onEventBroadcastDraw( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_DISCARD_SUCCEED:
+                this.onEventDiscardSucceed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_DISCARD_FAILED:
+                this.onEventDiscardFailed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_DISCARD:
+                this.onEventBroadcastDiscard( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_CONTROLLER:
+                this.onEventBroadcastController( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_PUSH_ACTION:
+                this.onEventPushAction( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_CHI_SUCCEED:
+                this.onEventChiSucceed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_CHI_FAILED:
+                this.onEventChiFailed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_CHI:
+                this.onEventBroadcastChi( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_PENG_SUCCEED:
+                this.onEventPengSucceed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_PENG_FAILED:
+                this.onEventPengFailed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_PENG:
+                this.onEventBroadcastPeng( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_GANG_SUCCEED:
+                this.onEventGangSucceed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_GANG_FAILED:
+                this.onEventGangFailed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_GANG:
+                this.onEventBroadcastGang( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_TING_SUCCEED:
+                this.onEventTingSucceed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_TING_FAILED:
+                this.onEventTingFailed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_TING:
+                this.onEventBroadcastTing( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_HU_SUCCEED:
+                this.onEventHuSucceed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_HU_FAILED:
+                this.onEventHuFailed( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_HU:
+                this.onEventBroadcastHu( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_CLOSING:
+                this.onEventBroadcastClosing( event.data );
+                break;
+            case ConfEvent.ConfEvent.EVENT_BROADCAST_TOTAL_CLOSING:
+                this.onEventBroadcastTotalClosing( event.data );
                 break;
         }
     },

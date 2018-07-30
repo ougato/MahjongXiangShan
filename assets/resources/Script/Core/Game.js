@@ -364,6 +364,203 @@ let Game = cc.Class({
     },
 
     /**
+     * 取消准备 网络回调
+     * @param data {object} 广播取消准备数据
+     */
+    onNetUnReady( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_UN_READY_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_UN_READY_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播取消准备 网络回调
+     * @param data {object} 广播取消准备数据
+     */
+    onNetBroadcastUnReady( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_UN_READY, data );
+    },
+
+    /**
+     * 广播骰子 网络回调
+     * @param data {object} 广播骰子数据
+     */
+    onNetBroadcastDice( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_DICE, data );
+
+    },
+
+    /**
+     * 推送发牌 网络回调
+     * @param data {object} 推送发牌数据
+     */
+    onNetPushDeal( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_PUSH_DEAL, data );
+    },
+
+    /**
+     * 广播摸牌 网络回调
+     * @param data {object} 广播摸牌数据
+     */
+    onNetBroadcastDraw( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_DRAW, data );
+    },
+
+    /**
+     * 出牌 网络回调
+     * @param data {object} 出牌数据
+     */
+    onNetDiscard( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_DISCARD_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_DISCARD_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播出牌 网络回调
+     * @param data {object} 广播出牌数据
+     */
+    onNetBroadcastDiscard( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_DISCARD, data );
+    },
+
+    /**
+     * 广播本轮操作人 网络回调
+     * @param data {object} 广播本轮操作人数据
+     */
+    onNetBroadcastController( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_CONTROLLER, data );
+    },
+
+    /**
+     * 推送吃碰杠听胡过 网络回调
+     * @param data {object} 推送 吃碰杠听胡过数据
+     */
+    onNetPushAction( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_PUSH_ACTION, data );
+    },
+
+    /**
+     * 吃 网络回调
+     * @param data {object} 吃数据
+     */
+    onNetChi( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_CHI_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_CHI_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播吃 网络回调
+     * @param data {object} 广播吃数据
+     */
+    onNetBroadcastChi( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_CHI, data );
+    },
+
+    /**
+     * 碰 网络回调
+     * @param data {object} 碰数据
+     */
+    onNetPeng( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_PENG_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_PENG_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播碰 网络回调
+     * @param data {object} 广播碰数据
+     */
+    onNetBroadcastPeng( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_PENG, data );
+    },
+
+    /**
+     * 杠 网络回调
+     * @param data {object} 杠数据
+     */
+    onNetGang( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_GANG_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_GANG_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播杠 网络回调
+     * @param data {object} 广播杠数据
+     */
+    onNetBroadcastGang( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_GANG, data );
+    },
+
+    /**
+     * 听 网络回调
+     * @param data {object} 听数据
+     */
+    onNetTing( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_TING_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_TING_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播听 网络回调
+     * @param data {object} 广播听数据
+     */
+    onNetBroadcastTing( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_TING, data );
+    },
+
+    /**
+     * 胡 网络回调
+     * @param data {object} 胡数据
+     */
+    onNetHu( data ) {
+        if( data.code >= 0 ) {
+            G.EventManager.sendEvent( ConfEvent.EVENT_HU_SUCCEED, data );
+        } else {
+            G.EventManager.sendEvent( ConfEvent.EVENT_HU_FAILED, data );
+        }
+    },
+
+    /**
+     * 广播胡 网络回调
+     * @param data {object} 广播胡数据
+     */
+    onNetBroadcastHu( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_HU, data );
+    },
+
+    /**
+     * 广播小结算 网络回调
+     * @param data {object} 广播小结算数据
+     */
+    onNetBroadcastClosing( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_CLOSING, data );
+    },
+
+    /**
+     * 广播大结算 网络回调
+     * @param data {object} 广播大结算数据
+     */
+    onNetBroadcastTotalClosing( data ) {
+        G.EventManager.sendEvent( ConfEvent.EVENT_BROADCAST_TOTAL_CLOSING, data );
+    },
+
+    /**
      * 网络 回调
      * @param msg
      */
@@ -402,6 +599,70 @@ let Game = cc.Class({
             case Protocol.BroadcastReady.cmd:
                 this.onNetBroadcastReady( msg.data );
                 break;
+            case Protocol.UnReady.cmd:
+                this.onNetUnReady( msg.data );
+                break;
+            case Protocol.BroadcastUnReady.cmd:
+                this.onNetBroadcastUnReady( msg.data );
+                break;
+            case Protocol.BroadcastDice.cmd:
+                this.onNetBroadcastDice( msg.data );
+                break;
+            case Protocol.PushDeal.cmd:
+                this.onNetPushDeal( msg.data );
+                break;
+            case Protocol.BroadcastDraw.cmd:
+                this.onNetBroadcastDraw( msg.data );
+                break;
+            case Protocol.Discard.cmd:
+                this.onNetDiscard( msg.data );
+                break;
+            case Protocol.BroadcastDiscard.cmd:
+                this.onNetBroadcastDiscard( msg.data );
+                break;
+            case Protocol.BroadcastController.cmd:
+                this.onNetBroadcastController( msg.data );
+                break;
+            case Protocol.PushAction.cmd:
+                this.onNetPushAction( msg.data );
+                break;
+            case Protocol.Chi.cmd:
+                this.onNetChi( msg.data );
+                break;
+            case Protocol.BroadcastChi.cmd:
+                this.onNetBroadcastChi( msg.data );
+                break;
+            case Protocol.Peng.cmd:
+                this.onNetPeng( msg.data );
+                break;
+            case Protocol.BroadcastPeng.cmd:
+                this.onNetBroadcastPeng( msg.data );
+                break;
+            case Protocol.Gang.cmd:
+                this.onNetGang( msg.data );
+                break;
+            case Protocol.BroadcastGang.cmd:
+                this.onNetBroadcastGang( msg.data );
+                break;
+            case Protocol.Ting.cmd:
+                this.onNetTing( msg.data );
+                break;
+            case Protocol.BroadcastTing.cmd:
+                this.onNetBroadcastTing( msg.data );
+                break;
+            case Protocol.Hu.cmd:
+                this.onNetHu( msg.data );
+                break;
+            case Protocol.BroadcastHu.cmd:
+                this.onNetBroadcastHu( msg.data );
+                break;
+            case Protocol.BroadcastClosing.cmd:
+                this.onNetBroadcastClosing( msg.data );
+                break;
+            case Protocol.BroadcastTotalClosing.cmd:
+                this.onNetBroadcastTotalClosing( msg.data );
+                break;
+
 
         }
     },
