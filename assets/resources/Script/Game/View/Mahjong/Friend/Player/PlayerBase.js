@@ -57,27 +57,6 @@ cc.Class({
     },
 
     /**
-     * 初始化未开始
-     */
-    initNotStarted() {
-        this.spriteReady.node.active = this.m_objPlayerData.stateInfo.isReady;
-
-    },
-
-    /**
-     * 初始化已开始
-     */
-    initStarted() {
-        this.spriteReady.node.active = false;
-        let cardInfo = this.m_objPlayerData.cardInfo;
-        if( !Utils.isNull( cardInfo ) && cardInfo.length > 0 ) {
-            for( let i = 0; cardInfo.length; ++i ) {
-                cc.log( cardInfo[i] )
-            }
-        }
-    },
-
-    /**
      * 初始化视图
      */
     initView() {
@@ -90,33 +69,7 @@ cc.Class({
         this.nodeProneCard.active = false;
         this.spriteReady.node.active = false;
 
-        if( !Utils.isNull( this.m_objPlayerData ) ) {
-            this.labelGold.string = this.m_objPlayerData.userInfo.gold;
-
-            let state = G.DataManager.getData( ConfData.RoomData ).getState();
-            switch( state ) {
-                case ConfGame.RoomState.NotStarted:
-                    this.initNotStarted();
-                    break;
-                case ConfGame.RoomState.Playing:
-                    this.initStarted();
-                    break;
-                case ConfGame.RoomState.Closing:
-                    if( this.m_objPlayerData.stateInfo.isReady ) {
-                        this.initNotStarted();
-                    } else {
-                        this.initStarted();
-                    }
-                    break;
-                case ConfGame.RoomState.TotalClosing:
-                    this.initStarted();
-                    break;
-
-            }
-            this.nodeAvatar.active = true;
-            this.nodeCard.active = true;
-            this.nodePlayer.active = true;
-        }
+        this.updatePlayer( this.m_objPlayerData );
     },
 
     /**
@@ -131,13 +84,8 @@ cc.Class({
      * @param data {object} 数据
      */
     join( data ) {
-        this.labelGold.string = data.userInfo.gold;
-        // TODO: 头像加载未设置
-        // this.spriteAvatar
-
-        this.nodeCard.active = true;
-        this.nodeAvatar.active = true;
-        this.nodePlayer.active = true;
+        this.m_objPlayerData = data;
+        this.updatePlayer( data );
     },
 
     /**
@@ -155,6 +103,56 @@ cc.Class({
     },
 
     /**
+     * 刷新个人信息
+     * @param data {object} 个人信息
+     */
+    updateUserInfo( data ) {
+        if( !Utils.isNull( data ) ) {
+            this.nodeAvatar.active = true;
+        }
+
+        // 金币
+        if( this.labelGold.string !== data.gold ) {
+            this.labelGold.string = data.gold;
+        }
+
+    },
+
+    /**
+     * 刷新麻将信息
+     * @param data {array} 麻将信息
+     */
+    updateCardInfo( data ) {
+        if( !Utils.isNull( data ) ) {
+            this.nodeCard.active = true;
+        }
+
+    },
+
+    /**
+     * 刷新状态信息
+     * @param data {object} 状态信息
+     */
+    updateStateInfo( data ) {
+        this.spriteReady.node.active = data.isReady;
+
+    },
+
+    /**
+     * 刷新玩家
+     * @param data {object} 玩家数据
+     */
+    updatePlayer( data ) {
+        if( !Utils.isNull( data ) ) {
+            this.updateUserInfo( data.userInfo );
+            this.updateCardInfo( data.cardInfo );
+            this.updateStateInfo( data.stateInfo );
+
+            this.nodePlayer.active = true;
+        }
+    },
+
+    /**
      * 清理头像
      */
     clearAvatar() {
@@ -166,18 +164,44 @@ cc.Class({
      */
     clearCard() {
         this.nodeCard.active = false;
+
         this.nodeActionCard.active = false;
+        let actionNodes = this.nodeActionCard.getChildren();
+        for( let i = 0; i < actionNodes.length; ++i ) {
+            actionNodes[i].active = false;
+        }
+
         this.nodeStrandCard.active = false;
+        let strandNodes = this.nodeStrandCard.getChildren();
+        for( let i = 0; i < strandNodes.length; ++i ) {
+            strandNodes[i].active = false;
+        }
+
         this.nodeLieCard.active = false;
+        let lieNodes = this.nodeLieCard.getChildren();
+        for( let i = 0; i < lieNodes.length; ++i ) {
+            lieNodes[i].active = false;
+        }
+
         this.nodeProneCard.active = false;
+        let proneNodes = this.nodeProneCard.getChildren();
+        for( let i = 0; i < proneNodes.length; ++i ) {
+            proneNodes[i].active = false;
+        }
     },
 
     /**
      * 清理
      */
     clear() {
-        this.clearAvatar();
-        this.clearCard();
+        this.nodePlayer.active = false;
+        this.nodeAvatar.active = false;
+        this.nodeCard.active = false;
+        this.nodeActionCard.active = false;
+        this.nodeStrandCard.active = false;
+        this.nodeLieCard.active = false;
+        this.nodeProneCard.active = false;
+        this.spriteReady.node.active = false;
     },
 
     // update (dt) {},

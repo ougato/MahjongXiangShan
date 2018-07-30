@@ -15,7 +15,7 @@ const Config = {
     // 是否调试模式
     isDebug: true,
     // 是否多个账号
-    isMulti: true,
+    isMulti: false,
     // 默认场景
     defaultScene: ConfView.Scene.Update,
     // 默认语言
