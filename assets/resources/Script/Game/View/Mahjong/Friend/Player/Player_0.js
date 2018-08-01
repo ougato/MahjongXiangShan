@@ -7,10 +7,10 @@
  * 玩家 下
  */
 
-let PlayerBase = require( "PlayerBase" );
+let PlayerViewBase = require( "PlayerViewBase" );
 
 cc.Class({
-    extends: PlayerBase,
+    extends: PlayerViewBase,
 
     properties: {
         // foo: {
@@ -60,11 +60,23 @@ cc.Class({
     },
 
     /**
-     * 初始化麻将牌
+     * 更新手牌
+     * @param card {array} 牌数据
      */
-    initCard() {
-        cc.log( "初始化麻将_0" );
+    updateShou( card ) {
+        for( let i = 0; i < card.length; ++i ) {
+            let vaule = card[( card.length - 1 ) - i];
+            let dig_1 = Math.floor( vaule % 10 );
+            let dig_2 = Math.floor( vaule / 10 % 10 );
 
+            let cardNode = this.nodeStrandCard.getChildByName( "Card_" + ( this.m_nMaxShouPaiNum - i ) );
+            let cardValue = cardNode.getChildByName( "Value" );
+            cc.loader.loadRes("Atlas/Game/Mahjong/Sprite_Card_" + dig_2 + "_" + dig_1, cc.SpriteFrame, function (err, spriteFrame) {
+                let sprite = cardValue.getComponent( cc.Sprite );
+                sprite.spriteFrame = spriteFrame;
+                cardNode.active = true;
+            });
+        }
     },
 
     // update (dt) {},

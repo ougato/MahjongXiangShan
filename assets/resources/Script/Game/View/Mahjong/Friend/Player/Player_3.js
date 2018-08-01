@@ -7,10 +7,10 @@
  * 玩家 左
  */
 
-let PlayerBase = require( "PlayerBase" );
+let PlayerViewBase = require( "PlayerViewBase" );
 
 cc.Class({
-    extends: PlayerBase,
+    extends: PlayerViewBase,
 
     properties: {
         // foo: {
@@ -57,14 +57,6 @@ cc.Class({
 
         // 调用父类方法
         this._super();
-    },
-
-    /**
-     * 初始化麻将牌
-     */
-    initCard() {
-        cc.log( "初始化麻将_3" );
-
     },
 
     // update (dt) {},

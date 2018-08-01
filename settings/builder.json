@@ -25,7 +25,7 @@
     "REMOTE_SERVER_ROOT": "",
     "orientation": "portrait"
   },
-  "renderMode": "1",
+  "renderMode": "2",
   "startScene": "71867e05-ad17-4145-9fc9-cc28c1086df0",
   "title": "MahjongXiangShan",
   "webOrientation": "landscape",

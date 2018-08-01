@@ -145,13 +145,18 @@ let Game = cc.Class({
      */
     intoGame() {
         G.ViewManager.replaceScene( Config.defaultScene, null, function( view ) {
-            this.listenerLoadProgress();
+            this.initListener();
             let script = view.getNode().getComponent( view.getName() );
             script.checkToken();
-            if( Utils.isWeChatGame() ) {
-                wx.onNetworkStatusChange( this.onNetChange.bind( this ) );
-            }
         }.bind( this ) );
+    },
+
+    /**
+     * 初始化监听
+     */
+    initListener() {
+        this.listenerLoadProgress();
+        this.listenerNetStateChange();
     },
 
     /**
@@ -191,6 +196,15 @@ let Game = cc.Class({
                     G.ViewManager.closeProgressBar();
                 }
             };
+        }
+    },
+
+    /**
+     * 监听网络状态改变
+     */
+    listenerNetStateChange() {
+        if( Utils.isWeChatGame() ) {
+            wx.onNetworkStatusChange( this.onNetChange.bind( this ) );
         }
     },
 
@@ -246,6 +260,7 @@ let Game = cc.Class({
     onNetLogin( data ) {
         if( data.code >= 0 ) {
             Utils.isNull( data.userInfo ) || G.DataManager.getData( ConfData.UserData ).setUserInfo( data.userInfo );
+            Utils.isNull( data.roomId ) || G.DataManager.getData( ConfData.RoomData ).setRoomId( data.roomId );
             G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_LOGIN_FAILED, data );
@@ -258,6 +273,7 @@ let Game = cc.Class({
      */
     onNetCreate( data ) {
         if( data.code >= 0 ) {
+            Utils.isNull( data.roomId ) || G.DataManager.getData( ConfData.RoomData ).setRoomId( data.roomId );
             G.EventManager.sendEvent( ConfEvent.EVENT_CREATE_SUCCEED, data );
         } else {
             G.EventManager.sendEvent( ConfEvent.EVENT_CREATE_FAILED, data );
@@ -278,7 +294,7 @@ let Game = cc.Class({
                 let playerData = G.DataManager.getData( ConfData.PlayerData );
                 playerData.setSelfSeat( this.findSelfSeat( playerInfo ) );
                 for( let i = 0; i < playerInfo.length; ++i ) {
-                    playerData.setPlayerData( this.transSeat( playerInfo[i].seat ), playerInfo[i] );
+                    playerData.setData( this.transSeat( playerInfo[i].seat ), playerInfo[i] );
                 }
             }
             G.EventManager.sendEvent( ConfEvent.EVENT_JOIN_SUCCEED, data );
@@ -662,7 +678,6 @@ let Game = cc.Class({
             case Protocol.BroadcastTotalClosing.cmd:
                 this.onNetBroadcastTotalClosing( msg.data );
                 break;
-
 
         }
     },
