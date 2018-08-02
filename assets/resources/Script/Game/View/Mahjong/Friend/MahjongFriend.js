@@ -61,6 +61,9 @@ cc.Class({
         G.EventManager.unEvent( this, ConfEvent.EVENT_READY_SUCCEED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_READY_FAILED );
         G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_READY );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_UN_READY_SUCCEED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_UN_READY_FAILED );
+        G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_UN_READY );
         G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DICE );
         G.EventManager.unEvent( this, ConfEvent.EVENT_PUSH_DEAL );
         G.EventManager.unEvent( this, ConfEvent.EVENT_BROADCAST_DRAW );
@@ -155,6 +158,9 @@ cc.Class({
         G.EventManager.addEvent( this, ConfEvent.EVENT_READY_SUCCEED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_READY_FAILED );
         G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_READY );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_UN_READY_SUCCEED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_UN_READY_FAILED );
+        G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_UN_READY );
         G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DICE );
         G.EventManager.addEvent( this, ConfEvent.EVENT_PUSH_DEAL );
         G.EventManager.addEvent( this, ConfEvent.EVENT_BROADCAST_DRAW );
@@ -410,11 +416,64 @@ cc.Class({
     },
 
     /**
+     * 取消准备 成功
+     * @param data
+     */
+    onEventUnReadySucceed( data ) {
+        // 等待服务器发送 广播 取消准备 消息
+        // 在这个回调方法内处理取消准备 动作
+        //
+        // onEventBroadcastReady
+    },
+
+    /**
+     * 取消准备 失败
+     * @param data
+     */
+    onEventUnReadyFailed( data ) {
+        G.ViewManager.openTips( ConfCode.WebSocket[data.code.toString()] );
+    },
+
+    /**
+     * 取消准备 广播
+     * @param data
+     */
+    onEventBroadcastUnReady( data ) {
+        if( this.isSelfSeat( data.seat ) ) {
+            this.buttonReady.node.active = true;
+        }
+        this.m_objPlayerController.ready( G.Game.transSeat( data.seat ), false );
+    },
+
+    /**
+     * 骰子 广播
+     * @param data
+     */
+    onEventBroadcastDice( data ) {
+        G.DataManager.getData( ConfData.RoomData ).setState( ConfGame.RoomState.Playing );
+
+    },
+
+    /**
      * 发牌 推送
      * @param data
      */
     onEventPushDeal( data ) {
+        let simulateData = [];
+        simulateData[0] = data.cards;
+        let maxPlayer = G.DataManager.getData( ConfData.RoomData ).getRuleInfo().playerNum;
+        let maxShouPaiNum = G.DataManager.getData( ConfData.PlayerData ).getMaxShouPaiNum();
+        for( let i = 1; i < maxPlayer; ++i ) {
+            let shouPai = [];
+            for( let j = 0; j < maxShouPaiNum; ++j ) {
+                shouPai.splice( j, 0, null );
+            }
+            simulateData.splice( simulateData.length, 0, shouPai );
+        }
 
+        for( let i = 0; i < simulateData.length; ++i ) {
+            this.m_objPlayerController.deal( i, simulateData[i] );
+        }
     },
 
     /**
@@ -590,6 +649,7 @@ cc.Class({
      * @param data
      */
     onEventBroadcastClosing( data ) {
+        G.DataManager.getData( ConfData.RoomData ).setState( ConfGame.RoomState.Closing );
 
     },
 
@@ -598,6 +658,7 @@ cc.Class({
      * @param data
      */
     onEventBroadcastTotalClosing( data ) {
+        G.DataManager.getData( ConfData.RoomData ).setState( ConfGame.RoomState.TotalClosing );
 
     },
 
@@ -640,76 +701,88 @@ cc.Class({
             case ConfEvent.EVENT_BROADCAST_READY:
                 this.onEventBroadcastReady( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_PUSH_DEAL:
+            case ConfEvent.EVENT_UN_READY_SUCCEED:
+                this.onEventUnReadySucceed( event.data );
+                break;
+            case ConfEvent.EVENT_UN_READY_FAILED:
+                this.onEventUnReadyFailed( event.data );
+                break;
+            case ConfEvent.EVENT_BROADCAST_UN_READY:
+                this.onEventBroadcastUnReady( event.data );
+                break;
+            case ConfEvent.EVENT_BROADCAST_DICE:
+                this.onEventBroadcastDice( event.data );
+                break;
+            case ConfEvent.EVENT_PUSH_DEAL:
                 this.onEventPushDeal( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_DRAW:
+            case ConfEvent.EVENT_BROADCAST_DRAW:
                 this.onEventBroadcastDraw( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_DISCARD_SUCCEED:
+            case ConfEvent.EVENT_DISCARD_SUCCEED:
                 this.onEventDiscardSucceed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_DISCARD_FAILED:
+            case ConfEvent.EVENT_DISCARD_FAILED:
                 this.onEventDiscardFailed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_DISCARD:
+            case ConfEvent.EVENT_BROADCAST_DISCARD:
                 this.onEventBroadcastDiscard( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_CONTROLLER:
+            case ConfEvent.EVENT_BROADCAST_CONTROLLER:
                 this.onEventBroadcastController( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_PUSH_ACTION:
+            case ConfEvent.EVENT_PUSH_ACTION:
                 this.onEventPushAction( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_CHI_SUCCEED:
+            case ConfEvent.EVENT_CHI_SUCCEED:
                 this.onEventChiSucceed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_CHI_FAILED:
+            case ConfEvent.EVENT_CHI_FAILED:
                 this.onEventChiFailed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_CHI:
+            case ConfEvent.EVENT_BROADCAST_CHI:
                 this.onEventBroadcastChi( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_PENG_SUCCEED:
+            case ConfEvent.EVENT_PENG_SUCCEED:
                 this.onEventPengSucceed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_PENG_FAILED:
+            case ConfEvent.EVENT_PENG_FAILED:
                 this.onEventPengFailed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_PENG:
+            case ConfEvent.EVENT_BROADCAST_PENG:
                 this.onEventBroadcastPeng( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_GANG_SUCCEED:
+            case ConfEvent.EVENT_GANG_SUCCEED:
                 this.onEventGangSucceed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_GANG_FAILED:
+            case ConfEvent.EVENT_GANG_FAILED:
                 this.onEventGangFailed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_GANG:
+            case ConfEvent.EVENT_BROADCAST_GANG:
                 this.onEventBroadcastGang( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_TING_SUCCEED:
+            case ConfEvent.EVENT_TING_SUCCEED:
                 this.onEventTingSucceed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_TING_FAILED:
+            case ConfEvent.EVENT_TING_FAILED:
                 this.onEventTingFailed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_TING:
+            case ConfEvent.EVENT_BROADCAST_TING:
                 this.onEventBroadcastTing( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_HU_SUCCEED:
+            case ConfEvent.EVENT_HU_SUCCEED:
                 this.onEventHuSucceed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_HU_FAILED:
+            case ConfEvent.EVENT_HU_FAILED:
                 this.onEventHuFailed( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_HU:
+            case ConfEvent.EVENT_BROADCAST_HU:
                 this.onEventBroadcastHu( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_CLOSING:
+            case ConfEvent.EVENT_BROADCAST_CLOSING:
                 this.onEventBroadcastClosing( event.data );
                 break;
-            case ConfEvent.ConfEvent.EVENT_BROADCAST_TOTAL_CLOSING:
+            case ConfEvent.EVENT_BROADCAST_TOTAL_CLOSING:
                 this.onEventBroadcastTotalClosing( event.data );
                 break;
         }

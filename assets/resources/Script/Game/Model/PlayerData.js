@@ -103,6 +103,8 @@ let PlayerData = cc.Class({
         this.m_mapPlayerInfo = new Map();
         // 自己服务器座位号
         this.m_nSelfSeat = null;
+        // 最大手牌数
+        this.m_nMaxShouPaiNum = 13;
     },
 
     /**
@@ -115,36 +117,45 @@ let PlayerData = cc.Class({
     },
 
     /**
-     * 设置牌数据
+     * 加入
      * @param seat {number} 客户端座位号
-     * @param cardData {array} 牌数据
+     * @param data {object} 玩家数据
      */
-    setCardData( seat, cardData ) {
-        for( let i = 0; i < cardData; ++i ) {
-            let type = cardData[i].type;
-            let card = cardData[i].card;
-            switch( type ) {
-                case ConfCard.CardType.ShouPai:
-                    this.setShouPai( seat, card );
-                    break;
-                case ConfCard.CardType.ChuPai:
-                    this.setChuPai( seat, card );
-                    break;
-                case ConfCard.CardType.ChiPai:
-                case ConfCard.CardType.PengPai:
-                case ConfCard.CardType.MingGang:
-                case ConfCard.CardType.AnGang:
-                case ConfCard.CardType.BaGang:
-                case ConfCard.CardType.QiangGang:
-                    this.addBaiPai( seat, card );
-                    break;
-                case ConfCard.CardType.MoPai:
-                    this.setMoPai( seat, card );
-                    break;
-                default:
+    join( seat, data ) {
+        this.setData( seat, data );
+    },
 
-                    break;
-            }
+    /**
+     * 退出
+     * @param seat {number} 客户端座位号
+     */
+    exit( seat ) {
+        if( this.m_mapPlayerInfo.has( seat ) ) {
+            this.m_mapPlayerInfo.delete( seat );
+        }
+    },
+
+    /**
+     * 准备
+     * @param seat {number} 客户端座位号
+     * @param isReady {boolean} 是否准备
+     */
+    ready( seat, isReady ) {
+        if( this.m_mapPlayerInfo.has( seat ) ) {
+            let data = this.m_mapPlayerInfo.get( seat );
+            data.isReady = isReady;
+        }
+    },
+
+    /**
+     * 发牌
+     * @param seat {number} 客户端座位号
+     * @param cards {array} 手牌数据
+     */
+    deal( seat, cards ) {
+        if( this.m_mapPlayerInfo.has( seat ) ) {
+            let data = this.m_mapPlayerInfo.get( seat );
+            this.setShouPai( seat, cards );
         }
     },
 
@@ -202,6 +213,40 @@ let PlayerData = cc.Class({
     },
 
     /**
+     * 设置牌数据
+     * @param seat {number} 客户端座位号
+     * @param cardData {array} 牌数据
+     */
+    setCardData( seat, cardData ) {
+        for( let i = 0; i < cardData; ++i ) {
+            let type = cardData[i].type;
+            let card = cardData[i].card;
+            switch( type ) {
+                case ConfCard.CardType.ShouPai:
+                    this.setShouPai( seat, card );
+                    break;
+                case ConfCard.CardType.ChuPai:
+                    this.setChuPai( seat, card );
+                    break;
+                case ConfCard.CardType.ChiPai:
+                case ConfCard.CardType.PengPai:
+                case ConfCard.CardType.MingGang:
+                case ConfCard.CardType.AnGang:
+                case ConfCard.CardType.BaGang:
+                case ConfCard.CardType.QiangGang:
+                    this.addBaiPai( seat, card );
+                    break;
+                case ConfCard.CardType.MoPai:
+                    this.setMoPai( seat, card );
+                    break;
+                default:
+
+                    break;
+            }
+        }
+    },
+
+    /**
      * 设置自己服务器座位号
      * @param seat {number} 服务器座位号
      */
@@ -215,6 +260,14 @@ let PlayerData = cc.Class({
      */
     getSelfSeat(){
         return this.m_nSelfSeat;
+    },
+
+    /**
+     * 获取最大手牌数量
+     * @return {number}
+     */
+    getMaxShouPaiNum() {
+        return this.m_nMaxShouPaiNum;
     },
 
     /**

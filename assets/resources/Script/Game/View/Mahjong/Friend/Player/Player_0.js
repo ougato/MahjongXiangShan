@@ -7,10 +7,12 @@
  * 玩家 下
  */
 
-let PlayerViewBase = require( "PlayerViewBase" );
+let PlayerBase = require( "PlayerBase" );
+let ConfData = require( "ConfData" );
+let ConfGame = require( "ConfGame" );
 
 cc.Class({
-    extends: PlayerViewBase,
+    extends: PlayerBase,
 
     properties: {
         // foo: {
@@ -59,17 +61,28 @@ cc.Class({
         this._super();
     },
 
+
     /**
      * 更新手牌
-     * @param card {array} 牌数据
+     * @param cards {array} 手牌
      */
-    updateShou( card ) {
-        for( let i = 0; i < card.length; ++i ) {
-            let vaule = card[( card.length - 1 ) - i];
+    updateShouPai( cards ) {
+        let roomState = G.DataManager.getData( ConfData.RoomData ).getState();
+        if( roomState === ConfGame.RoomState.NotStarted ) {
+            return;
+        }
+
+        for( let i = 0; i < cards.length; ++i ) {
+            let vaule = cards[( cards.length - 1 ) - i];
             let dig_1 = Math.floor( vaule % 10 );
             let dig_2 = Math.floor( vaule / 10 % 10 );
 
-            let cardNode = this.nodeStrandCard.getChildByName( "Card_" + ( this.m_nMaxShouPaiNum - i ) );
+            let cardNode = null;
+            if( roomState === ConfGame.RoomState.Playing ) {
+                cardNode = this.nodeStrandCard.getChildByName( "Card_" + ( ( this.m_nMaxShouPaiNum - 1 ) - i ) );
+            } else if( roomState === ConfGame.RoomState.Closing || roomState === ConfGame.RoomState.TotalClosing ) {
+                cardNode = this.nodeLieCard.getChildByName( "Card_" + ( ( this.m_nMaxShouPaiNum - 1 ) - i ) );
+            }
             let cardValue = cardNode.getChildByName( "Value" );
             cc.loader.loadRes("Atlas/Game/Mahjong/Sprite_Card_" + dig_2 + "_" + dig_1, cc.SpriteFrame, function (err, spriteFrame) {
                 let sprite = cardValue.getComponent( cc.Sprite );
@@ -77,6 +90,46 @@ cc.Class({
                 cardNode.active = true;
             });
         }
+    },
+
+    /**
+     * 更新摆牌
+     * @param cards {array} 摆牌
+     */
+    updateBaiPai( cards ) {
+        let roomState = G.DataManager.getData( ConfData.RoomData ).getState();
+        if( roomState === ConfGame.RoomState.NotStarted ) {
+            return;
+        }
+
+    },
+
+    /**
+     * 更新摸牌
+     * @param card {number} 摸牌
+     */
+    updateMoPai( card ) {
+        let roomState = G.DataManager.getData( ConfData.RoomData ).getState();
+        if( roomState === ConfGame.RoomState.NotStarted ) {
+            return;
+        }
+
+        let dig_1 = Math.floor( card % 10 );
+        let dig_2 = Math.floor( card / 10 % 10 );
+
+        let cardNode = null;
+        if( roomState === ConfGame.RoomState.Playing ) {
+            cardNode = this.nodeStrandCard.getChildByName( "Card_" + this.m_nMaxShouPaiNum );
+        } else if( roomState === ConfGame.RoomState.Closing || roomState === ConfGame.RoomState.TotalClosing ) {
+            cardNode = this.nodeLieCard.getChildByName( "Card_" + this.m_nMaxShouPaiNum );
+        }
+
+        let cardValue = cardNode.getChildByName( "Value" );
+        cc.loader.loadRes("Atlas/Game/Mahjong/Sprite_Card_" + dig_2 + "_" + dig_1, cc.SpriteFrame, function (err, spriteFrame) {
+            let sprite = cardValue.getComponent( cc.Sprite );
+            sprite.spriteFrame = spriteFrame;
+            cardNode.active = true;
+        });
     },
 
     // update (dt) {},

@@ -7,10 +7,10 @@
  * 玩家 右
  */
 
-let PlayerViewBase = require( "PlayerViewBase" );
+let PlayerBase = require( "PlayerBase" );
 
 cc.Class({
-    extends: PlayerViewBase,
+    extends: PlayerBase,
 
     properties: {
         // foo: {

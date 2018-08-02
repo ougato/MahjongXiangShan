@@ -77,6 +77,48 @@ let Game = cc.Class({
         G.NetManager.unProto( this, Protocol.Ready.cmd );
         // 释放 广播准备 网络
         G.NetManager.unProto( this, Protocol.BroadcastReady.cmd );
+        // 添加 取消准备 网络
+        G.NetManager.unProto( this, Protocol.UnReady.cmd );
+        // 添加 广播取消准备 网络
+        G.NetManager.unProto( this, Protocol.BroadcastUnReady.cmd );
+        // 添加 广播骰子 网络
+        G.NetManager.unProto( this, Protocol.BroadcastDice.cmd );
+        // 添加 推送发牌 网络
+        G.NetManager.unProto( this, Protocol.PushDeal.cmd );
+        // 添加 广播摸牌 网络
+        G.NetManager.unProto( this, Protocol.BroadcastDraw.cmd );
+        // 添加 出牌 网络
+        G.NetManager.unProto( this, Protocol.Discard.cmd );
+        // 添加 广播出牌 网络
+        G.NetManager.unProto( this, Protocol.BroadcastDiscard.cmd );
+        // 添加 广播本轮操作人 网络
+        G.NetManager.unProto( this, Protocol.BroadcastController.cmd );
+        // 添加 推送吃碰杠听胡过 网络
+        G.NetManager.unProto( this, Protocol.PushAction.cmd );
+        // 添加 吃 网络
+        G.NetManager.unProto( this, Protocol.Chi.cmd );
+        // 添加 广播吃 网络
+        G.NetManager.unProto( this, Protocol.BroadcastChi.cmd );
+        // 添加 碰 网络
+        G.NetManager.unProto( this, Protocol.Peng.cmd );
+        // 添加 广播碰 网络
+        G.NetManager.unProto( this, Protocol.BroadcastPeng.cmd );
+        // 添加 杠 网络
+        G.NetManager.unProto( this, Protocol.Gang.cmd );
+        // 添加 广播杠 网络
+        G.NetManager.unProto( this, Protocol.BroadcastGang.cmd );
+        // 添加 听 网络
+        G.NetManager.unProto( this, Protocol.Ting.cmd );
+        // 添加 广播听 网络
+        G.NetManager.unProto( this, Protocol.BroadcastTing.cmd );
+        // 添加 胡 网络
+        G.NetManager.unProto( this, Protocol.Hu.cmd );
+        // 添加 广播胡 网络
+        G.NetManager.unProto( this, Protocol.BroadcastHu.cmd );
+        // 添加 广播小结算 网络
+        G.NetManager.unProto( this, Protocol.BroadcastClosing.cmd );
+        // 添加 广播大结算 网络
+        G.NetManager.unProto( this, Protocol.BroadcastTotalClosing.cmd );
 
     },
 
@@ -137,6 +179,48 @@ let Game = cc.Class({
         G.NetManager.addProto( this, Protocol.Ready.cmd );
         // 添加 广播准备 网络
         G.NetManager.addProto( this, Protocol.BroadcastReady.cmd );
+        // 添加 取消准备 网络
+        G.NetManager.addProto( this, Protocol.UnReady.cmd );
+        // 添加 广播取消准备 网络
+        G.NetManager.addProto( this, Protocol.BroadcastUnReady.cmd );
+        // 添加 广播骰子 网络
+        G.NetManager.addProto( this, Protocol.BroadcastDice.cmd );
+        // 添加 推送发牌 网络
+        G.NetManager.addProto( this, Protocol.PushDeal.cmd );
+        // 添加 广播摸牌 网络
+        G.NetManager.addProto( this, Protocol.BroadcastDraw.cmd );
+        // 添加 出牌 网络
+        G.NetManager.addProto( this, Protocol.Discard.cmd );
+        // 添加 广播出牌 网络
+        G.NetManager.addProto( this, Protocol.BroadcastDiscard.cmd );
+        // 添加 广播本轮操作人 网络
+        G.NetManager.addProto( this, Protocol.BroadcastController.cmd );
+        // 添加 推送吃碰杠听胡过 网络
+        G.NetManager.addProto( this, Protocol.PushAction.cmd );
+        // 添加 吃 网络
+        G.NetManager.addProto( this, Protocol.Chi.cmd );
+        // 添加 广播吃 网络
+        G.NetManager.addProto( this, Protocol.BroadcastChi.cmd );
+        // 添加 碰 网络
+        G.NetManager.addProto( this, Protocol.Peng.cmd );
+        // 添加 广播碰 网络
+        G.NetManager.addProto( this, Protocol.BroadcastPeng.cmd );
+        // 添加 杠 网络
+        G.NetManager.addProto( this, Protocol.Gang.cmd );
+        // 添加 广播杠 网络
+        G.NetManager.addProto( this, Protocol.BroadcastGang.cmd );
+        // 添加 听 网络
+        G.NetManager.addProto( this, Protocol.Ting.cmd );
+        // 添加 广播听 网络
+        G.NetManager.addProto( this, Protocol.BroadcastTing.cmd );
+        // 添加 胡 网络
+        G.NetManager.addProto( this, Protocol.Hu.cmd );
+        // 添加 广播胡 网络
+        G.NetManager.addProto( this, Protocol.BroadcastHu.cmd );
+        // 添加 广播小结算 网络
+        G.NetManager.addProto( this, Protocol.BroadcastClosing.cmd );
+        // 添加 广播大结算 网络
+        G.NetManager.addProto( this, Protocol.BroadcastTotalClosing.cmd );
 
     },
 

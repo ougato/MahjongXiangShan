@@ -54,6 +54,15 @@ let PlayerController = cc.Class({
         this.m_objPlayerView.ready( seat, isReady );
     },
 
+    /**
+     * 发牌
+     * @param seat {number} 座位
+     * @param cards {array} 手牌
+     */
+    deal( seat, cards ) {
+        this.m_objPlayerData.deal( seat, cards );
+        this.m_objPlayerView.deal( seat, cards );
+    },
 });
 
 module.exports = PlayerController;

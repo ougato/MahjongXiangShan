@@ -11705,7 +11705,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Button_GoldFrame",
+    "_name": "Node_GoldFrame",
     "_objFlags": 0,
     "_parent": {
       "__id__": 337
@@ -23034,7 +23034,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Button_GoldFrame",
+    "_name": "Node_GoldFrame",
     "_objFlags": 0,
     "_parent": {
       "__id__": 681
@@ -34363,7 +34363,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Button_GoldFrame",
+    "_name": "Node_GoldFrame",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1025
@@ -47960,7 +47960,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Button_GoldFrame",
+    "_name": "Node_GoldFrame",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1425

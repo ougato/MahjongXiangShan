@@ -86,9 +86,19 @@ cc.Class({
     /**
      * 准备
      * @param seat {number} 客户端座位号
+     * @param isReady {boolean} 是否准备
      */
-    ready( seat ) {
-        this.m_arrScriptPlayer[seat].ready();
+    ready( seat, isReady ) {
+        this.m_arrScriptPlayer[seat].ready( isReady );
+    },
+
+    /**
+     * 发牌
+     * @param seat {number} 客户端座位号
+     * @param cards {array} 手牌数据
+     */
+    deal( seat, cards ) {
+        this.m_arrScriptPlayer[seat].deal( cards );
     },
 
     /**
