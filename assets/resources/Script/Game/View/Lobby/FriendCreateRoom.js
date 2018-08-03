@@ -64,7 +64,7 @@ cc.Class({
      */
     initData() {
         // 房间人数
-        this.m_nPlayerNum = 4;
+        this.m_nPlayerNum = 2;
     },
 
     /**

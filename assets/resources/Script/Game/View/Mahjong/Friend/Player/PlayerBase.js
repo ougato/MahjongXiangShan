@@ -83,6 +83,8 @@ cc.Class({
      * 初始化麻将
      */
     initCard() {
+        this.nodeCard.active = true;
+
         this.nodeActionCard.active = true;
         let actionNodes = this.nodeActionCard.getChildren();
         for( let i = 0; i < actionNodes.length; ++i ) {

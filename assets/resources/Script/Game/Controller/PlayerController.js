@@ -49,9 +49,21 @@ let PlayerController = cc.Class({
      * @param seat {number} 客户端座位号
      * @param isReady {boolean} 是否准备
      */
-    ready( seat, isReady ) {
-        this.m_objPlayerData.ready( seat, isReady );
-        this.m_objPlayerView.ready( seat, isReady );
+    ready() {
+        let argLen = arguments.length;
+        if( argLen === 1 ) {
+            let arg0 = arguments[0];
+            let playerData = this.m_objPlayerData.m_mapPlayerInfo;
+            playerData.forEach( function( value, index ) {
+                this.m_objPlayerData.ready( G.Game.transSeat( value.seat ), arg0 );
+                this.m_objPlayerView.ready( G.Game.transSeat( value.seat ), arg0 );
+            }.bind( this ) );
+        } else {
+            let arg0 = arguments[0];
+            let arg1 = arguments[1];
+            this.m_objPlayerData.ready( arg0, arg1 );
+            this.m_objPlayerView.ready( arg0, arg1 );
+        }
     },
 
     /**

@@ -451,6 +451,8 @@ cc.Class({
      */
     onEventBroadcastDice( data ) {
         G.DataManager.getData( ConfData.RoomData ).setState( ConfGame.RoomState.Playing );
+        this.m_objPlayerController.ready( false );
+
 
     },
 

@@ -278,7 +278,8 @@ let PlayerData = cc.Class({
     setShouPai( seat, cardInfo ) {
         if( this.m_mapPlayerInfo.has( seat ) ) {
             let data = this.m_mapPlayerInfo.get( seat );
-            data.shouPai = cardInfo.card;
+            data.shouPai = cardInfo;
+            data.shouPai.sort();
         } else {
             Log.error( DefLog[19] );
         }
